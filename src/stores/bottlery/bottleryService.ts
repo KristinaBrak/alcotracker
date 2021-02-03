@@ -1,4 +1,6 @@
-import axios, { AxiosRequestConfig } from "axios";
+import axios from "axios";
+import { FetchData } from "src/types";
+import { withCache } from "../../cache";
 import { BOTTLERY_PRODUCT, BOTTLERY_URL } from "../../consts";
 import { Category, Product } from "../store.types";
 
@@ -17,24 +19,6 @@ interface BottleryItem {
 const requestData =
   "action=btl_products&data%5Border%5D=price_desc&data%5Blimit%5D=";
 
-const config: AxiosRequestConfig = {
-  headers: {
-    authority: "www.bottlery.eu",
-    pragma: "no-cache",
-    "cache-control": "no-cache",
-    accept: "/",
-    "x-requested-with": "XMLHttpRequest",
-    "content-type": "application/x-www-form-urlencoded; charset=UTF-8",
-    "sec-gpc": "1",
-    origin: "https://www.bottlery.eu",
-    "sec-fetch-site": "same-origin",
-    "sec-fetch-mode": "cors",
-    "sec-fetch-dest": "empty",
-    referer: "https://www.bottlery.eu/visos-prekes/",
-    "accept-language": "en-GB,en-US;q=0.9,en;q=0.8",
-    cookie: 'PHPSESSID=8621ab5520e0b71af4882ef5aea4e37a; n18v3="yes"',
-  },
-};
 [
   "ALCO_WINE",
   "ALCO_STRONG",
@@ -83,21 +67,25 @@ const mapProduct = ({
   image: picture_filepath,
 });
 
-export const fetchProducts = async () => {
+interface BottleryResponseType {
+  error: any;
+  data: BottleryItem[];
+}
+
+const fetchData = async (URL: string) => {
   const {
     data: { error, data },
-  } = await axios
-    .post<{
-      error: any;
-      data: BottleryItem[];
-    }>(BOTTLERY_URL, requestData, config)
-    .catch(() => {
-      throw new Error("Bottlery API error");
-    });
-
+  } = await axios.post<BottleryResponseType>(URL, requestData).catch(() => {
+    throw new Error("Bottlery API error");
+  });
   if (error) {
     throw new Error("Bottlery response error");
   }
+  return data;
+};
+
+export const fetchBottleryProducts = async (): Promise<Product[]> => {
+  const data = await withCache(fetchData)(BOTTLERY_URL);
 
   const items: Product[] = data.map(mapProduct);
   return items;
