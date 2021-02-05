@@ -72,10 +72,10 @@ interface BottleryResponseType {
   data: BottleryItem[];
 }
 
-const fetchData = async (URL: string) => {
+const fetchData = async (url: string) => {
   const {
     data: { error, data },
-  } = await axios.post<BottleryResponseType>(URL, requestData).catch(() => {
+  } = await axios.post<BottleryResponseType>(url, requestData).catch(() => {
     throw new Error("Bottlery API error");
   });
   if (error) {

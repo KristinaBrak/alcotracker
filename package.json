@@ -16,6 +16,7 @@
     "axios": "^0.21.1",
     "cheerio": "^1.0.0-rc.5",
     "dotenv": "^8.2.0",
+    "ioredis": "^4.19.4",
     "jssoup": "^0.0.12"
   },
   "devDependencies": {

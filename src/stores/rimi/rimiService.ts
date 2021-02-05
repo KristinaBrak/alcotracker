@@ -1,13 +1,18 @@
 import axios from "axios";
 import cheerio from "cheerio";
+import { withCache } from "../../cache";
+import { FetchData, Url } from "../../types";
+import { debug } from "../../logger";
 import { Category, Product } from "../store.types";
 
 interface RimiCategory {
   name: string;
-  link: string;
+  link: Url;
 }
 
 const rimiURL = "https://www.rimi.lt";
+
+const PRODUCTS_PER_PAGE = 20;
 
 const rimiAlcoholURL =
   "https://www.rimi.lt/e-parduotuve/lt/produktai/alkoholiniai-gerimai/c/SH-1";
@@ -82,80 +87,102 @@ const convertToCategory = (category: string) => {
   return categoryDictionary[category.toLowerCase()] ?? Category.OTHER;
 };
 
+const extractAlcVolume = (productName: string) => {
+  const alcVolumeText: string[] = productName.match(/\d?\,?\d\s?%/) ?? ["-1%"];
+  const alcVolumeList: string[] = alcVolumeText[0].split("%");
+  const alcVolume = Number(alcVolumeList[0].replace(",", ".").trim());
+  return alcVolume;
+};
+
+const fetchData: FetchData<string> = async (url: string) => {
+  const { data } = await axios.get<string>(url, {
+    headers: {
+      Cookie:
+        "rimi_storefront_session=eyJpdiI6Im9oblVcL29wMFN4enRvNDhIN25Nam9nPT0iLCJ2YWx1ZSI6ImxXZlVHbEl0OW54ZG11UXdJaWFLcWFcL25QUE9rdzZvZ0l1SUR0am0wU1BGeHRrUFwvR05vTlBUMlJVTXRYQmFBUSIsIm1hYyI6IjFlNWE3OTAxMTZkOTQ1ZTQ1NGRiMmI4YmIyMGNjMmU0MzU0Yzc3YzhiNDVhZTMzM2M1ZjQxZmUzOGQ2N2FkZTAifQ%3D%3D; ",
+    },
+  });
+  return data;
+};
+
+const parseProducts = (data: string, categoryName: string): Product[] => {
+  const products: Product[] = [];
+  const $ = cheerio.load(data);
+  $.html();
+  $("li.product-grid__item > div.js-product-container").each((_, el) => {
+    const details = $(el).attr("data-gtm-eec-product") ?? "";
+
+    //Attribute (data-gtm-eec-product) structure with examples:
+    // {"id":"1363162",
+    // "name":"Alus \u0160VYTURYS EKSTRA, 5,2 %, 6 X 0,5 l sk.",
+    // "category":"SH-1-1-2",
+    // "brand":null,
+    // "price":5.89,
+    // "currency":"EUR"}
+
+    const product = JSON.parse(details);
+    const productCategory = convertToCategory(categoryName);
+    const productPrice = product.price;
+
+    const alcVolume = extractAlcVolume(product.name);
+
+    const image =
+      $(el).find("div.card__image-wrapper > div > img").attr("src") ?? "#";
+    const productLink = rimiURL + $(el).children("a").attr("href") ?? "/";
+
+    products.push({
+      name: product.name,
+      category: productCategory,
+      price: productPrice,
+      alcVolume,
+      link: productLink,
+      image,
+    });
+  });
+  return products;
+};
+
+const parseNextPageUrl = (data: string): Url | undefined => {
+  let nextPage: Url | undefined = undefined;
+  const $ = cheerio.load(data);
+  $.html();
+  $("div.pagination > ul > li.pagination__item > a").each((_, el) => {
+    if ($(el).attr("rel") === "next") {
+      nextPage = rimiURL + $(el).attr("href");
+    }
+  });
+  return nextPage;
+};
 export const fetchRimiCategoryProducts = async ({
   name,
   link,
 }: RimiCategory) => {
-  const products: Product[] = [];
   try {
-    const { data } = await axios.get(link, {
-      headers: {
-        Cookie:
-          "rimi_storefront_session=eyJpdiI6Im9oblVcL29wMFN4enRvNDhIN25Nam9nPT0iLCJ2YWx1ZSI6ImxXZlVHbEl0OW54ZG11UXdJaWFLcWFcL25QUE9rdzZvZ0l1SUR0am0wU1BGeHRrUFwvR05vTlBUMlJVTXRYQmFBUSIsIm1hYyI6IjFlNWE3OTAxMTZkOTQ1ZTQ1NGRiMmI4YmIyMGNjMmU0MzU0Yzc3YzhiNDVhZTMzM2M1ZjQxZmUzOGQ2N2FkZTAifQ%3D%3D; ",
-      },
-    });
+    const products: Product[] = [];
+    let nextPage: Url | undefined = link;
 
-    const $ = cheerio.load(data);
-    $.html();
-    $("li.product-grid__item > div.js-product-container").each(
-      async (_, el) => {
-        const details = $(el).attr("data-gtm-eec-product") ?? "";
-
-        //Attribute (data-gtm-eec-product) structure with examples:
-        // {"id":"1363162",
-        // "name":"Alus \u0160VYTURYS EKSTRA, 5,2 %, 6 X 0,5 l sk.",
-        // "category":"SH-1-1-2",
-        // "brand":null,
-        // "price":5.89,
-        // "currency":"EUR"}
-
-        const product = JSON.parse(details);
-        const productDetails = product.name.split(", ");
-
-        const productName = productDetails[0];
-        const productCategory = convertToCategory(name);
-        const productPrice = product.price;
-
-        const alcVolumeText: string[] = product.name.match(/\d?\,?\d\s?%/) ?? [
-          "-1%",
-        ];
-        const alcVolumes: string[] = alcVolumeText[0].split("%");
-        const alcVolume = Number(alcVolumes[0].replace(",", ".").trim());
-
-        const image =
-          $(el).find("div.card__image-wrapper > div > img").attr("src") ?? "#";
-        const productLink = rimiURL + ($(el).children("a").attr("href") ?? "/");
-
-        const volume = Number(await fetchVolume(productLink));
-
-        products.push({
-          name: productName,
-          category: productCategory,
-          price: productPrice,
-          alcVolume,
-          volume,
-          link: productLink,
-          image,
-        });
-
-        console.log("Each", {
-          name: productName,
-          category: productCategory,
-          price: productPrice,
-          alcVolume,
-          volume,
-          link: productLink,
-          image,
-        });
-      }
-    );
+    while (nextPage) {
+      const data = await withCache(fetchData)(nextPage);
+      products.push(...parseProducts(data, name));
+      nextPage = parseNextPageUrl(data);
+    }
     return products;
   } catch (error) {
     throw new Error(error.message);
   }
 };
 
-export const fetchRimiCategories = async () => {
+// const fetchRimiCategoryProducts = async ({ name, link }: RimiCategory) => {
+//   try {
+//     const data = await withCache(fetchData)(link);
+//     const products = parseProducts(data, name);
+
+//     return products;
+//   } catch (error) {
+//     throw new Error(error.message);
+//   }
+// };
+
+const fetchRimiCategories = async () => {
   try {
     const { data } = await axios.get(rimiAlcoholURL, {
       headers: {
@@ -174,13 +201,28 @@ export const fetchRimiCategories = async () => {
       .siblings()
       .find("li > a")
       .each((_, el) => {
-        const alcoURL = $(el).attr("href") ?? "";
-        const alcoName = $(el).text() ?? "";
-        console.log("name", alcoName);
+        const alcoURL =
+          rimiURL +
+            $(el).attr("href") +
+            `?pageSize=${PRODUCTS_PER_PAGE}&query=` ?? "";
+        const alcoName = $(el).text().trim() ?? "";
+        debug("name", alcoName);
         urlList.push({ name: alcoName, link: alcoURL });
       });
     return urlList;
   } catch (error) {
     throw new Error(error.message);
   }
+};
+
+export const fetchRimiProducts = async () => {
+  const rimiCategories = await fetchRimiCategories();
+
+  return (
+    await Promise.all(
+      rimiCategories.map((rimiCategory) =>
+        fetchRimiCategoryProducts(rimiCategory)
+      )
+    )
+  ).flat();
 };

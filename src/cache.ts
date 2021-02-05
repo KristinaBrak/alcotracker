@@ -1,7 +1,8 @@
 import Redis from "ioredis";
 import { exit } from "process";
-import { CACHE_DURATION } from "./consts";
+import { CACHE_DURATION_SECONDS } from "./consts";
 import { isDebug } from "./env.utils";
+import { debug } from "./logger";
 import { FetchData } from "./types";
 
 export const REDIS_PORT = Number(process.env.REDIS_PORT) || 6379;
@@ -17,19 +18,15 @@ export const withCache = <T>(fn: FetchData<T>) => async (
 ): Promise<T> => {
   const cachedItems = await cache.get(key);
   if (cachedItems) {
-    if (isDebug()) {
-      console.debug("[DEBUG] cache hit");
-    }
+    debug("cache hit", key);
 
     return JSON.parse(cachedItems);
   }
 
   return fn(key, ...args).then(async (data) => {
-    if (isDebug()) {
-      console.debug("[DEBUG] writting to cache");
-    }
+    debug("writting to cache", key);
 
-    await cache.setex(key, CACHE_DURATION, JSON.stringify(data));
+    await cache.setex(key, CACHE_DURATION_SECONDS, JSON.stringify(data));
     return data;
   });
 };
