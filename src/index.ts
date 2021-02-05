@@ -5,20 +5,18 @@ import {
   fetchRimiCategoryProducts,
   fetchRimiProducts,
 } from './stores/rimi/rimiService';
-import { logger } from './logger';
 import { fetchBarboraProducts } from './stores/barbora/barboraService';
+import { logger } from './logger';
 
 (async () => {
   // const result = await fetchBottleryProducts();
   // console.log(result[0]);
   // const rimiProducts = await fetchRimiProducts();
-  // console.log(rimiProducts.length);
-
-  const barboraProducts = await fetchBarboraProducts();
-  console.log(barboraProducts.filter(p => p.alcVolume).length);
+  // const barboraProducts = await fetchBarboraProducts();
+  // console.log(barboraProducts.filter(p => p.alcVolume).length);
 })()
   .catch(error => {
-    console.error('[ERROR]', error);
+    logger.error(error);
     exit(1);
   })
   .finally(() => exit(0));

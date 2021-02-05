@@ -1,5 +1,4 @@
 import axios from 'axios';
-import { FetchData } from 'src/types';
 import { withCache } from '../../cache';
 import { BOTTLERY_PRODUCT, BOTTLERY_URL } from '../../consts';
 import { Category, Product } from '../store.types';

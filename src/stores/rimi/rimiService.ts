@@ -1,8 +1,8 @@
 import axios from 'axios';
 import cheerio from 'cheerio';
+import { logger } from '../../logger';
 import { withCache } from '../../cache';
 import { FetchData, Url } from '../../types';
-import { debug } from '../../logger';
 import { Category, Product } from '../store.types';
 
 interface RimiCategory {
@@ -206,7 +206,6 @@ const fetchRimiCategories = async () => {
             $(el).attr('href') +
             `?pageSize=${PRODUCTS_PER_PAGE}&query=` ?? '';
         const alcoName = $(el).text().trim() ?? '';
-        debug('name', alcoName);
         urlList.push({ name: alcoName, link: alcoURL });
       });
     return urlList;

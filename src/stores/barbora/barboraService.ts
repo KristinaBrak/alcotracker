@@ -1,6 +1,6 @@
 import axios from 'axios';
 import jsdom, { JSDOM } from 'jsdom';
-import { debug } from '../../logger';
+import { logger } from '../../logger';
 import { Url } from '../../types';
 import { Category, Product } from '../store.types';
 
@@ -74,7 +74,7 @@ const fetchBarboraProductCategories = async (data: string) => {
       const name = el.textContent?.trim() ?? '??';
       const link: Url = barboraURL + el.getAttribute('href')?.trim() ?? '??';
       categories.push({ name, link });
-      debug('el', name, link);
+      logger.debug('el' + name + link);
     });
   return categories;
 };
