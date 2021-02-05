@@ -5,20 +5,17 @@ import {
   fetchRimiCategoryProducts,
   fetchRimiProducts,
 } from "./stores/rimi/rimiService";
+import { fetchBarboraProducts } from "./stores/barbora/barboraService";
 dotenv.config();
 
 (async () => {
   // const result = await fetchBottleryProducts();
   // console.log(result[0]);
-  const rimiProducts = await fetchRimiProducts();
-  console.log(rimiProducts.length);
+  // const rimiProducts = await fetchRimiProducts();
+  // console.log(rimiProducts.length);
 
-  // const alus = await fetchRimiCategoryProducts({
-  //   name: "alus",
-  //   link:
-  //     "https://www.rimi.lt/e-parduotuve/lt/produktai/alkoholiniai-gerimai/alus/c/SH-1-1?pageSize=100&query=",
-  // });
-  // console.log(alus.length);
+  const barboraProducts = await fetchBarboraProducts();
+  console.log(barboraProducts.filter((p) => p.alcVolume).length);
 })()
   .catch((error) => {
     console.error("[ERROR]", error);
