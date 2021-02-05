@@ -1,9 +1,9 @@
 export enum Category {
-  WINE = "wine",
-  STRONG = "strong",
-  LIGHT = "light",
-  FREE = "free",
-  OTHER = "other",
+  WINE = 'wine',
+  STRONG = 'strong',
+  LIGHT = 'light',
+  FREE = 'free',
+  OTHER = 'other',
 }
 
 export interface Product {
@@ -15,5 +15,3 @@ export interface Product {
   link: string;
   image: string;
 }
-
-

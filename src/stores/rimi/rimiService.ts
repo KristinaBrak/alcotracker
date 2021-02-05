@@ -1,41 +1,41 @@
-import axios from "axios";
-import cheerio from "cheerio";
-import { withCache } from "../../cache";
-import { FetchData, Url } from "../../types";
-import { debug } from "../../logger";
-import { Category, Product } from "../store.types";
+import axios from 'axios';
+import cheerio from 'cheerio';
+import { withCache } from '../../cache';
+import { FetchData, Url } from '../../types';
+import { debug } from '../../logger';
+import { Category, Product } from '../store.types';
 
 interface RimiCategory {
   name: string;
   link: Url;
 }
 
-const rimiURL = "https://www.rimi.lt";
+const rimiURL = 'https://www.rimi.lt';
 
 const PRODUCTS_PER_PAGE = 20;
 
 const rimiAlcoholURL =
-  "https://www.rimi.lt/e-parduotuve/lt/produktai/alkoholiniai-gerimai/c/SH-1";
+  'https://www.rimi.lt/e-parduotuve/lt/produktai/alkoholiniai-gerimai/c/SH-1';
 
 const beerURL =
-  "https://www.rimi.lt/e-parduotuve/lt/produktai/alkoholiniai-gerimai/alus/c/SH-1-1/";
+  'https://www.rimi.lt/e-parduotuve/lt/produktai/alkoholiniai-gerimai/alus/c/SH-1-1/';
 
 export const getBeer = async () => {
   try {
     const { data } = await axios.get(beerURL, {
       headers: {
         Cookie:
-          "rimi_storefront_session=eyJpdiI6Im9oblVcL29wMFN4enRvNDhIN25Nam9nPT0iLCJ2YWx1ZSI6ImxXZlVHbEl0OW54ZG11UXdJaWFLcWFcL25QUE9rdzZvZ0l1SUR0am0wU1BGeHRrUFwvR05vTlBUMlJVTXRYQmFBUSIsIm1hYyI6IjFlNWE3OTAxMTZkOTQ1ZTQ1NGRiMmI4YmIyMGNjMmU0MzU0Yzc3YzhiNDVhZTMzM2M1ZjQxZmUzOGQ2N2FkZTAifQ%3D%3D; ",
+          'rimi_storefront_session=eyJpdiI6Im9oblVcL29wMFN4enRvNDhIN25Nam9nPT0iLCJ2YWx1ZSI6ImxXZlVHbEl0OW54ZG11UXdJaWFLcWFcL25QUE9rdzZvZ0l1SUR0am0wU1BGeHRrUFwvR05vTlBUMlJVTXRYQmFBUSIsIm1hYyI6IjFlNWE3OTAxMTZkOTQ1ZTQ1NGRiMmI4YmIyMGNjMmU0MzU0Yzc3YzhiNDVhZTMzM2M1ZjQxZmUzOGQ2N2FkZTAifQ%3D%3D; ',
       },
     });
 
     const $ = cheerio.load(data);
     $.html();
     const beerList: string[] = [];
-    $("li.product-grid__item > div.js-product-container").each((_, el) => {
-      const beer = $(el).attr("data-gtm-eec-product") ?? "";
+    $('li.product-grid__item > div.js-product-container').each((_, el) => {
+      const beer = $(el).attr('data-gtm-eec-product') ?? '';
       beerList.push(beer);
-      console.log("Each", beer);
+      console.log('Each', beer);
     });
     return beerList;
   } catch (error) {
@@ -48,49 +48,49 @@ const fetchVolume = async (url: string) => {
     const { data } = await axios.get(url, {
       headers: {
         Cookie:
-          "rimi_storefront_session=eyJpdiI6Im9oblVcL29wMFN4enRvNDhIN25Nam9nPT0iLCJ2YWx1ZSI6ImxXZlVHbEl0OW54ZG11UXdJaWFLcWFcL25QUE9rdzZvZ0l1SUR0am0wU1BGeHRrUFwvR05vTlBUMlJVTXRYQmFBUSIsIm1hYyI6IjFlNWE3OTAxMTZkOTQ1ZTQ1NGRiMmI4YmIyMGNjMmU0MzU0Yzc3YzhiNDVhZTMzM2M1ZjQxZmUzOGQ2N2FkZTAifQ%3D%3D; ",
+          'rimi_storefront_session=eyJpdiI6Im9oblVcL29wMFN4enRvNDhIN25Nam9nPT0iLCJ2YWx1ZSI6ImxXZlVHbEl0OW54ZG11UXdJaWFLcWFcL25QUE9rdzZvZ0l1SUR0am0wU1BGeHRrUFwvR05vTlBUMlJVTXRYQmFBUSIsIm1hYyI6IjFlNWE3OTAxMTZkOTQ1ZTQ1NGRiMmI4YmIyMGNjMmU0MzU0Yzc3YzhiNDVhZTMzM2M1ZjQxZmUzOGQ2N2FkZTAifQ%3D%3D; ',
       },
     });
 
     const $ = cheerio.load(data);
     $.html();
     const volume: string[] = [];
-    $("div.product__list-wrapper> ul.list > li > span").each((_, el) => {
-      if ($(el).text() === "Kiekis") {
+    $('div.product__list-wrapper> ul.list > li > span').each((_, el) => {
+      if ($(el).text() === 'Kiekis') {
         const volumeText = $(el).siblings().text();
-        volume.push(volumeText.split("l")[0].trim());
+        volume.push(volumeText.split('l')[0].trim());
       }
     });
     return volume[0];
   } catch (error) {
-    return "??";
+    return '??';
   }
 };
 
 const convertToCategory = (category: string) => {
   const categoryDictionary: { [key: string]: Category | undefined } = {
-    ["vynas"]: Category.WINE,
-    ["degtinė"]: Category.STRONG,
-    ["viskis"]: Category.STRONG,
-    ["brendis"]: Category.STRONG,
-    ["trauktinė ir likeris"]: Category.STRONG,
-    ["tekila"]: Category.STRONG,
-    ["romas"]: Category.STRONG,
-    ["konjakas"]: Category.STRONG,
-    ["džinas"]: Category.STRONG,
-    ["alus"]: Category.LIGHT,
-    ["sidras"]: Category.LIGHT,
-    ["kokteiliai"]: Category.LIGHT,
-    ["nealkoholiniai gėrimai"]: Category.FREE,
+    ['vynas']: Category.WINE,
+    ['degtinė']: Category.STRONG,
+    ['viskis']: Category.STRONG,
+    ['brendis']: Category.STRONG,
+    ['trauktinė ir likeris']: Category.STRONG,
+    ['tekila']: Category.STRONG,
+    ['romas']: Category.STRONG,
+    ['konjakas']: Category.STRONG,
+    ['džinas']: Category.STRONG,
+    ['alus']: Category.LIGHT,
+    ['sidras']: Category.LIGHT,
+    ['kokteiliai']: Category.LIGHT,
+    ['nealkoholiniai gėrimai']: Category.FREE,
   };
 
   return categoryDictionary[category.toLowerCase()] ?? Category.OTHER;
 };
 
 const extractAlcVolume = (productName: string) => {
-  const alcVolumeText: string[] = productName.match(/\d?\,?\d\s?%/) ?? ["-1%"];
-  const alcVolumeList: string[] = alcVolumeText[0].split("%");
-  const alcVolume = Number(alcVolumeList[0].replace(",", ".").trim());
+  const alcVolumeText: string[] = productName.match(/\d?\,?\d\s?%/) ?? ['-1%'];
+  const alcVolumeList: string[] = alcVolumeText[0].split('%');
+  const alcVolume = Number(alcVolumeList[0].replace(',', '.').trim());
   return alcVolume;
 };
 
@@ -98,7 +98,7 @@ const fetchData: FetchData<string> = async (url: string) => {
   const { data } = await axios.get<string>(url, {
     headers: {
       Cookie:
-        "rimi_storefront_session=eyJpdiI6Im9oblVcL29wMFN4enRvNDhIN25Nam9nPT0iLCJ2YWx1ZSI6ImxXZlVHbEl0OW54ZG11UXdJaWFLcWFcL25QUE9rdzZvZ0l1SUR0am0wU1BGeHRrUFwvR05vTlBUMlJVTXRYQmFBUSIsIm1hYyI6IjFlNWE3OTAxMTZkOTQ1ZTQ1NGRiMmI4YmIyMGNjMmU0MzU0Yzc3YzhiNDVhZTMzM2M1ZjQxZmUzOGQ2N2FkZTAifQ%3D%3D; ",
+        'rimi_storefront_session=eyJpdiI6Im9oblVcL29wMFN4enRvNDhIN25Nam9nPT0iLCJ2YWx1ZSI6ImxXZlVHbEl0OW54ZG11UXdJaWFLcWFcL25QUE9rdzZvZ0l1SUR0am0wU1BGeHRrUFwvR05vTlBUMlJVTXRYQmFBUSIsIm1hYyI6IjFlNWE3OTAxMTZkOTQ1ZTQ1NGRiMmI4YmIyMGNjMmU0MzU0Yzc3YzhiNDVhZTMzM2M1ZjQxZmUzOGQ2N2FkZTAifQ%3D%3D; ',
     },
   });
   return data;
@@ -108,8 +108,8 @@ const parseProducts = (data: string, categoryName: string): Product[] => {
   const products: Product[] = [];
   const $ = cheerio.load(data);
   $.html();
-  $("li.product-grid__item > div.js-product-container").each((_, el) => {
-    const details = $(el).attr("data-gtm-eec-product") ?? "";
+  $('li.product-grid__item > div.js-product-container').each((_, el) => {
+    const details = $(el).attr('data-gtm-eec-product') ?? '';
 
     //Attribute (data-gtm-eec-product) structure with examples:
     // {"id":"1363162",
@@ -126,8 +126,8 @@ const parseProducts = (data: string, categoryName: string): Product[] => {
     const alcVolume = extractAlcVolume(product.name);
 
     const image =
-      $(el).find("div.card__image-wrapper > div > img").attr("src") ?? "#";
-    const productLink = rimiURL + $(el).children("a").attr("href") ?? "/";
+      $(el).find('div.card__image-wrapper > div > img').attr('src') ?? '#';
+    const productLink = rimiURL + $(el).children('a').attr('href') ?? '/';
 
     products.push({
       name: product.name,
@@ -145,9 +145,9 @@ const parseNextPageUrl = (data: string): Url | undefined => {
   let nextPage: Url | undefined = undefined;
   const $ = cheerio.load(data);
   $.html();
-  $("div.pagination > ul > li.pagination__item > a").each((_, el) => {
-    if ($(el).attr("rel") === "next") {
-      nextPage = rimiURL + $(el).attr("href");
+  $('div.pagination > ul > li.pagination__item > a').each((_, el) => {
+    if ($(el).attr('rel') === 'next') {
+      nextPage = rimiURL + $(el).attr('href');
     }
   });
   return nextPage;
@@ -187,7 +187,7 @@ const fetchRimiCategories = async () => {
     const { data } = await axios.get(rimiAlcoholURL, {
       headers: {
         Cookie:
-          "rimi_storefront_session=eyJpdiI6Im9oblVcL29wMFN4enRvNDhIN25Nam9nPT0iLCJ2YWx1ZSI6ImxXZlVHbEl0OW54ZG11UXdJaWFLcWFcL25QUE9rdzZvZ0l1SUR0am0wU1BGeHRrUFwvR05vTlBUMlJVTXRYQmFBUSIsIm1hYyI6IjFlNWE3OTAxMTZkOTQ1ZTQ1NGRiMmI4YmIyMGNjMmU0MzU0Yzc3YzhiNDVhZTMzM2M1ZjQxZmUzOGQ2N2FkZTAifQ%3D%3D; ",
+          'rimi_storefront_session=eyJpdiI6Im9oblVcL29wMFN4enRvNDhIN25Nam9nPT0iLCJ2YWx1ZSI6ImxXZlVHbEl0OW54ZG11UXdJaWFLcWFcL25QUE9rdzZvZ0l1SUR0am0wU1BGeHRrUFwvR05vTlBUMlJVTXRYQmFBUSIsIm1hYyI6IjFlNWE3OTAxMTZkOTQ1ZTQ1NGRiMmI4YmIyMGNjMmU0MzU0Yzc3YzhiNDVhZTMzM2M1ZjQxZmUzOGQ2N2FkZTAifQ%3D%3D; ',
       },
     });
 
@@ -199,14 +199,14 @@ const fetchRimiCategories = async () => {
       "#main > nav > div.category-menu__wrapper.-child.js-child-categories > a[href='/e-parduotuve/lt/produktai/alkoholiniai-gerimai/c/SH-1']"
     )
       .siblings()
-      .find("li > a")
+      .find('li > a')
       .each((_, el) => {
         const alcoURL =
           rimiURL +
-            $(el).attr("href") +
-            `?pageSize=${PRODUCTS_PER_PAGE}&query=` ?? "";
-        const alcoName = $(el).text().trim() ?? "";
-        debug("name", alcoName);
+            $(el).attr('href') +
+            `?pageSize=${PRODUCTS_PER_PAGE}&query=` ?? '';
+        const alcoName = $(el).text().trim() ?? '';
+        debug('name', alcoName);
         urlList.push({ name: alcoName, link: alcoURL });
       });
     return urlList;
@@ -220,7 +220,7 @@ export const fetchRimiProducts = async () => {
 
   return (
     await Promise.all(
-      rimiCategories.map((rimiCategory) =>
+      rimiCategories.map(rimiCategory =>
         fetchRimiCategoryProducts(rimiCategory)
       )
     )

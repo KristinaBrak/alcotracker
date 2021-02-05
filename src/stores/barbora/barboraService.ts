@@ -1,54 +1,54 @@
-import axios from "axios";
-import jsdom, { JSDOM } from "jsdom";
-import { debug } from "../../logger";
-import { Url } from "../../types";
-import { Category, Product } from "../store.types";
+import axios from 'axios';
+import jsdom, { JSDOM } from 'jsdom';
+import { debug } from '../../logger';
+import { Url } from '../../types';
+import { Category, Product } from '../store.types';
 
 interface BarboraCategory {
   name: string;
   link: Url;
 }
 
-const barboraURL = "https://barbora.lt";
+const barboraURL = 'https://barbora.lt';
 
 const config = {
   headers: {
-    Connection: "keep-alive",
-    "Cache-Control": "max-age=0",
-    "Upgrade-Insecure-Requests": "1",
-    "User-Agent":
-      "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4147.89 Safari/537.36",
+    Connection: 'keep-alive',
+    'Cache-Control': 'max-age=0',
+    'Upgrade-Insecure-Requests': '1',
+    'User-Agent':
+      'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4147.89 Safari/537.36',
     Accept:
-      "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9",
-    "Sec-Fetch-Site": "none",
-    "Sec-Fetch-Mode": "navigate",
-    "Sec-Fetch-User": "?1",
-    "Sec-Fetch-Dest": "document",
-    "Accept-Language": "en-US,en;q=0.9",
+      'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9',
+    'Sec-Fetch-Site': 'none',
+    'Sec-Fetch-Mode': 'navigate',
+    'Sec-Fetch-User': '?1',
+    'Sec-Fetch-Dest': 'document',
+    'Accept-Language': 'en-US,en;q=0.9',
     Cookie:
-      "f5avraaaaaaaaaaaaaaaa_session_=IAGNLHJNLEEOFFIBOOFJOBKBNCLMCNIOOAOEFDMGEJMDHNJLFHEHOBFALGGFCDFHAMIDKCMFCMJLMCBDFBKAMNPKPCGHONOIMKICOEICNEGEBPFCGEFFFLFBBMGEALJC; region=barbora.lt; _fbp=fb.1.1612524867873.567810989; f5avraaaaaaaaaaaaaaaa_session_=JGONBLKHDOKGHPCOABKIIOKCANBOHJKCIIHLHDGINOPIOEDKGEGMELDAAFNNIFCHEJCDKHFNFMOMCIGHFMBABMJBJCBHEIFNOCCFGINDGMLEAOFEOLIDGLDHBBEKHGNN",
+      'f5avraaaaaaaaaaaaaaaa_session_=IAGNLHJNLEEOFFIBOOFJOBKBNCLMCNIOOAOEFDMGEJMDHNJLFHEHOBFALGGFCDFHAMIDKCMFCMJLMCBDFBKAMNPKPCGHONOIMKICOEICNEGEBPFCGEFFFLFBBMGEALJC; region=barbora.lt; _fbp=fb.1.1612524867873.567810989; f5avraaaaaaaaaaaaaaaa_session_=JGONBLKHDOKGHPCOABKIIOKCANBOHJKCIIHLHDGINOPIOEDKGEGMELDAAFNNIFCHEJCDKHFNFMOMCIGHFMBABMJBJCBHEIFNOCCFGINDGMLEAOFEOLIDGLDHBBEKHGNN',
   },
 };
 
-const extractAlcVolume = (productName: string): Product["alcVolume"] => {
+const extractAlcVolume = (productName: string): Product['alcVolume'] => {
   const alcVolumeText: string[] = productName.match(/\d?\d?\,?\d\s?%/) ?? [
-    "-1%",
+    '-1%',
   ];
-  const alcVolumeList: string[] = alcVolumeText[0].split("%");
-  const alcVolume = Number(alcVolumeList[0].replace(",", ".").trim());
+  const alcVolumeList: string[] = alcVolumeText[0].split('%');
+  const alcVolume = Number(alcVolumeList[0].replace(',', '.').trim());
   return alcVolume;
 };
 
-const extractVolume = (volumeText: string): Product["volume"] => {
+const extractVolume = (volumeText: string): Product['volume'] => {
   //seperate ml and l
   const volumeMl = volumeText.match(/^\d{0,3}\,?\d\s?ml/); //["500ml"]
   if (volumeMl) {
-    const volume = Number(volumeMl[0].replace("ml", "").trim()) / 1000; //big int
+    const volume = Number(volumeMl[0].replace('ml', '').trim()) / 1000; //big int
     return volume;
   }
   const volumeL = volumeText.match(/^\d{0,3}\,?\d\s?l/);
   if (volumeL) {
-    const volume = Number(volumeL[0].replace("l", "").trim());
+    const volume = Number(volumeL[0].replace('l', '').trim());
     return volume;
   }
   return;
@@ -56,10 +56,10 @@ const extractVolume = (volumeText: string): Product["volume"] => {
 
 const convertToCategory = (category: string) => {
   const categoryDictionary: { [key: string]: Category | undefined } = {
-    ["nealkoholiniai gėrimai"]: Category.FREE,
-    ["stiprieji alkoholiniai gėrimai"]: Category.STRONG,
-    ["vynas"]: Category.WINE,
-    ["alus ir sidras"]: Category.LIGHT,
+    ['nealkoholiniai gėrimai']: Category.FREE,
+    ['stiprieji alkoholiniai gėrimai']: Category.STRONG,
+    ['vynas']: Category.WINE,
+    ['alus ir sidras']: Category.LIGHT,
   };
 
   return categoryDictionary[category.toLowerCase()] ?? Category.OTHER;
@@ -71,10 +71,10 @@ const fetchBarboraProductCategories = async (data: string) => {
   dom.window.document
     .querySelectorAll("div[class='b-single-category--box'] > h3 > a")
     ?.forEach((el, _, __) => {
-      const name = el.textContent?.trim() ?? "??";
-      const link: Url = barboraURL + el.getAttribute("href")?.trim() ?? "??";
+      const name = el.textContent?.trim() ?? '??';
+      const link: Url = barboraURL + el.getAttribute('href')?.trim() ?? '??';
       categories.push({ name, link });
-      debug("el", name, link);
+      debug('el', name, link);
     });
   return categories;
 };
@@ -88,9 +88,9 @@ const fetchBarboraCategoryProducts = async ({
   const products: Product[] = [];
 
   dom.window.document
-    .querySelectorAll("div.b-product--wrap")
+    .querySelectorAll('div.b-product--wrap')
     ?.forEach((el, _, __) => {
-      const details = el.getAttribute("data-b-for-cart");
+      const details = el.getAttribute('data-b-for-cart');
       //   {"id":"00000000000BR05951",
       //   "product_position_in_list":0,
       //   "title":"Spiritinis gėrimas CAPTAIN MORGAN ORIGINAL SPICED GOLD (35%), 1000 ml",
@@ -112,13 +112,13 @@ const fetchBarboraCategoryProducts = async ({
       if (details) {
         const element = JSON.parse(details);
 
-        const titleParts: string[] = element.title.split(", ");
+        const titleParts: string[] = element.title.split(', ');
         const volumeText = titleParts.slice(-1)[0].trim();
 
         const linkElement = el.querySelector(
           "div[class='b-product-wrap-img'] > a[class='b-product--imagelink b-link--product-info']"
         );
-        const link = barboraURL + linkElement?.getAttribute("href");
+        const link = barboraURL + linkElement?.getAttribute('href');
 
         const product: Product = {
           name: element.title,
@@ -138,7 +138,7 @@ const fetchBarboraCategoryProducts = async ({
 };
 
 export const fetchBarboraProducts = async () => {
-  const { data } = await axios.get(barboraURL + "/gerimai", config);
+  const { data } = await axios.get(barboraURL + '/gerimai', config);
 
   const barboraCategories: BarboraCategory[] = await fetchBarboraProductCategories(
     data

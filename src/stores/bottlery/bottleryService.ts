@@ -1,8 +1,8 @@
-import axios from "axios";
-import { FetchData } from "src/types";
-import { withCache } from "../../cache";
-import { BOTTLERY_PRODUCT, BOTTLERY_URL } from "../../consts";
-import { Category, Product } from "../store.types";
+import axios from 'axios';
+import { FetchData } from 'src/types';
+import { withCache } from '../../cache';
+import { BOTTLERY_PRODUCT, BOTTLERY_URL } from '../../consts';
+import { Category, Product } from '../store.types';
 
 interface BottleryItem {
   Bottlery_price: string;
@@ -17,33 +17,33 @@ interface BottleryItem {
 }
 
 const requestData =
-  "action=btl_products&data%5Border%5D=price_desc&data%5Blimit%5D=";
+  'action=btl_products&data%5Border%5D=price_desc&data%5Blimit%5D=';
 
 [
-  "ALCO_WINE",
-  "ALCO_STRONG",
-  "POS_SALES",
+  'ALCO_WINE',
+  'ALCO_STRONG',
+  'POS_SALES',
   //   "ADVERTISEMENT",
   //   "FOOD",
-  "ALCO_LIGHT",
+  'ALCO_LIGHT',
   //   "PERSONAL_CARE",
   //   "NO_ALCO_BEVERAGES",
-  "ALCO_FREE",
+  'ALCO_FREE',
   //   "HOUSEHOLD_ACCESS",
 ];
 
 const convertToCategory = (category: string) => {
   const categoryDictionary: { [key: string]: Category | undefined } = {
-    ["ALCO_WINE"]: Category.WINE,
-    ["ALCO_STRONG"]: Category.STRONG,
-    ["POS_SALES"]: Category.OTHER,
-    ["ADVERTISEMENT"]: Category.OTHER,
-    ["FOOD"]: Category.OTHER,
-    ["ALCO_LIGHT"]: Category.LIGHT,
-    ["PERSONAL_CARE"]: Category.OTHER,
-    ["NO_ALCO_BEVERAGES"]: Category.OTHER,
-    ["ALCO_FREE"]: Category.FREE,
-    ["HOUSEHOLD_ACCESS"]: Category.OTHER,
+    ['ALCO_WINE']: Category.WINE,
+    ['ALCO_STRONG']: Category.STRONG,
+    ['POS_SALES']: Category.OTHER,
+    ['ADVERTISEMENT']: Category.OTHER,
+    ['FOOD']: Category.OTHER,
+    ['ALCO_LIGHT']: Category.LIGHT,
+    ['PERSONAL_CARE']: Category.OTHER,
+    ['NO_ALCO_BEVERAGES']: Category.OTHER,
+    ['ALCO_FREE']: Category.FREE,
+    ['HOUSEHOLD_ACCESS']: Category.OTHER,
   };
 
   return categoryDictionary[category] ?? Category.OTHER;
@@ -76,10 +76,10 @@ const fetchData = async (url: string) => {
   const {
     data: { error, data },
   } = await axios.post<BottleryResponseType>(url, requestData).catch(() => {
-    throw new Error("Bottlery API error");
+    throw new Error('Bottlery API error');
   });
   if (error) {
-    throw new Error("Bottlery response error");
+    throw new Error('Bottlery response error');
   }
   return data;
 };

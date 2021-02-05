@@ -1,12 +1,12 @@
-import { exit } from "process";
-import { fetchBottleryProducts } from "./stores/bottlery/bottleryService";
-import * as dotenv from "dotenv";
+import * as dotenv from 'dotenv';
+dotenv.config();
+import { exit } from 'process';
 import {
   fetchRimiCategoryProducts,
   fetchRimiProducts,
-} from "./stores/rimi/rimiService";
-import { fetchBarboraProducts } from "./stores/barbora/barboraService";
-dotenv.config();
+} from './stores/rimi/rimiService';
+import { logger } from './logger';
+import { fetchBarboraProducts } from './stores/barbora/barboraService';
 
 (async () => {
   // const result = await fetchBottleryProducts();
@@ -15,10 +15,10 @@ dotenv.config();
   // console.log(rimiProducts.length);
 
   const barboraProducts = await fetchBarboraProducts();
-  console.log(barboraProducts.filter((p) => p.alcVolume).length);
+  console.log(barboraProducts.filter(p => p.alcVolume).length);
 })()
-  .catch((error) => {
-    console.error("[ERROR]", error);
+  .catch(error => {
+    console.error('[ERROR]', error);
     exit(1);
   })
   .finally(() => exit(0));
