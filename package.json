@@ -19,6 +19,7 @@
     "ioredis": "^4.19.4",
     "jsdom": "^16.4.0",
     "jssoup": "^0.0.12",
+    "query-string": "^6.13.8",
     "winston": "^3.3.3"
   },
   "devDependencies": {

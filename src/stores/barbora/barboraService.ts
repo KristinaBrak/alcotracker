@@ -3,6 +3,7 @@ import jsdom, { JSDOM } from 'jsdom';
 import { logger } from '../../logger';
 import { Url } from '../../types';
 import { Category, Product } from '../store.types';
+import querystring from 'query-string';
 
 interface BarboraCategory {
   name: string;
@@ -82,10 +83,28 @@ const fetchBarboraProductCategories = async (data: string) => {
 const fetchBarboraCategoryProducts = async ({
   name,
   link,
-}: BarboraCategory) => {
+}: BarboraCategory): Promise<Product[]> => {
+  const products: Product[] = [];
+
+  const {
+    query: { page },
+  } = querystring.parseUrl(link);
+  logger.info(page);
+
   const { data } = await axios.get(link, config);
   const dom = new JSDOM(data);
-  const products: Product[] = [];
+
+  const pageList = dom.window.document.querySelector('ul.pagination');
+  const pageListLength = pageList?.children.length ?? -1;
+  const nextPageLinkElement = pageList?.children[
+    pageListLength - 1
+  ].querySelector('a');
+  const nextPageUrl =
+    barboraURL + nextPageLinkElement?.getAttribute('href') ?? undefined;
+  logger.info(nextPageUrl);
+  const {
+    query: { page: nextPage },
+  } = querystring.parseUrl(nextPageUrl);
 
   dom.window.document
     .querySelectorAll('div.b-product--wrap')
@@ -116,7 +135,7 @@ const fetchBarboraCategoryProducts = async ({
         const volumeText = titleParts.slice(-1)[0].trim();
 
         const linkElement = el.querySelector(
-          "div[class='b-product-wrap-img'] > a[class='b-product--imagelink b-link--product-info']"
+          "div[class='b-product-wrap-img'] > a[class='b-product--imagelink b-link--product-info']",
         );
         const link = barboraURL + linkElement?.getAttribute('href');
 
@@ -129,25 +148,31 @@ const fetchBarboraCategoryProducts = async ({
           link,
           image: barboraURL + element.image,
         };
-        console.log({ product });
 
         products.push(product);
       }
     });
-  return products;
+
+  if (page === nextPage) {
+    return products;
+  }
+
+  return products.concat(
+    await fetchBarboraCategoryProducts({ name, link: nextPageUrl }),
+  );
 };
 
 export const fetchBarboraProducts = async () => {
   const { data } = await axios.get(barboraURL + '/gerimai', config);
 
   const barboraCategories: BarboraCategory[] = await fetchBarboraProductCategories(
-    data
+    data,
   );
 
   const products = (
-    await Promise.all([fetchBarboraCategoryProducts(barboraCategories[4])])
+    await Promise.all(
+      barboraCategories.map(category => fetchBarboraCategoryProducts(category)),
+    )
   ).flat();
-
-  //   console.log(barboraCategories);
   return products;
 };

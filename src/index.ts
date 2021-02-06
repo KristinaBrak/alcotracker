@@ -12,7 +12,8 @@ import { logger } from './logger';
   // const result = await fetchBottleryProducts();
   // console.log(result[0]);
   // const rimiProducts = await fetchRimiProducts();
-  // const barboraProducts = await fetchBarboraProducts();
+  const barboraProducts = await fetchBarboraProducts();
+  console.log(barboraProducts.length);
   // console.log(barboraProducts.filter(p => p.alcVolume).length);
 })()
   .catch(error => {
