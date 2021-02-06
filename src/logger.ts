@@ -1,6 +1,4 @@
-import { isDebug } from './env.utils';
 import winston, { format } from 'winston';
-import { ConsoleTransportOptions } from 'winston/lib/winston/transports';
 import path from 'path';
 
 // levels "fatal" | "error" | "warn" | "info" | "debug" | "trace"
