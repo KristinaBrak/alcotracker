@@ -1,12 +1,12 @@
 import { fetchBarboraProducts } from './barbora/barboraService';
 import { fetchBottleryProducts } from './bottlery/bottleryService';
 import { fetchRimiProducts } from './rimi/rimiService';
-import { Product } from './store.types';
+import { ApiProduct } from './store.types';
 
 export interface ApiStore {
   name: string;
   link: string;
-  fn: () => Promise<Product[]>;
+  fn: () => Promise<ApiProduct[]>;
 }
 
 export const stores: ApiStore[] = [

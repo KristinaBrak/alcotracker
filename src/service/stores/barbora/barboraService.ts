@@ -1,8 +1,7 @@
 import axios from 'axios';
-import jsdom, { JSDOM } from 'jsdom';
-import { logger } from '../../logger';
-import { Url } from '../../types';
-import { Category, Product } from '../store.types';
+import { JSDOM } from 'jsdom';
+import { Url } from '../../../types';
+import { Category, ApiProduct } from '../store.types';
 import querystring from 'query-string';
 
 interface BarboraCategory {
@@ -31,16 +30,18 @@ const config = {
   },
 };
 
-const extractAlcVolume = (productName: string): Product['alcVolume'] => {
-  const alcVolumeText: string[] = productName.match(/\d?\d?\,?\d\s?%/) ?? [
-    '-1%',
-  ];
-  const alcVolumeList: string[] = alcVolumeText[0].split('%');
-  const alcVolume = Number(alcVolumeList[0].replace(',', '.').trim());
-  return alcVolume;
+const extractAlcVolume = (productName: string): ApiProduct['alcVolume'] => {
+  const alcVolumeText: string[] | undefined =
+    productName.match(/\d?\d?\,?\d\s?%/) ?? undefined;
+  if (alcVolumeText) {
+    const alcVolumeList: string[] = alcVolumeText[0].split('%');
+    const alcVolume = Number(alcVolumeList[0].replace(',', '.').trim());
+    return alcVolume;
+  }
+  return;
 };
 
-const extractVolume = (volumeText: string): Product['volume'] => {
+const extractVolume = (volumeText: string): ApiProduct['volume'] => {
   //seperate ml and l
   const volumeMl = volumeText.match(/^\d{0,3}\,?\d\s?ml/); //["500ml"]
   if (volumeMl) {
@@ -71,11 +72,10 @@ const fetchBarboraProductCategories = async (data: string) => {
   const dom = new JSDOM(data);
   dom.window.document
     .querySelectorAll("div[class='b-single-category--box'] > h3 > a")
-    ?.forEach((el, _, __) => {
+    ?.forEach(el => {
       const name = el.textContent?.trim() ?? '??';
       const link: Url = barboraURL + el.getAttribute('href')?.trim() ?? '??';
       categories.push({ name, link });
-      logger.debug('el' + name + link);
     });
   return categories;
 };
@@ -83,13 +83,12 @@ const fetchBarboraProductCategories = async (data: string) => {
 const fetchBarboraCategoryProducts = async ({
   name,
   link,
-}: BarboraCategory): Promise<Product[]> => {
-  const products: Product[] = [];
+}: BarboraCategory): Promise<ApiProduct[]> => {
+  const products: ApiProduct[] = [];
 
   const {
     query: { page },
   } = querystring.parseUrl(link);
-  logger.info(page);
 
   const { data } = await axios.get(link, config);
   const dom = new JSDOM(data);
@@ -101,7 +100,6 @@ const fetchBarboraCategoryProducts = async ({
   ].querySelector('a');
   const nextPageUrl =
     barboraURL + nextPageLinkElement?.getAttribute('href') ?? undefined;
-  logger.info(nextPageUrl);
   const {
     query: { page: nextPage },
   } = querystring.parseUrl(nextPageUrl);
@@ -110,6 +108,7 @@ const fetchBarboraCategoryProducts = async ({
     .querySelectorAll('div.b-product--wrap')
     ?.forEach((el, _, __) => {
       const details = el.getAttribute('data-b-for-cart');
+      // Attribute 'data-b-for-cart' structure with examples
       //   {"id":"00000000000BR05951",
       //   "product_position_in_list":0,
       //   "title":"Spiritinis gėrimas CAPTAIN MORGAN ORIGINAL SPICED GOLD (35%), 1000 ml",
@@ -139,7 +138,7 @@ const fetchBarboraCategoryProducts = async ({
         );
         const link = barboraURL + linkElement?.getAttribute('href');
 
-        const product: Product = {
+        const product: ApiProduct = {
           name: element.title,
           category: convertToCategory(name),
           price: element.price,

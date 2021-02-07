@@ -6,7 +6,7 @@ export enum Category {
   OTHER = 'other',
 }
 
-export interface Product {
+export interface ApiProduct {
   name: string;
   category: Category;
   price: number;

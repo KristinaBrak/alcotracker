@@ -4,8 +4,8 @@ import { Price } from '../../entity/Price';
 import { Product } from '../../entity/Product';
 import { Store } from '../../entity/Store';
 import { logger } from '../../logger';
-import { Product as ApiProduct } from '../../stores/store.types';
-import { ApiStore, stores } from '../../stores/storeService';
+import { ApiProduct } from '../stores/store.types';
+import { ApiStore, stores } from '../stores/storeService';
 
 const updateStores = async () => {
   const dbStores = await Store.find();
@@ -70,6 +70,7 @@ const fetchAndUpdateStoreProducts = async ({ name, fn }: ApiStore) => {
 };
 
 export const executeStoreRunner = async () => {
+  logger.info('executing store runner');
   await updateStores();
   await Promise.all(stores.map(fetchAndUpdateStoreProducts));
 };

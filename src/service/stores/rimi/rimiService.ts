@@ -1,9 +1,9 @@
 import axios from 'axios';
 import cheerio from 'cheerio';
-import { logger } from '../../logger';
-import { withCache } from '../../cache';
-import { FetchData, Url } from '../../types';
-import { Category, Product } from '../store.types';
+import { logger } from '../../../logger';
+import { withCache } from '../../../cache';
+import { FetchData, Url } from '../../../types';
+import { Category, ApiProduct } from '../store.types';
 
 interface RimiCategory {
   name: string;
@@ -61,7 +61,7 @@ const convertToCategory = (category: string) => {
   return categoryDictionary[category.toLowerCase()] ?? Category.OTHER;
 };
 
-const extractAlcVolume = (productName: string): Product['alcVolume'] => {
+const extractAlcVolume = (productName: string): ApiProduct['alcVolume'] => {
   const alcVolumeText: string[] = productName.match(/\d?\,?\d\s?%/) ?? ['-1%'];
   const alcVolumeList: string[] = alcVolumeText[0].split('%');
   const alcVolume = Number(alcVolumeList[0].replace(',', '.').trim());
@@ -78,8 +78,8 @@ const fetchData: FetchData<string> = async (url: string) => {
   return data;
 };
 
-const parseProducts = (data: string, categoryName: string): Product[] => {
-  const products: Product[] = [];
+const parseProducts = (data: string, categoryName: string): ApiProduct[] => {
+  const products: ApiProduct[] = [];
   const $ = cheerio.load(data);
   $.html();
   $('li.product-grid__item > div.js-product-container').each((_, el) => {
@@ -131,7 +131,7 @@ export const fetchRimiCategoryProducts = async ({
   link,
 }: RimiCategory) => {
   try {
-    const products: Product[] = [];
+    const products: ApiProduct[] = [];
     let nextPage: Url | undefined = link;
 
     while (nextPage) {

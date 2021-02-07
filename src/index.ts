@@ -1,18 +1,18 @@
 import * as dotenv from 'dotenv';
-import { exit } from 'process';
+dotenv.config();
 import 'reflect-metadata';
+import { exit } from 'process';
 import { createConnection } from 'typeorm';
 import { logger } from './logger';
+import { scheduleJob } from './scheduler';
 import { executeStoreRunner } from './service/storeRunner/storeRunner';
-dotenv.config();
 
 createConnection()
   .then(async connection => {
     await connection.runMigrations();
-    await executeStoreRunner();
+    scheduleJob(executeStoreRunner);
   })
   .catch(error => {
     logger.error(error);
     exit(1);
-  })
-  .finally(() => exit(0));
+  });

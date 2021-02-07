@@ -1,7 +1,7 @@
 import axios from 'axios';
-import { withCache } from '../../cache';
-import { BOTTLERY_PRODUCT, BOTTLERY_URL } from '../../consts';
-import { Category, Product } from '../store.types';
+import { withCache } from '../../../cache';
+import { BOTTLERY_PRODUCT, BOTTLERY_URL } from '../../../consts';
+import { Category, ApiProduct } from '../store.types';
 
 interface BottleryItem {
   Bottlery_price: string;
@@ -56,7 +56,7 @@ const mapProduct = ({
   slug,
   mmu_qty,
   picture_filepath,
-}: BottleryItem): Product => ({
+}: BottleryItem): ApiProduct => ({
   alcVolume: Number(alc_volume),
   category: convertToCategory(item_hierarchy),
   price: Number(price),
@@ -83,9 +83,9 @@ const fetchData = async (url: string) => {
   return data;
 };
 
-export const fetchBottleryProducts = async (): Promise<Product[]> => {
+export const fetchBottleryProducts = async (): Promise<ApiProduct[]> => {
   const data = await withCache(fetchData)(BOTTLERY_URL);
 
-  const items: Product[] = data.map(mapProduct);
+  const items: ApiProduct[] = data.map(mapProduct);
   return items;
 };
