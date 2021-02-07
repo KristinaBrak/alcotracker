@@ -3,11 +3,13 @@ import { fetchBottleryProducts } from './bottlery/bottleryService';
 import { fetchRimiProducts } from './rimi/rimiService';
 import { Product } from './store.types';
 
-export const stores: {
+export interface ApiStore {
   name: string;
   link: string;
   fn: () => Promise<Product[]>;
-}[] = [
+}
+
+export const stores: ApiStore[] = [
   {
     name: 'bottlery',
     link: 'https://www.bottlery.eu/',
