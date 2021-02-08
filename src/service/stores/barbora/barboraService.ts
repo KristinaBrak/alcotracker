@@ -9,6 +9,8 @@ interface BarboraCategory {
   link: Url;
 }
 
+const MIN_PAGING_ELEMENTS = 3;
+
 const barboraURL = 'https://barbora.lt';
 
 const config = {
@@ -94,7 +96,7 @@ const fetchBarboraCategoryProducts = async ({
   const dom = new JSDOM(data);
 
   const pageList = dom.window.document.querySelector('ul.pagination');
-  const pageListLength = pageList?.children.length ?? -1;
+  const pageListLength = pageList?.children.length ?? MIN_PAGING_ELEMENTS;
   const nextPageLinkElement = pageList?.children[
     pageListLength - 1
   ].querySelector('a');

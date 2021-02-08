@@ -1,6 +1,5 @@
 import axios from 'axios';
 import cheerio from 'cheerio';
-import { logger } from '../../../logger';
 import { withCache } from '../../../cache';
 import { FetchData, Url } from '../../../types';
 import { Category, ApiProduct } from '../store.types';
@@ -62,10 +61,14 @@ const convertToCategory = (category: string) => {
 };
 
 const extractAlcVolume = (productName: string): ApiProduct['alcVolume'] => {
-  const alcVolumeText: string[] = productName.match(/\d?\,?\d\s?%/) ?? ['-1%'];
-  const alcVolumeList: string[] = alcVolumeText[0].split('%');
-  const alcVolume = Number(alcVolumeList[0].replace(',', '.').trim());
-  return alcVolume;
+  const alcVolumeText: string[] | undefined =
+    productName.match(/\d?\,?\d\s?%/) ?? undefined;
+  if (alcVolumeText) {
+    const alcVolumeList: string[] = alcVolumeText[0].split('%');
+    const alcVolume = Number(alcVolumeList[0].replace(',', '.').trim());
+    return alcVolume;
+  }
+  return undefined;
 };
 
 const fetchData: FetchData<string> = async (url: string) => {
