@@ -4,10 +4,10 @@ import { CACHE_DURATION_SECONDS } from './consts';
 import { logger } from './logger';
 import { FetchData } from './types';
 
-export const REDIS_PORT = Number(process.env.REDIS_PORT) || 6379;
+export const REDIS_HOST = process.env.REDIS_HOST ?? 'localhost:6379';
 
-export const cache = new Redis(REDIS_PORT).on('error', () => {
-  logger.error('Redis is not running!');
+export const cache = new Redis(REDIS_HOST).on('error', error => {
+  logger.error(`Redis is not swimming ${error}`);
   exit(2);
 });
 

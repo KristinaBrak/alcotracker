@@ -23,7 +23,7 @@ export class Price extends BaseEntity {
   product: Product;
 
   @Column('float')
-  price: number;
+  value: number;
 
   @CreateDateColumn()
   createdAt: Date;

@@ -1,0 +1,19 @@
+version: '3.9'
+services:
+  app:
+    build: ..
+    depends_on:
+      - 'redis'
+      - postgres
+  redis:
+    image: 'redis:alpine'
+  postgres:
+    image: 'postgres:13'
+    ports:
+      - '5432:5432'
+    environment:
+      - POSTGRES_DB=alcotracker
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    volumes:
+      - ./database-data:/var/lib/postgresql/data/

@@ -2,17 +2,24 @@ import * as dotenv from 'dotenv';
 dotenv.config();
 import 'reflect-metadata';
 import { exit } from 'process';
-import { createConnection } from 'typeorm';
+import { createConnection, getConnectionOptions } from 'typeorm';
 import { logger } from './logger';
 import { scheduleJob } from './scheduler';
 import { executeStoreRunner } from './service/storeRunner/storeRunner';
+import { dbName } from './consts';
 
-createConnection()
-  .then(async connection => {
-    await connection.runMigrations();
-    scheduleJob(executeStoreRunner);
-  })
+logger.info('Starting alcotracker');
+getConnectionOptions(dbName)
+  .then(options =>
+    createConnection({ ...options, name: 'default' }).then(async connection => {
+      logger.info('connected to database');
+      await connection.runMigrations();
+      logger.info('migrations completed');
+      scheduleJob(executeStoreRunner);
+    }),
+  )
   .catch(error => {
     logger.error(error);
+    console.error(error.stack);
     exit(1);
   });

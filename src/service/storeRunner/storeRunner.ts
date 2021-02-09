@@ -1,4 +1,5 @@
 import { getConnection } from 'typeorm';
+import { dbName } from '../../consts';
 import { Category } from '../../entity/Category';
 import { Price } from '../../entity/Price';
 import { Product } from '../../entity/Product';
@@ -54,7 +55,7 @@ const updateStoreProducts = async (store: Store, products: ApiProduct[]) => {
         await ProductRepository.save(dbProduct);
       }
       const dbPrice = new Price();
-      dbPrice.price = price;
+      dbPrice.value = price;
       dbPrice.product = dbProduct;
       await PriceRepository.save(dbPrice);
     });
