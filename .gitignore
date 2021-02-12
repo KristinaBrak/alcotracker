@@ -3,3 +3,5 @@ node_modules
 .env
 yarn.lock
 .vscode
+compose-local-env/database-data
+compose-local-env/.DS_Store

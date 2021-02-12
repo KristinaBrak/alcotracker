@@ -4,7 +4,7 @@ services:
     build: ..
     depends_on:
       - 'redis'
-      - postgres
+      - 'postgres'
   redis:
     image: 'redis:alpine'
   postgres:
