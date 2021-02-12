@@ -8,18 +8,17 @@ import { scheduleJob } from './scheduler';
 import { executeStoreRunner } from './service/storeRunner/storeRunner';
 import { dbName } from './consts';
 
-logger.info('Starting alcotracker');
-getConnectionOptions(dbName)
-  .then(options =>
-    createConnection({ ...options, name: 'default' }).then(async connection => {
-      logger.info('connected to database');
-      await connection.runMigrations();
-      logger.info('migrations completed');
-      scheduleJob(executeStoreRunner);
-    }),
-  )
-  .catch(error => {
-    logger.error(error);
-    console.error(error.stack);
-    exit(1);
-  });
+(async () => {
+  logger.info('Starting alcotracker');
+  const connection = await getConnectionOptions(dbName).then(options =>
+    createConnection({ ...options, name: 'default' }),
+  );
+  logger.info('connected to database');
+  await connection.runMigrations();
+  logger.info('migrations completed');
+  scheduleJob(executeStoreRunner);
+})().catch(error => {
+  logger.error(error);
+  console.error(error.stack);
+  exit(1);
+});

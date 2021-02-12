@@ -1,4 +1,4 @@
-import axios from 'axios';
+import axios, { AxiosRequestConfig } from 'axios';
 import cheerio from 'cheerio';
 import { withCache } from '../../../cache';
 import { FetchData, Url } from '../../../types';
@@ -13,17 +13,18 @@ const rimiURL = 'https://www.rimi.lt';
 
 const PRODUCTS_PER_PAGE = 20;
 
-const rimiAlcoholURL =
-  'https://www.rimi.lt/e-parduotuve/lt/produktai/alkoholiniai-gerimai/c/SH-1';
+const rimiAlcoholURL = 'https://www.rimi.lt/e-parduotuve/lt/produktai/alkoholiniai-gerimai/c/SH-1';
+
+const requestOptions: AxiosRequestConfig = {
+  headers: {
+    Cookie:
+      'rimi_storefront_session=eyJpdiI6IkQ4MGtHampuXC9sWG5IMUxyd1pBQ0RnPT0iLCJ2YWx1ZSI6IkxtenlQazE1ZUFhbWdRMGhVeWd2Z0V6OHo3bVZJOVRHdVlBUnRMK2lDd1R5Q291VFlYWWVEUzhOWFNRbmx3OUE2b08rZXQ3OHczR1JmSmJSdE5LTlNQWFBGa09JS3VhQXBRUVZyUXVqdnpcL0NUelRrcXFHcDFuRHVhaWpKTG41RiIsIm1hYyI6IjRiYmVjZTA0MzViNjg2MDU0YTg0ZmE2NjkwOGFmN2NlYjc1NWJjYzRiYWMxMzllZDM2MTNkYTk1ZmM0YmJiZDYifQ%3D%3D; ',
+  },
+};
 
 const fetchVolume = async (url: string) => {
   try {
-    const { data } = await axios.get(url, {
-      headers: {
-        Cookie:
-          'rimi_storefront_session=eyJpdiI6Im9oblVcL29wMFN4enRvNDhIN25Nam9nPT0iLCJ2YWx1ZSI6ImxXZlVHbEl0OW54ZG11UXdJaWFLcWFcL25QUE9rdzZvZ0l1SUR0am0wU1BGeHRrUFwvR05vTlBUMlJVTXRYQmFBUSIsIm1hYyI6IjFlNWE3OTAxMTZkOTQ1ZTQ1NGRiMmI4YmIyMGNjMmU0MzU0Yzc3YzhiNDVhZTMzM2M1ZjQxZmUzOGQ2N2FkZTAifQ%3D%3D; ',
-      },
-    });
+    const { data } = await axios.get(url, requestOptions);
 
     const $ = cheerio.load(data);
     $.html();
@@ -61,8 +62,7 @@ const convertToCategory = (category: string) => {
 };
 
 const extractAlcVolume = (productName: string): ApiProduct['alcVolume'] => {
-  const alcVolumeText: string[] | undefined =
-    productName.match(/\d?\,?\d\s?%/) ?? undefined;
+  const alcVolumeText: string[] | undefined = productName.match(/\d?\,?\d\s?%/) ?? undefined;
   if (alcVolumeText) {
     const alcVolumeList: string[] = alcVolumeText[0].split('%');
     const alcVolume = Number(alcVolumeList[0].replace(',', '.').trim());
@@ -72,12 +72,7 @@ const extractAlcVolume = (productName: string): ApiProduct['alcVolume'] => {
 };
 
 const fetchData: FetchData<string> = async (url: string) => {
-  const { data } = await axios.get<string>(url, {
-    headers: {
-      Cookie:
-        'rimi_storefront_session=eyJpdiI6Im9oblVcL29wMFN4enRvNDhIN25Nam9nPT0iLCJ2YWx1ZSI6ImxXZlVHbEl0OW54ZG11UXdJaWFLcWFcL25QUE9rdzZvZ0l1SUR0am0wU1BGeHRrUFwvR05vTlBUMlJVTXRYQmFBUSIsIm1hYyI6IjFlNWE3OTAxMTZkOTQ1ZTQ1NGRiMmI4YmIyMGNjMmU0MzU0Yzc3YzhiNDVhZTMzM2M1ZjQxZmUzOGQ2N2FkZTAifQ%3D%3D; ',
-    },
-  });
+  const { data } = await axios.get<string>(url, requestOptions);
   return data;
 };
 
@@ -102,8 +97,7 @@ const parseProducts = (data: string, categoryName: string): ApiProduct[] => {
 
     const alcVolume = extractAlcVolume(product.name);
 
-    const image =
-      $(el).find('div.card__image-wrapper > div > img').attr('src') ?? '#';
+    const image = $(el).find('div.card__image-wrapper > div > img').attr('src') ?? '#';
     const productLink = rimiURL + $(el).children('a').attr('href') ?? '/';
 
     products.push({
@@ -129,10 +123,7 @@ const parseNextPageUrl = (data: string): Url | undefined => {
   });
   return nextPage;
 };
-export const fetchRimiCategoryProducts = async ({
-  name,
-  link,
-}: RimiCategory) => {
+export const fetchRimiCategoryProducts = async ({ name, link }: RimiCategory) => {
   try {
     const products: ApiProduct[] = [];
     let nextPage: Url | undefined = link;
@@ -150,12 +141,7 @@ export const fetchRimiCategoryProducts = async ({
 
 const fetchRimiCategories = async () => {
   try {
-    const { data } = await axios.get(rimiAlcoholURL, {
-      headers: {
-        Cookie:
-          'rimi_storefront_session=eyJpdiI6Im9oblVcL29wMFN4enRvNDhIN25Nam9nPT0iLCJ2YWx1ZSI6ImxXZlVHbEl0OW54ZG11UXdJaWFLcWFcL25QUE9rdzZvZ0l1SUR0am0wU1BGeHRrUFwvR05vTlBUMlJVTXRYQmFBUSIsIm1hYyI6IjFlNWE3OTAxMTZkOTQ1ZTQ1NGRiMmI4YmIyMGNjMmU0MzU0Yzc3YzhiNDVhZTMzM2M1ZjQxZmUzOGQ2N2FkZTAifQ%3D%3D; ',
-      },
-    });
+    const { data } = await axios.get(rimiAlcoholURL, requestOptions);
 
     const $ = cheerio.load(data);
     $.html();
@@ -168,9 +154,7 @@ const fetchRimiCategories = async () => {
       .find('li > a')
       .each((_, el) => {
         const alcoURL =
-          rimiURL +
-            $(el).attr('href') +
-            `?pageSize=${PRODUCTS_PER_PAGE}&query=` ?? '';
+          rimiURL + $(el).attr('href') + `?pageSize=${PRODUCTS_PER_PAGE}&query=` ?? '';
         const alcoName = $(el).text().trim() ?? '';
         urlList.push({ name: alcoName, link: alcoURL });
       });
@@ -184,10 +168,6 @@ export const fetchRimiProducts = async () => {
   const rimiCategories = await fetchRimiCategories();
 
   return (
-    await Promise.all(
-      rimiCategories.map(rimiCategory =>
-        fetchRimiCategoryProducts(rimiCategory),
-      ),
-    )
+    await Promise.all(rimiCategories.map(rimiCategory => fetchRimiCategoryProducts(rimiCategory)))
   ).flat();
 };
