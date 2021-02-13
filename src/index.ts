@@ -24,9 +24,8 @@ const PORT = process.env.PORT || 4000;
   const schema = await buildSchema({
     resolvers: [__dirname + '/resolvers/**/*.resolver.{ts,js}'],
   });
+  scheduleJob(executeStoreRunner);
   const server = new ApolloServer({ schema });
-
-  // scheduleJob(executeStoreRunner);
 
   server.listen(PORT).then(({ url }) => {
     logger.info(`Server is ready at ${url}`);
