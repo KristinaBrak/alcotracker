@@ -3,6 +3,7 @@ import { JSDOM } from 'jsdom';
 import { Url } from '../../../types';
 import { Category, ApiProduct } from '../store.types';
 import querystring from 'query-string';
+import { logger } from '../../../logger';
 
 interface BarboraCategory {
   name: string;
@@ -33,8 +34,7 @@ const config = {
 };
 
 const extractAlcVolume = (productName: string): ApiProduct['alcVolume'] => {
-  const alcVolumeText: string[] | undefined =
-    productName.match(/\d?\d?\,?\d\s?%/) ?? undefined;
+  const alcVolumeText: string[] | undefined = productName.match(/\d?\d?\,?\d\s?%/) ?? undefined;
   if (alcVolumeText) {
     const alcVolumeList: string[] = alcVolumeText[0].split('%');
     const alcVolume = Number(alcVolumeList[0].replace(',', '.').trim());
@@ -44,16 +44,20 @@ const extractAlcVolume = (productName: string): ApiProduct['alcVolume'] => {
 };
 
 const extractVolume = (volumeText: string): ApiProduct['volume'] => {
-  //seperate ml and l
-  const volumeMl = volumeText.match(/^\d{0,3}\,?\d\s?ml/); //["500ml"]
-  if (volumeMl) {
-    const volume = Number(volumeMl[0].replace('ml', '').trim()) / 1000; //big int
-    return volume;
-  }
-  const volumeL = volumeText.match(/^\d{0,3}\,?\d\s?l/);
-  if (volumeL) {
-    const volume = Number(volumeL[0].replace('l', '').trim());
-    return volume;
+  const units = [
+    { type: 'l', precision: 1 },
+    { type: 'ml', precision: 1000 },
+  ];
+
+  for (const { type, precision } of units) {
+    const volumeMatch = volumeText.match(new RegExp(`\\d{0,3}\\,?\\d\\s?${type}`));
+    if (volumeMatch) {
+      const numericVolume = Number(volumeMatch[0].replace(type, '').replace(',', '.').trim());
+      if (isNaN(numericVolume)) {
+        logger.error(`failed to parse volume for ${volumeText}`);
+      }
+      return numericVolume / precision;
+    }
   }
   return;
 };
@@ -97,83 +101,68 @@ const fetchBarboraCategoryProducts = async ({
 
   const pageList = dom.window.document.querySelector('ul.pagination');
   const pageListLength = pageList?.children.length ?? MIN_PAGING_ELEMENTS;
-  const nextPageLinkElement = pageList?.children[
-    pageListLength - 1
-  ].querySelector('a');
-  const nextPageUrl =
-    barboraURL + nextPageLinkElement?.getAttribute('href') ?? undefined;
+  const nextPageLinkElement = pageList?.children[pageListLength - 1].querySelector('a');
+  const nextPageUrl = barboraURL + nextPageLinkElement?.getAttribute('href') ?? undefined;
   const {
     query: { page: nextPage },
   } = querystring.parseUrl(nextPageUrl);
 
-  dom.window.document
-    .querySelectorAll('div.b-product--wrap')
-    ?.forEach((el, _, __) => {
-      const details = el.getAttribute('data-b-for-cart');
-      // Attribute 'data-b-for-cart' structure with examples
-      //   {"id":"00000000000BR05951",
-      //   "product_position_in_list":0,
-      //   "title":"Spiritinis gėrimas CAPTAIN MORGAN ORIGINAL SPICED GOLD (35%), 1000 ml",
-      //   "category_id":"9efa3bf4-5d31-4031-9636-f20a1e7b1e5b",
-      //   "category_name_full_path":"Gėrimai/Stiprieji alkoholiniai gėrimai/Romas",
-      //   "root_category_id":"3e2e66e1-88c3-48df-b8c2-f444618991e4",
-      //   "brand_name":"Captain Morgan",
-      //   "price":21.9900,
-      //   "image":"/api/images/GetInventoryImage?id=ec47b192-c0f3-4230-a41d-6e85ea7ba9d4",
-      //   "comparative_unit":"l",
-      //   "comparative_unit_price":21.99,
-      //   "status":"active",
-      //   "popUpText":null,
-      //   "age_limitation":20,
-      //   "picking_actions":[],
-      //   "list":"Prekės pagal kategoriją",
-      //   "quantity":1.0}
+  dom.window.document.querySelectorAll('div.b-product--wrap')?.forEach((el, _, __) => {
+    const details = el.getAttribute('data-b-for-cart');
+    // Attribute 'data-b-for-cart' structure with examples
+    //   {"id":"00000000000BR05951",
+    //   "product_position_in_list":0,
+    //   "title":"Spiritinis gėrimas CAPTAIN MORGAN ORIGINAL SPICED GOLD (35%), 1000 ml",
+    //   "category_id":"9efa3bf4-5d31-4031-9636-f20a1e7b1e5b",
+    //   "category_name_full_path":"Gėrimai/Stiprieji alkoholiniai gėrimai/Romas",
+    //   "root_category_id":"3e2e66e1-88c3-48df-b8c2-f444618991e4",
+    //   "brand_name":"Captain Morgan",
+    //   "price":21.9900,
+    //   "image":"/api/images/GetInventoryImage?id=ec47b192-c0f3-4230-a41d-6e85ea7ba9d4",
+    //   "comparative_unit":"l",
+    //   "comparative_unit_price":21.99,
+    //   "status":"active",
+    //   "popUpText":null,
+    //   "age_limitation":20,
+    //   "picking_actions":[],
+    //   "list":"Prekės pagal kategoriją",
+    //   "quantity":1.0}
 
-      if (details) {
-        const element = JSON.parse(details);
+    if (details) {
+      const element = JSON.parse(details);
+      const linkElement = el.querySelector(
+        "div[class='b-product-wrap-img'] > a[class='b-product--imagelink b-link--product-info']",
+      );
+      const link = barboraURL + linkElement?.getAttribute('href');
 
-        const titleParts: string[] = element.title.split(', ');
-        const volumeText = titleParts.slice(-1)[0].trim();
+      const product: ApiProduct = {
+        name: element.title,
+        category: convertToCategory(name),
+        price: element.price,
+        alcVolume: extractAlcVolume(element.title),
+        volume: extractVolume(element.title),
+        link,
+        image: barboraURL + element.image,
+      };
 
-        const linkElement = el.querySelector(
-          "div[class='b-product-wrap-img'] > a[class='b-product--imagelink b-link--product-info']",
-        );
-        const link = barboraURL + linkElement?.getAttribute('href');
-
-        const product: ApiProduct = {
-          name: element.title,
-          category: convertToCategory(name),
-          price: element.price,
-          alcVolume: extractAlcVolume(element.title),
-          volume: extractVolume(volumeText),
-          link,
-          image: barboraURL + element.image,
-        };
-
-        products.push(product);
-      }
-    });
+      products.push(product);
+    }
+  });
 
   if (page === nextPage) {
     return products;
   }
 
-  return products.concat(
-    await fetchBarboraCategoryProducts({ name, link: nextPageUrl }),
-  );
+  return products.concat(await fetchBarboraCategoryProducts({ name, link: nextPageUrl }));
 };
 
 export const fetchBarboraProducts = async () => {
   const { data } = await axios.get(barboraURL + '/gerimai', config);
 
-  const barboraCategories: BarboraCategory[] = await fetchBarboraProductCategories(
-    data,
-  );
+  const barboraCategories: BarboraCategory[] = await fetchBarboraProductCategories(data);
 
   const products = (
-    await Promise.all(
-      barboraCategories.map(category => fetchBarboraCategoryProducts(category)),
-    )
+    await Promise.all(barboraCategories.map(category => fetchBarboraCategoryProducts(category)))
   ).flat();
   return products;
 };
