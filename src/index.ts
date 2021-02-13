@@ -30,9 +30,7 @@ const PORT = process.env.PORT || 4000;
   server.listen(PORT).then(({ url }) => {
     logger.info(`Server is ready at ${url}`);
   });
-  exit(0);
 })().catch(error => {
   logger.error(error);
   console.error(error.stack);
-  exit(1);
 });
