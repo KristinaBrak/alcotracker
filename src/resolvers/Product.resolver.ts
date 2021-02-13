@@ -5,7 +5,7 @@ import { Product } from '../entity/Product';
 export class ProductResolver {
   @Query(() => [Product])
   async allProducts(): Promise<Product[]> {
-    const products = await Product.find({ relations: ['prices'] });
+    const products = await Product.find({ relations: ['category', 'store'] });
 
     if (!products) {
       throw new Error('No products exists');

@@ -1,3 +1,4 @@
+import { Field, ObjectType } from 'type-graphql';
 import {
   Entity,
   PrimaryGeneratedColumn,
@@ -9,11 +10,13 @@ import {
 } from 'typeorm';
 import { Product } from './Product';
 
+@ObjectType()
 @Entity()
 export class Category extends BaseEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
+  @Field(type => String)
   @Column('varchar', { length: 255, unique: true })
   name: string;
 

@@ -1,5 +1,6 @@
 FROM node:lts-alpine
 
+ENV PORT 4000
 ENV NODE_ENV development
 ENV DB production
 ENV LOG_LEVEL info
