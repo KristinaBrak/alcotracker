@@ -5,6 +5,8 @@ services:
     depends_on:
       - 'redis'
       - 'postgres'
+    ports:
+      - '4000:4000'
   redis:
     image: 'redis:alpine'
   postgres:
