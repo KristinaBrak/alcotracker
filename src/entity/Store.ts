@@ -1,3 +1,4 @@
+import { Field, ObjectType } from 'type-graphql';
 import {
   Entity,
   PrimaryGeneratedColumn,
@@ -5,17 +6,17 @@ import {
   BaseEntity,
   CreateDateColumn,
   UpdateDateColumn,
-  ManyToOne,
-  Index,
   OneToMany,
 } from 'typeorm';
 import { Product } from './Product';
 
+@ObjectType()
 @Entity()
 export class Store extends BaseEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
+  @Field(type => String)
   @Column('text')
   name: string;
 

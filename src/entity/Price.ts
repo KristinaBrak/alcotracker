@@ -1,3 +1,4 @@
+import { Field, Float, ObjectType } from 'type-graphql';
 import {
   Entity,
   PrimaryGeneratedColumn,
@@ -10,6 +11,7 @@ import {
 } from 'typeorm';
 import { Product } from './Product';
 
+@ObjectType()
 @Entity()
 export class Price extends BaseEntity {
   @PrimaryGeneratedColumn()
@@ -22,9 +24,11 @@ export class Price extends BaseEntity {
   })
   product: Product;
 
+  @Field(type => Float)
   @Column('float')
   value: number;
 
+  @Field(type => String)
   @CreateDateColumn()
   createdAt: Date;
 
