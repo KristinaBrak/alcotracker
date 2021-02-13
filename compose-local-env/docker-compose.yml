@@ -16,4 +16,7 @@ services:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
     volumes:
-      - ./database-data:/var/lib/postgresql/data/
+      - db-data:/var/lib/postgresql/data/
+volumes:
+  db-data:
+    driver: local

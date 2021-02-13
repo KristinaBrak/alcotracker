@@ -28,7 +28,7 @@
     "query-string": "^6.13.8",
     "reflect-metadata": "^0.1.10",
     "type-graphql": "^1.1.1",
-    "typeorm": "0.2.30",
+    "typeorm": "^0.2.31",
     "winston": "^3.3.3"
   },
   "devDependencies": {

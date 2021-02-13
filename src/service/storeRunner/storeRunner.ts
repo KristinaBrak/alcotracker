@@ -25,15 +25,7 @@ const updateStores = async () => {
 const updateStoreProducts = async (store: Store, products: ApiProduct[]) => {
   const CategoryRepository = getConnection().getRepository(Category);
   const dbCategories = await CategoryRepository.find();
-  for (const {
-    category,
-    image,
-    link,
-    name,
-    price,
-    alcVolume,
-    volume,
-  } of products) {
+  for (const { category, image, link, name, price, alcVolume, volume } of products) {
     await getConnection().transaction(async em => {
       const ProductRepository = em.getRepository(Product);
       const PriceRepository = em.getRepository(Price);
@@ -48,9 +40,8 @@ const updateStoreProducts = async (store: Store, products: ApiProduct[]) => {
         dbProduct.volume = volume;
         dbProduct.image = image;
         dbProduct.category =
-          dbCategories.find(
-            c => c.name.toLowerCase() === category.toLowerCase(),
-          ) ?? dbCategories.find(c => c.name.toLowerCase() === 'other')!;
+          dbCategories.find(c => c.name.toLowerCase() === category.toLowerCase()) ??
+          dbCategories.find(c => c.name.toLowerCase() === 'other')!;
         logger.debug(`inserting dbProduct ${name}`);
         await ProductRepository.save(dbProduct);
       }
