@@ -39,11 +39,11 @@ export class Product extends BaseEntity {
 
   @Field(type => Float, { nullable: true })
   @Column('float', { nullable: true })
-  alcVolume?: number;
+  alcVolume: number | null;
 
   @Field(type => Float, { nullable: true })
   @Column('float', { nullable: true })
-  volume?: number;
+  volume: number | null;
 
   @Field(type => String)
   @Index()

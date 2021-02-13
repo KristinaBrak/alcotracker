@@ -36,21 +36,29 @@ const updateStoreProducts = async (store: Store, products: ApiProduct[]) => {
         dbProduct.name = name;
         dbProduct.link = link;
         dbProduct.store = store;
-        // dbProduct.alcVolume = alcVolume;
-        // dbProduct.volume = volume;
+        dbProduct.alcVolume = alcVolume ?? null;
+        dbProduct.volume = volume ?? null;
         dbProduct.image = image;
         dbProduct.category =
           dbCategories.find(c => c.name.toLowerCase() === category.toLowerCase()) ??
           dbCategories.find(c => c.name.toLowerCase() === 'other')!;
         logger.debug(`inserting dbProduct ${name}`);
+        await ProductRepository.save(dbProduct);
+      } else {
+        let changed = false;
+        if (dbProduct.alcVolume !== alcVolume) {
+          dbProduct.alcVolume = alcVolume ?? null;
+          changed = true;
+        }
+        if (dbProduct.volume !== volume) {
+          dbProduct.volume = alcVolume ?? null;
+          changed = true;
+        }
+        if (changed) {
+          logger.warn(`updating existing product! ${name}`);
+          await ProductRepository.save(dbProduct);
+        }
       }
-      if (dbProduct.alcVolume !== alcVolume) {
-        dbProduct.alcVolume = alcVolume;
-      }
-      if (dbProduct.volume !== volume) {
-        dbProduct.volume = volume;
-      }
-      await ProductRepository.save(dbProduct);
 
       const dbPrice = new Price();
       dbPrice.value = price;

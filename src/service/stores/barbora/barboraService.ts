@@ -34,9 +34,9 @@ const config = {
 };
 
 const extractAlcVolume = (productName: string): ApiProduct['alcVolume'] => {
-  const alcVolumeText: string[] | undefined = productName.match(/\d?\d?\,?\d\s?%/) ?? undefined;
-  if (alcVolumeText) {
-    const alcVolumeList: string[] = alcVolumeText[0].split('%');
+  const alcVolumeText = productName.match(/\d?\d?\,?\d\s?%/);
+  if (alcVolumeText && alcVolumeText.length) {
+    const alcVolumeList = alcVolumeText[0].split('%');
     const alcVolume = Number(alcVolumeList[0].replace(',', '.').trim());
     return alcVolume;
   }
