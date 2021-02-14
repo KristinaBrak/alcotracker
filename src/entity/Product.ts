@@ -30,6 +30,13 @@ export class Product extends BaseEntity {
   @OneToMany(() => Price, price => price.product)
   prices: Price[];
 
+  @Field(type => Float)
+  priceMean: number;
+
+  @Field(type => Float)
+  priceMode: number;
+
+  @Field(type => Category)
   @ManyToOne(() => Category, category => category.products)
   category: Category;
 
