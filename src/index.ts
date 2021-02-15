@@ -1,7 +1,6 @@
 import * as dotenv from 'dotenv';
 dotenv.config();
 import 'reflect-metadata';
-import { exit } from 'process';
 import { createConnection, getConnectionOptions } from 'typeorm';
 import { logger } from './logger';
 import { scheduleJob } from './scheduler';
