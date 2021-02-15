@@ -44,7 +44,6 @@ export class ProductResolver implements ResolverInterface<Product> {
     if (!products.length) {
       throw new Error('No products exists');
     }
-    console.timeEnd('go');
 
     return products;
   }
