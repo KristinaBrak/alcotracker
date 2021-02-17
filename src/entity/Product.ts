@@ -1,4 +1,5 @@
 import { Field, Float, Int, ObjectType } from 'type-graphql';
+import { Filter } from 'type-graphql-filter';
 import {
   Entity,
   PrimaryGeneratedColumn,
@@ -22,6 +23,7 @@ export class Product extends BaseEntity {
   id: number;
 
   @Field(type => String)
+  @Filter(['like'], type => String)
   @Index()
   @Column('text')
   name: string;
@@ -45,10 +47,12 @@ export class Product extends BaseEntity {
   store: Store;
 
   @Field(type => Float, { nullable: true })
+  @Filter(['lte', 'gte', 'eq'], type => Int)
   @Column('float', { nullable: true })
   alcVolume: number | null;
 
   @Field(type => Float, { nullable: true })
+  @Filter(['lte', 'gte', 'eq'], type => Int)
   @Column('float', { nullable: true })
   volume: number | null;
 

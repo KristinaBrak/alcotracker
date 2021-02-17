@@ -28,6 +28,7 @@
     "query-string": "^6.13.8",
     "reflect-metadata": "^0.1.10",
     "type-graphql": "^1.1.1",
+    "type-graphql-filter": "^0.2.2",
     "typeorm": "^0.2.31",
     "winston": "^3.3.3"
   },

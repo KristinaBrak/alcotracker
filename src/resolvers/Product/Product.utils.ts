@@ -34,3 +34,23 @@ export const parseSortOrder = (sort?: ProductSort[]): { [key: string]: string } 
     }),
     {},
   );
+
+const operatorDict: { [key: string]: string } = {
+  gte: '>=',
+  lte: '<=',
+  eq: '=',
+};
+
+export const parseFilter = (table: string, filter: any) => {
+  if (!filter) {
+    return '';
+  }
+  const conditions = Object.entries(filter).map(([filterKey, value]) => {
+    const [field, operator] = filterKey.split('_');
+    if (operator === 'like') {
+      return `${table}.${field} ILIKE '%${value}%'`;
+    }
+    return `${table}.${field} ${operatorDict[operator]} ${value}`;
+  });
+  return conditions.join(' AND ');
+};
