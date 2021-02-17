@@ -51,7 +51,7 @@ const updateStoreProducts = async (store: Store, products: ApiProduct[]) => {
           changed = true;
         }
         if (dbProduct.volume !== volume) {
-          dbProduct.volume = alcVolume ?? null;
+          dbProduct.volume = volume ?? null;
           changed = true;
         }
         if (changed) {

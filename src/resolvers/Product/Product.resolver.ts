@@ -10,15 +10,18 @@ import {
   ResolverInterface,
   Root,
 } from 'type-graphql';
+import { generateFilterType } from 'type-graphql-filter';
 import { getConnection } from 'typeorm';
 import { Price } from '../../entity/Price';
 import { Product } from '../../entity/Product';
-import { ProductSort } from './Product.utils';
+import { parseFilter, ProductSort } from './Product.utils';
 
 @ArgsType()
 class ProductArgs {
   @Field(type => [ProductSort], { nullable: true })
   sort?: ProductSort[];
+  @Field(generateFilterType(Product), { nullable: true })
+  filter?: any;
 }
 
 @Resolver(of => Product)
@@ -52,14 +55,13 @@ export class ProductResolver implements ResolverInterface<Product> {
   }
 
   @Query(type => [Product])
-  async products(@Args() { sort }: ProductArgs): Promise<Product[]> {
-    console.log({ sort });
-
+  async products(@Args() { sort, filter }: ProductArgs): Promise<Product[]> {
     const builder = getConnection()
       .getRepository(Product)
       .createQueryBuilder('product')
       .leftJoinAndSelect('product.category', 'category')
-      .leftJoinAndSelect('product.store', 'store');
+      .leftJoinAndSelect('product.store', 'store')
+      .where(parseFilter('product', filter));
 
     const orderedBuilder =
       sort?.reduce((acc, { field, order }) => {
