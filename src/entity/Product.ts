@@ -47,12 +47,12 @@ export class Product extends BaseEntity {
   store: Store;
 
   @Field(type => Float, { nullable: true })
-  @Filter(['lte', 'gte', 'eq'], type => Int)
+  @Filter(['lte', 'gte', 'eq'], type => Float)
   @Column('float', { nullable: true })
   alcVolume: number | null;
 
   @Field(type => Float, { nullable: true })
-  @Filter(['lte', 'gte', 'eq'], type => Int)
+  @Filter(['lte', 'gte', 'eq'], type => Float)
   @Column('float', { nullable: true })
   volume: number | null;
 
