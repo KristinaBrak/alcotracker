@@ -28,7 +28,7 @@ export class Product extends BaseEntity {
 
   @Field(type => [Price])
   @OneToMany(() => Price, price => price.product)
-  prices: Price[];
+  prices: Promise<Price[]>;
 
   @Field(type => Float)
   priceMean: number;
