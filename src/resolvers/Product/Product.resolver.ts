@@ -22,6 +22,10 @@ class ProductArgs {
   sort?: ProductSort[];
   @Field(generateFilterType(Product), { nullable: true })
   filter?: any;
+  @Field(type => Int, { nullable: true })
+  skip?: number;
+  @Field(type => Int, { nullable: true })
+  take?: number;
 }
 
 @Resolver(of => Product)
@@ -55,20 +59,22 @@ export class ProductResolver implements ResolverInterface<Product> {
   }
 
   @Query(type => [Product])
-  async products(@Args() { sort, filter }: ProductArgs): Promise<Product[]> {
+  async products(@Args() { sort, filter, skip, take }: ProductArgs): Promise<Product[]> {
     const builder = getConnection()
       .getRepository(Product)
       .createQueryBuilder('product')
       .leftJoinAndSelect('product.category', 'category')
       .leftJoinAndSelect('product.store', 'store')
-      .where(parseFilter('product', filter));
+      .where(parseFilter('product', filter))
+      .skip(skip)
+      .take(take);
 
     const orderedBuilder =
       sort?.reduce((acc, { field, order }) => {
         return acc.addOrderBy(`product.${field}`, order, 'NULLS LAST');
       }, builder) ?? builder;
 
-    return orderedBuilder.getMany();
+    return orderedBuilder.addOrderBy('product.id').getMany();
   }
 
   @Query(type => Product)
