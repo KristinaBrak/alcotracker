@@ -73,15 +73,22 @@ const convertToCategory = (category: string) => {
   return categoryDictionary[category.toLowerCase()] ?? Category.OTHER;
 };
 
+const isAlcoholCategory = (categoryName: string) => {
+  const category = convertToCategory(categoryName);
+  return category !== Category.OTHER;
+};
+
 const fetchBarboraProductCategories = async (data: string) => {
   const categories: BarboraCategory[] = [];
   const dom = new JSDOM(data);
   dom.window.document
     .querySelectorAll("div[class='b-single-category--box'] > h3 > a")
     ?.forEach(el => {
-      const name = el.textContent?.trim() ?? '??';
-      const link: Url = barboraURL + el.getAttribute('href')?.trim() ?? '??';
-      categories.push({ name, link });
+      const name = el.textContent?.trim();
+      if (name && isAlcoholCategory(name.toLowerCase())) {
+        const link: Url = barboraURL + el.getAttribute('href')?.trim();
+        categories.push({ name, link });
+      }
     });
   return categories;
 };
