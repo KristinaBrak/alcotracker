@@ -22,25 +22,6 @@ const requestOptions: AxiosRequestConfig = {
   },
 };
 
-const fetchVolume = async (url: string) => {
-  try {
-    const { data } = await axios.get(url, requestOptions);
-
-    const $ = cheerio.load(data);
-    $.html();
-    const volume: string[] = [];
-    $('div.product__list-wrapper> ul.list > li > span').each((_, el) => {
-      if ($(el).text() === 'Kiekis') {
-        const volumeText = $(el).siblings().text();
-        volume.push(volumeText.split('l')[0].trim());
-      }
-    });
-    return volume[0];
-  } catch (error) {
-    return '??';
-  }
-};
-
 const convertToCategory = (category: string) => {
   const categoryDictionary: { [key: string]: Category | undefined } = {
     ['vynas']: Category.WINE,
@@ -62,13 +43,33 @@ const convertToCategory = (category: string) => {
 };
 
 const extractAlcVolume = (productName: string): ApiProduct['alcVolume'] => {
-  const alcVolumeText: string[] | undefined = productName.match(/\d?\,?\d\s?%/) ?? undefined;
+  const alcVolumeText: string[] | undefined = productName.match(/\d?\d?\,?\d\s?%/) ?? undefined;
   if (alcVolumeText) {
     const alcVolumeList: string[] = alcVolumeText[0].split('%');
     const alcVolume = Number(alcVolumeList[0].replace(',', '.').trim());
     return alcVolume;
   }
   return undefined;
+};
+
+const extractVolume = (productName: string): ApiProduct['volume'] => {
+  const volumeText = productName.match(/(\d?\,?\d+)\s?l/);
+  if (volumeText) {
+    const volumeOfUnit = Number(volumeText[0].replace(',', '.').replace('l', '').trim());
+    const quantityText = productName.match(/(\d)\s?[Xx]\s?/);
+    if (!quantityText) {
+      return volumeOfUnit;
+    }
+    const quantity = Number(
+      quantityText[0]
+        .trim()
+        .split(/\s?[Xx]\s?/)[0]
+        .trim(),
+    );
+    const volume = volumeOfUnit * quantity;
+    return volume;
+  }
+  return;
 };
 
 const fetchData: FetchData<string> = async (url: string) => {
@@ -96,7 +97,7 @@ const parseProducts = (data: string, categoryName: string): ApiProduct[] => {
     const productPrice = product.price;
 
     const alcVolume = extractAlcVolume(product.name);
-
+    const volume = extractVolume(product.name);
     const image = $(el).find('div.card__image-wrapper > div > img').attr('src') ?? '#';
     const productLink = rimiURL + $(el).children('a').attr('href') ?? '/';
 
@@ -104,6 +105,7 @@ const parseProducts = (data: string, categoryName: string): ApiProduct[] => {
       name: product.name,
       category: productCategory,
       price: productPrice,
+      volume,
       alcVolume,
       link: productLink,
       image,

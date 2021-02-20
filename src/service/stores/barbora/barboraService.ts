@@ -50,7 +50,7 @@ const extractVolume = (volumeText: string): ApiProduct['volume'] => {
   ];
 
   for (const { type, precision } of units) {
-    const volumeMatch = volumeText.match(new RegExp(`\\d{0,3}\\,?\\d\\s?${type}`));
+    const volumeMatch = volumeText.match(new RegExp(`\\d*\\,?\\d+\\s?${type}`));
     if (volumeMatch) {
       const numericVolume = Number(volumeMatch[0].replace(type, '').replace(',', '.').trim());
       if (isNaN(numericVolume)) {
