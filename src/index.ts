@@ -23,7 +23,7 @@ const PORT = process.env.PORT || 4000;
   const schema = await buildSchema({
     resolvers: [__dirname + '/resolvers/**/*.resolver.{ts,js}'],
   });
-  // await executeStoreRunner();
+  scheduleJob(executeStoreRunner);
 
   const server = new ApolloServer({ schema });
   server.listen(PORT).then(({ url }) => {
