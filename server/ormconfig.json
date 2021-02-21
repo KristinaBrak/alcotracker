@@ -1,5 +1,24 @@
 [
   {
+    "name": "default",
+    "type": "postgres",
+    "host": "localhost",
+    "port": 5432,
+    "username": "postgres",
+    "password": "postgres",
+    "database": "alcotracker",
+    "synchronize": false,
+    "logging": true,
+    "entities": ["src/entity/**/*.ts"],
+    "migrations": ["src/migration/**/*.ts"],
+    "subscribers": ["src/subscriber/**/*.ts"],
+    "cli": {
+      "entitiesDir": "src/entity",
+      "migrationsDir": "src/migration",
+      "subscribersDir": "src/subscriber"
+    }
+  },
+  {
     "name": "development",
     "type": "postgres",
     "host": "localhost",
@@ -7,7 +26,7 @@
     "username": "postgres",
     "password": "postgres",
     "database": "alcotracker",
-    "synchronize": true,
+    "synchronize": false,
     "logging": false,
     "entities": ["src/entity/**/*.ts"],
     "migrations": ["src/migration/**/*.ts"],
