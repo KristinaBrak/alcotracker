@@ -33,5 +33,5 @@ export class Price extends BaseEntity {
   createdAt: Date;
 
   @UpdateDateColumn()
-  updatedaAt: Date;
+  updatedAt: Date;
 }

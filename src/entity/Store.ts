@@ -30,5 +30,5 @@ export class Store extends BaseEntity {
   createdAt: Date;
 
   @UpdateDateColumn()
-  updatedaAt: Date;
+  updatedAt: Date;
 }

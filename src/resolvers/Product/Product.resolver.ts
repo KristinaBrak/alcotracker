@@ -13,14 +13,14 @@ import {
 import { generateFilterType } from 'type-graphql-filter';
 import { getConnection } from 'typeorm';
 import { Price } from '../../entity/Price';
-import { Product } from '../../entity/Product';
-import { parseFilter, ProductSort } from './Product.utils';
+import { createProductBuilder, parseFilter, ProductSort } from './Product.utils';
+import { ProductDTO } from './ProductDTO';
 
 @ArgsType()
 class ProductArgs {
   @Field(type => [ProductSort], { nullable: true })
   sort?: ProductSort[];
-  @Field(generateFilterType(Product), { nullable: true })
+  @Field(generateFilterType(ProductDTO), { nullable: true })
   filter?: any;
   @Field(type => Int, { nullable: true })
   skip?: number;
@@ -28,61 +28,44 @@ class ProductArgs {
   take?: number;
 }
 
-@Resolver(of => Product)
-export class ProductResolver implements ResolverInterface<Product> {
-  @FieldResolver()
-  async prices(@Root() product: Product): Product['prices'] {
-    return product.prices;
-  }
 
+@Resolver(of => ProductDTO)
+export class ProductResolver implements ResolverInterface<ProductDTO> {
   @FieldResolver()
-  async priceMean(@Root() product: Product): Promise<number> {
+  async prices(@Root() product: ProductDTO): Promise<ProductDTO['prices']> {
     const connection = getConnection();
-    const { avg } = await connection
+    const prices = await connection
       .createQueryBuilder(Price, 'price')
-      .select('AVG(value)::NUMERIC(10,2)')
       .where('price."productId" = :id', { id: product.id })
-      .getRawOne();
-    return avg;
+      .orderBy('price.createdAt')
+      .getMany();
+    return prices;
   }
 
-  @FieldResolver()
-  async priceMode(@Root() product: Product): Promise<Product['priceMode']> {
-    const prices = await product.prices;
-    return prices
-      .sort(
-        (a, b) =>
-          prices.filter(v => v.value === a.value).length -
-          prices.filter(v => v.value === b.value).length,
-      )
-      .pop()!.value;
-  }
+  @Query(type => [ProductDTO])
+  async products(@Args() { sort, filter, skip, take }: ProductArgs): Promise<ProductDTO[]> {
+    const parsedFilter = parseFilter(filter);
 
-  @Query(type => [Product])
-  async products(@Args() { sort, filter, skip, take }: ProductArgs): Promise<Product[]> {
-    const builder = getConnection()
-      .getRepository(Product)
-      .createQueryBuilder('product')
-      .leftJoinAndSelect('product.category', 'category')
-      .leftJoinAndSelect('product.store', 'store')
-      .where(parseFilter('product', filter))
-      .skip(skip)
-      .take(take);
+    const builder = createProductBuilder().where(parsedFilter).offset(skip).limit(take);
 
     const orderedBuilder =
       sort?.reduce((acc, { field, order }) => {
-        return acc.addOrderBy(`product.${field}`, order, 'NULLS LAST');
+        return acc.addOrderBy(`product."${field}"`, order, 'NULLS LAST');
       }, builder) ?? builder;
 
-    return orderedBuilder.addOrderBy('product.id').getMany();
+    const result = await orderedBuilder.addOrderBy('product.id').getRawMany();
+
+    return result;
   }
 
-  @Query(type => Product)
-  async product(@Arg('id', () => Int) id: number): Promise<Product> {
-    const product = await Product.findOne({
-      where: { id },
-      relations: ['category', 'store'],
-    });
+  @Query(type => ProductDTO)
+  async product(@Arg('id', () => Int) id: number): Promise<ProductDTO> {
+    const product = await createProductBuilder()
+      .where('product.id = :id', {
+        id,
+      })
+      .getRawOne();
+
     if (!product) {
       throw new Error(`No product with id: ${id}`);
     }

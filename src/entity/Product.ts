@@ -1,5 +1,3 @@
-import { Field, Float, Int, ObjectType } from 'type-graphql';
-import { Filter } from 'type-graphql-filter';
 import {
   Entity,
   PrimaryGeneratedColumn,
@@ -15,53 +13,34 @@ import { Category } from './Category';
 import { Price } from './Price';
 import { Store } from './Store';
 
-@ObjectType()
 @Entity()
 export class Product extends BaseEntity {
-  @Field(type => Int)
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Field(type => String)
-  @Filter(['like'], type => String)
   @Index()
   @Column('text')
   name: string;
 
-  @Field(type => [Price])
   @OneToMany(() => Price, price => price.product)
   prices: Promise<Price[]>;
 
-  @Field(type => Float)
-  priceMean: number;
-
-  @Field(type => Float)
-  priceMode: number;
-
-  @Field(type => Category)
   @ManyToOne(() => Category, category => category.products)
   category: Category;
 
-  @Field(type => Store)
   @ManyToOne(() => Store, store => store.products, { cascade: ['remove'] })
   store: Store;
 
-  @Field(type => Float, { nullable: true })
-  @Filter(['lte', 'gte', 'eq'], type => Float)
   @Column('float', { nullable: true })
   alcVolume: number | null;
 
-  @Field(type => Float, { nullable: true })
-  @Filter(['lte', 'gte', 'eq'], type => Float)
   @Column('float', { nullable: true })
   volume: number | null;
 
-  @Field(type => String)
   @Index()
   @Column('text', { unique: true })
   link: string;
 
-  @Field(type => String)
   @Column('text')
   image: string;
 
@@ -69,5 +48,5 @@ export class Product extends BaseEntity {
   createdAt: Date;
 
   @UpdateDateColumn()
-  updatedaAt: Date;
+  updatedAt: Date;
 }

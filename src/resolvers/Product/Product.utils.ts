@@ -1,4 +1,7 @@
 import { Field, InputType, registerEnumType } from 'type-graphql';
+import { getConnection } from 'typeorm';
+import { Product } from '../../entity/Product';
+import { columnNameDictionary, PRODUCT_SELECT } from './product.queries';
 
 export enum SortableField {
   alcVolume = 'alcVolume',
@@ -41,16 +44,28 @@ const operatorDict: { [key: string]: string } = {
   eq: '=',
 };
 
-export const parseFilter = (table: string, filter: any) => {
+export const parseFilter = (filter: any) => {
   if (!filter) {
     return '';
   }
+
   const conditions = Object.entries(filter).map(([filterKey, value]) => {
     const [field, operator] = filterKey.split('_');
+    const fieldValue = columnNameDictionary[field] ?? `"${field}"`;
     if (operator === 'like') {
-      return `${table}.${field} ILIKE '%${value}%'`;
+      return `${fieldValue} ILIKE '%${value}%'`;
     }
-    return `${table}.${field} ${operatorDict[operator]} ${value}`;
+    return `${fieldValue} ${operatorDict[operator]} ${value}`;
   });
+  // TODO return array instead and join using andWhere clause
   return conditions.join(' AND ');
+};
+
+export const createProductBuilder = () => {
+  return getConnection()
+    .createQueryBuilder(Product, 'product')
+    .select(PRODUCT_SELECT)
+    .innerJoinAndSelect('product.category', 'c', 'product."categoryId" = c.id')
+    .innerJoinAndSelect('product.store', 's', 'product."storeId" = s.id')
+    .innerJoinAndSelect('product_statistic', 'stats', 'product.id = stats.id');
 };
