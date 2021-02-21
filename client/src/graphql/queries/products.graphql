@@ -1,0 +1,16 @@
+query Products($filter: ProductDTOFilter, $sort: [ProductSort!], $skip: Int, $take: Int) {
+  products(filter: $filter, sort: $sort, skip: $skip, take: $take) {
+    id
+    name
+    alcVolume
+    volume
+    link
+    image
+    store
+    category
+    priceCurrent
+    priceMean
+    priceMode
+    discount
+  }
+}
