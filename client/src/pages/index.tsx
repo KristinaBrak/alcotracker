@@ -1,29 +1,33 @@
-import { ApolloClient, InMemoryCache } from '@apollo/client';
-import { useState } from 'react';
-import { useProductsQuery } from '../src/generated/graphql';
+import { ApolloClient, InMemoryCache } from "@apollo/client";
+import { useState } from "react";
+import ProductList from "../components/Product/ProductList/ProdutList";
+import { ProductDto, useProductsQuery } from "../generated/graphql";
 
 const client = new ApolloClient({
-  uri: 'http://localhost:4000/',
+  uri: "http://localhost:4000/",
   cache: new InMemoryCache(),
 });
 
 const Home = () => {
   const [value, setValue] = useState(5);
-  const [name, setName] = useState('');
-  const [productName, setProductName] = useState('');
+  const [name, setName] = useState("");
+  const [productName, setProductName] = useState("");
   const [take, setTake] = useState(value);
 
-  const { loading, data } = useProductsQuery({
+  const { error, loading, data } = useProductsQuery({
     client,
     variables: {
       filter: {
         name_like: productName,
+        priceMode_lte: 50,
       },
       take: take,
     },
   });
-
-  if (loading || !data) return 'Loading...';
+  if (error) {
+    return "error";
+  }
+  if (loading || !data) return "Loading...";
   const { products } = data;
   return (
     <div>
@@ -49,13 +53,7 @@ const Home = () => {
       >
         Hit it
       </button>
-      <div style={{ display: 'flex', flexDirection: 'column' }}>
-        {products.map(({ image }) => (
-          <div>
-            <img width="auto" src={image} />
-          </div>
-        ))}
-      </div>
+      <ProductList products={products} />
     </div>
   );
 };

@@ -148,6 +148,23 @@ export type QueryProductArgs = {
   id: Scalars['Int'];
 };
 
+export type ProducutQueryVariables = Exact<{
+  id: Scalars['Int'];
+}>;
+
+
+export type ProducutQuery = (
+  { __typename?: 'Query' }
+  & { product: (
+    { __typename?: 'ProductDTO' }
+    & Pick<ProductDto, 'id' | 'name' | 'link' | 'volume' | 'alcVolume' | 'priceMean' | 'priceMode' | 'discount' | 'category' | 'store'>
+    & { prices: Array<(
+      { __typename?: 'Price' }
+      & Pick<Price, 'createdAt' | 'value'>
+    )> }
+  ) }
+);
+
 export type ProductsQueryVariables = Exact<{
   filter?: Maybe<ProductDtoFilter>;
   sort?: Maybe<Array<ProductSort> | ProductSort>;
@@ -165,6 +182,52 @@ export type ProductsQuery = (
 );
 
 
+export const ProducutDocument = gql`
+    query Producut($id: Int!) {
+  product(id: $id) {
+    id
+    name
+    link
+    volume
+    alcVolume
+    priceMean
+    priceMode
+    discount
+    category
+    store
+    prices {
+      createdAt
+      value
+    }
+  }
+}
+    `;
+
+/**
+ * __useProducutQuery__
+ *
+ * To run a query within a React component, call `useProducutQuery` and pass it any options that fit your needs.
+ * When your component renders, `useProducutQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useProducutQuery({
+ *   variables: {
+ *      id: // value for 'id'
+ *   },
+ * });
+ */
+export function useProducutQuery(baseOptions: Apollo.QueryHookOptions<ProducutQuery, ProducutQueryVariables>) {
+        return Apollo.useQuery<ProducutQuery, ProducutQueryVariables>(ProducutDocument, baseOptions);
+      }
+export function useProducutLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<ProducutQuery, ProducutQueryVariables>) {
+          return Apollo.useLazyQuery<ProducutQuery, ProducutQueryVariables>(ProducutDocument, baseOptions);
+        }
+export type ProducutQueryHookResult = ReturnType<typeof useProducutQuery>;
+export type ProducutLazyQueryHookResult = ReturnType<typeof useProducutLazyQuery>;
+export type ProducutQueryResult = Apollo.QueryResult<ProducutQuery, ProducutQueryVariables>;
 export const ProductsDocument = gql`
     query Products($filter: ProductDTOFilter, $sort: [ProductSort!], $skip: Int, $take: Int) {
   products(filter: $filter, sort: $sort, skip: $skip, take: $take) {
