@@ -1,5 +1,6 @@
 import { fetchBarboraProducts } from './barbora/barboraService';
 import { fetchBottleryProducts } from './bottlery/bottleryService';
+import { fetchLidlProducts } from './lidl/lidl.service';
 import { fetchRimiProducts } from './rimi/rimiService';
 import { ApiProduct } from './store.types';
 
@@ -21,4 +22,5 @@ export const stores: ApiStore[] = [
     fn: fetchRimiProducts,
   },
   { name: 'barbora', link: 'https://barbora.lt/', fn: fetchBarboraProducts },
+  { name: 'lidl', link: 'https://www.lidl.lt/lt', fn: fetchLidlProducts },
 ];
