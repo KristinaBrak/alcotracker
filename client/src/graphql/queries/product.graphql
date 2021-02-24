@@ -1,0 +1,18 @@
+query Producut($id: Int!) {
+  product(id: $id) {
+    id
+    name
+    link
+    volume
+    alcVolume
+    priceMean
+    priceMode
+    discount
+    category
+    store
+    prices {
+      createdAt
+      value
+    }
+  }
+}
