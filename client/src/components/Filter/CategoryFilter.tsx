@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { ProductDtoFilter } from "../../generated/graphql";
 
 interface Props {
@@ -22,13 +22,22 @@ const categories = [
 ];
 
 const CategoryFilter: React.FC<Props> = ({ setCategory }) => {
+  const [selectedCategory, setSelectedCategory] = useState<
+    string | undefined
+  >();
   return (
     <ul style={{ margin: "10px" }}>
       {categories.map((category) => (
         <button
           key={`button-${category.id}`}
-          onClick={() => setCategory(category.category)}
-          style={{ margin: "10px" }}
+          onClick={() => {
+            setCategory(category.category);
+            setSelectedCategory(category.id);
+          }}
+          style={{
+            margin: "10px",
+            color: selectedCategory === category.id ? "blue" : "black",
+          }}
         >
           <li key={`category-${category.id}`}>{category.lt}</li>
         </button>
