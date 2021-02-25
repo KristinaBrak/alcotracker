@@ -1,4 +1,5 @@
 import { useState } from "react";
+import Filter from "../components/Filter/Filter";
 import FilterList from "../components/Filter/FilterList";
 import ProductList from "../components/Product/ProductList/ProdutList";
 import { ProductDtoFilter, useProductsQuery } from "../generated/graphql";
@@ -23,7 +24,7 @@ const Home = () => {
   const { products } = data;
   return (
     <div>
-      <FilterList setFilter={setFilter} filter={filter} />
+      <Filter setFilter={setFilter} filter={filter} />
       <input
         type="number"
         value={value}
