@@ -21,7 +21,7 @@ import { ViewColumn, ViewEntity } from 'typeorm';
     from price pr
     group by pr."productId"
   ) as calc on calc."productId" = p.id 
-  where calc."productId" = p.id and p."alcVolume" > 0
+  where calc."productId" = p.id
   order by p.id
   ) as z;
   `,
