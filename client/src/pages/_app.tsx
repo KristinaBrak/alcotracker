@@ -1,11 +1,15 @@
 import { ApolloProvider } from "@apollo/client";
 import { apolloClient } from "../lib/apolloClient";
+import { ChakraProvider } from "@chakra-ui/react";
+
 import "../styles/globals.css";
 
 function App({ Component, pageProps }) {
   return (
     <ApolloProvider client={apolloClient}>
-      <Component {...pageProps} />
+      <ChakraProvider>
+        <Component {...pageProps} />
+      </ChakraProvider>
     </ApolloProvider>
   );
 }

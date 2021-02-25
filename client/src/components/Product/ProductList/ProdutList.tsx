@@ -9,7 +9,7 @@ const ProductList: React.FC<Props> = ({ products }) => {
   return (
     <ul style={{ display: "flex", flexWrap: "wrap" }}>
       {products.map((product) => (
-        <ProductItem product={product as ProductDto} />
+        <ProductItem product={product as ProductDto} key={`${product.id}`} />
       ))}
     </ul>
   );
