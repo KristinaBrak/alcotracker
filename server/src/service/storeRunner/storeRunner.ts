@@ -1,5 +1,4 @@
 import { getConnection } from 'typeorm';
-import { dbName } from '../../consts';
 import { Category } from '../../entity/Category';
 import { Price } from '../../entity/Price';
 import { Product } from '../../entity/Product';
@@ -46,11 +45,11 @@ const updateStoreProducts = async (store: Store, products: ApiProduct[]) => {
         await ProductRepository.save(dbProduct);
       } else {
         let changed = false;
-        if (dbProduct.alcVolume !== alcVolume) {
+        if (dbProduct.alcVolume != alcVolume) {
           dbProduct.alcVolume = alcVolume ?? null;
           changed = true;
         }
-        if (dbProduct.volume !== volume) {
+        if (dbProduct.volume != volume) {
           dbProduct.volume = volume ?? null;
           changed = true;
         }

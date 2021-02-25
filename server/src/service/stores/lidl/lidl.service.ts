@@ -77,15 +77,16 @@ const parseLidlCategoryProducts = (alcPageHtml: string, category: Category): Api
       ?.textContent?.trim();
     const name = `${productTitle} ${productDescription}`;
     const pricebox = article.querySelector('.product__price div.pricebox');
-    const price = Number(pricebox?.querySelector('.pricebox__price')?.textContent?.trim());
+    const price = Number(
+      pricebox?.querySelector('.pricebox__price')?.textContent?.trim().replace(',', '.'),
+    );
     const basicQuantity = pricebox
       ?.querySelector('div.pricebox__basic-quantity')
       ?.textContent?.trim()!;
 
     const volume = parseVolume(basicQuantity);
     const alcVolume = parseAlcVolume(basicQuantity);
-
-    products.push({
+    const product = {
       name,
       image,
       link,
@@ -93,7 +94,8 @@ const parseLidlCategoryProducts = (alcPageHtml: string, category: Category): Api
       category,
       volume,
       alcVolume,
-    });
+    };
+    products.push(product);
   });
 
   return products;
