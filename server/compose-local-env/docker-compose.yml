@@ -37,6 +37,14 @@ services:
       - POSTGRES_PASSWORD=nQPcdB2iSHogfS
     volumes:
       - db-data:/var/lib/postgresql/data/
+  watchtower:
+    container_name: watchtower
+    restart: 'unless-stopped'
+    image: containrrr/watchtower
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    command: --debug true --cleanup true app
+
 volumes:
   db-data:
     driver: local
