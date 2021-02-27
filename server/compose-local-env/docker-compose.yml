@@ -15,7 +15,7 @@ services:
           cpus: '2'
           memory: 1g
   redis:
-    image: 'redis:alpine'
+    image: 'arm32v7/redis'
     container_name: redis
     restart: 'unless-stopped'
     deploy:
