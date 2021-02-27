@@ -1,4 +1,4 @@
-query Producut($id: Int!) {
+query Product($id: Int!) {
   product(id: $id) {
     id
     name
