@@ -1,7 +1,7 @@
 version: '3.9'
 services:
   app:
-    image: mantassidabras/alcotracker:latest
+    image: docker.io/mantassidabras/alcotracker:latest
     container_name: app
     depends_on:
       - 'redis'
