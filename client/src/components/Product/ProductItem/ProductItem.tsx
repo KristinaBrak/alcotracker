@@ -1,53 +1,71 @@
-import { spawn } from "child_process";
-import { ProductDto, ProductsQuery } from "../../../generated/graphql";
+import {
+  Box,
+  Heading,
+  Image,
+  Tag,
+  Text,
+} from "@chakra-ui/react";
+import React from "react";
+import { ProductDto } from "../../../generated/graphql";
+import { categoryNames } from "../../Filter/Filter";
+import Discount from "./Discount";
 
 interface Props {
   product: ProductDto;
 }
 
 const ProductItem: React.FC<Props> = ({
-  product: {
-    id,
-    name,
-    volume,
-    alcVolume,
-    image,
-    link,
-    priceCurrent,
-    priceMean,
-    priceMode,
-    discount,
-    store,
-    category,
-  },
+  product: { name, image, link, priceCurrent, discount, store, category },
 }) => {
   return (
-    <div style={{ display: "flex", margin: "20px 0", minWidth: "50%" }}>
-      <div
-        style={{ display: "flex", flexDirection: "column", maxWidth: "50%" }}
+    <Box
+      w="200px"
+      h="300px"
+      maxH="300px"
+      borderWidth="1px"
+      borderRadius="lg"
+      // overflow="hidden"
+      margin="2"
+    >
+      <a href={link} target="_blank">
+        <Image
+          width="100%"
+          height="150px"
+          objectFit="scale-down"
+          src={image}
+          alt={name}
+          loading="lazy"
+        />
+      </a>
+
+      <Box
+        padding="2"
+        display="flex"
+        flexDirection="column"
+        justifyContent="space-between"
+        alignSelf="stretch"
       >
-        {/* <div style={{ maxWidth: "50%" }}> */}
-        <a href={link} target="_blank">
-          <img src={image} alt={name} />
-        </a>
-        {/* </div> */}
-        <p style={{ maxWidth: "80%" }}>{name}</p>
-      </div>
-      <div
-        style={{
-          display: "flex",
-          flexDirection: "column",
-          justifyContent: "flex-start",
-        }}
-      >
-        <p>{store}</p>
-        <p>{category}</p>
-        <p>{volume} L</p>
-        <p>{alcVolume} %</p>
-        <span>{priceCurrent}€</span>
-        {discount ? <span>{discount}</span> : null}
-      </div>
-    </div>
+        <Text fontSize="sm" noOfLines={2}>
+          {name}
+        </Text>
+        <Box
+          marginTop="2"
+          d="flex"
+          justifyContent="space-between"
+          alignItems="baseline"
+        >
+          <Heading as="h5" size="sm">
+            {priceCurrent}€
+          </Heading>
+
+          <Tag colorScheme="pink">{store}</Tag>
+        </Box>
+        {discount !== 0 ? <Discount discount={discount} /> : null}
+        <Box marginTop="1">
+          <Tag>{categoryNames[category]}</Tag>
+        </Box>
+      </Box>
+    </Box>
   );
 };
 

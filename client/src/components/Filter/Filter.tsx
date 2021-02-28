@@ -14,7 +14,7 @@ enum Category {
   FREE = "free",
   OTHER = "other",
 }
-const categoryNames: { [key: string]: string } = {
+export const categoryNames: { [key: string]: string } = {
   [Category.WINE]: "vynas",
   [Category.STRONG]: "stiprieji",
   [Category.LIGHT]: "lengvieji",

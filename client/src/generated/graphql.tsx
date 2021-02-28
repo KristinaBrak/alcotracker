@@ -59,13 +59,14 @@ export type ProductDto = {
 
 
 export type ProductSort = {
-  field: FilterableField;
+  field: SortableField;
   order: Sort;
 };
 
-export enum FilterableField {
+export enum SortableField {
   AlcVolume = 'alcVolume',
-  Volume = 'volume'
+  Volume = 'volume',
+  Discount = 'discount'
 }
 
 export enum Sort {
