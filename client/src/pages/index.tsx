@@ -1,6 +1,5 @@
-import { useState } from "react";
+import { useReducer, useState } from "react";
 import Filter from "../components/Filter/Filter";
-import FilterList from "../components/Filter/FilterList";
 import ProductList from "../components/Product/ProductList/ProdutList";
 import { ProductDtoFilter, useProductsQuery } from "../generated/graphql";
 
@@ -16,12 +15,6 @@ const Home = () => {
     },
   });
 
-  if (error) {
-    return "error";
-  }
-
-  if (loading || !data) return "Loading...";
-  const { products } = data;
   return (
     <div>
       <Filter setFilter={setFilter} filter={filter} />
@@ -34,7 +27,7 @@ const Home = () => {
         style={{ border: "1px solid gray" }}
       />
       <button onClick={() => setTake(value)}>Apply</button>
-      <ProductList products={products} />
+      <ProductList productsData={data} loading={loading} error={error} />
     </div>
   );
 };

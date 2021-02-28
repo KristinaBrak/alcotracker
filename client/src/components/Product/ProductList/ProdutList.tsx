@@ -2,10 +2,20 @@ import { ProductDto, ProductsQuery } from "../../../generated/graphql";
 import ProductItem from "../ProductItem/ProductItem";
 
 interface Props {
-  products: ProductsQuery["products"];
+  productsData: ProductsQuery;
+  loading: boolean;
+  error?: Error;
 }
 
-const ProductList: React.FC<Props> = ({ products }) => {
+const ProductList: React.FC<Props> = ({ productsData, loading, error }) => {
+  if (error) {
+    return <p>error</p>;
+  }
+  if (loading || !productsData) {
+    return <p>Loading...</p>;
+  }
+
+  const { products } = productsData;
   return (
     <ul style={{ display: "flex", flexWrap: "wrap" }}>
       {products.map((product) => (

@@ -1,48 +1,45 @@
-import React, { useState } from "react";
+import { Select } from "@chakra-ui/react";
+import React from "react";
 import { ProductDtoFilter } from "../../generated/graphql";
 
 interface Props {
   setCategory: (category: string) => void;
 }
 
-const categories1 = [
-  "alus",
-  "sidras",
-  "vynas",
-  "stiprieji",
-  "nealkoholiniai",
-  "kiti",
-];
-const categories = [
-  { id: "category-light", en: "light", lt: "lengvieji", category: "light" },
-  { id: "category-wine", en: "wine", lt: "vynas", category: "wine" },
-  { id: "category-strong", en: "strong", lt: "stiprieji", category: "strong" },
-  { id: "category-free", en: "free", lt: "nealkoholiniai", category: "free" },
-  { id: "category-other", en: "other", lt: "kiti", category: "other" },
-];
+enum Category {
+  WINE = "wine",
+  STRONG = "strong",
+  LIGHT = "light",
+  FREE = "free",
+  OTHER = "other",
+}
+
+const categoryNames: { [key: string]: string } = {
+  [Category.WINE]: "vynas",
+  [Category.STRONG]: "stiprieji",
+  [Category.LIGHT]: "lengvieji",
+  [Category.FREE]: "nealkoholiniai",
+  [Category.OTHER]: "kiti",
+};
 
 const CategoryFilter: React.FC<Props> = ({ setCategory }) => {
-  const [selectedCategory, setSelectedCategory] = useState<
-    string | undefined
-  >();
   return (
-    <ul style={{ margin: "10px" }}>
-      {categories.map((category) => (
-        <button
-          key={`button-${category.id}`}
-          onClick={() => {
-            setCategory(category.category);
-            setSelectedCategory(category.id);
-          }}
-          style={{
-            margin: "10px",
-            color: selectedCategory === category.id ? "blue" : "black",
-          }}
-        >
-          <li key={`category-${category.id}`}>{category.lt}</li>
-        </button>
-      ))}
-    </ul>
+    <Select
+      name="categories"
+      id="filter-category"
+      size="sm"
+      onChange={(event) => {
+        const name = event.target.value;
+        setCategory(name);
+      }}
+    >
+      <option value={""}>visi</option>
+      <option value={Category.WINE}>{categoryNames[Category.WINE]}</option>
+      <option value={Category.STRONG}>{categoryNames[Category.STRONG]}</option>
+      <option value={Category.LIGHT}>{categoryNames[Category.LIGHT]}</option>
+      <option value={Category.FREE}>{categoryNames[Category.FREE]}</option>
+      <option value={Category.OTHER}>{categoryNames[Category.OTHER]}</option>
+    </Select>
   );
 };
 

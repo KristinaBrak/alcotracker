@@ -1,6 +1,15 @@
 import { Select } from "@chakra-ui/react";
 import React, { Dispatch, SetStateAction, useState } from "react";
 import { ProductDtoFilter } from "../../generated/graphql";
+import CategoryFilter from "./CategoryFilter";
+import NameFilter from "./NameFilter";
+import PriceFilter from "./PriceFilter";
+import { Button, Container } from "@chakra-ui/react";
+import FilterCard from "./FilterCard";
+import AlcVolumeFilter from "./AlcVolumeFilter";
+import VolumeFilter from "./VolumeFilter";
+import StoreFilter from "./StoreFilter";
+import DiscountFilter from "./DiscountFilter";
 
 interface Props {
   setFilter: Dispatch<SetStateAction<ProductDtoFilter>>;
@@ -24,78 +33,96 @@ export const categoryNames: { [key: string]: string } = {
 
 const Filter: React.FC<Props> = ({ setFilter, filter }) => {
   const [name, setName] = useState("");
-  const [minValue, setMinValue] = useState<number | undefined>();
-  const [maxValue, setMaxValue] = useState<number | undefined>();
+  const [minDiscount, setMinDiscount] = useState<number | undefined>();
+  const [maxDiscount, setMaxDiscount] = useState<number | undefined>();
+  const [minPrice, setMinPrice] = useState<number | undefined>();
+  const [maxPrice, setMaxPrice] = useState<number | undefined>();
   const [category, setCategory] = useState<string | undefined>();
+  const [minAlcVolume, setMinAlcVolume] = useState<number | undefined>();
+  const [maxAlcVolume, setMaxAlcVolume] = useState<number | undefined>();
+  const [minVolume, setMinVolume] = useState<number | undefined>();
+  const [maxVolume, setMaxVolume] = useState<number | undefined>();
+  const [store, setStore] = useState<string | undefined>();
 
   const submitFilter = () => {
     setFilter({
       ...filter,
       name_like: name,
-      priceCurrent_lte: maxValue,
-      priceCurrent_gte: minValue,
-      priceMode_lte: maxValue,
-      priceMode_gte: minValue,
+      discount_gte: minDiscount,
+      discount_lte: maxDiscount,
+      priceCurrent_lte: maxPrice,
+      priceCurrent_gte: minPrice,
+      priceMode_lte: maxPrice,
+      priceMode_gte: minPrice,
       category_like: category,
+      alcVolume_lte: maxAlcVolume,
+      alcVolume_gte: minAlcVolume,
+      volume_lte: maxVolume,
+      volume_gte: minVolume,
+      store_like: store,
     });
   };
 
   return (
-    <form
-      style={{ margin: "10px", padding: "10px" }}
-      onSubmit={(event) => {
-        event.preventDefault();
-        submitFilter();
-      }}
+    <Container
+      colorScheme="teal"
+      outline="1px solid teal"
+      id="filter-container"
+      margin="10px"
+      padding="10px"
     >
-      <div id="filter-name">
-        <input
-          type="text"
-          value={name}
-          onChange={({ target }) => {
-            setName(target.value);
-          }}
-          style={{ border: "1px solid black" }}
-          placeholder="Enter name"
-        />
-      </div>
-      <div id="filter-price">
-        <input
-          type="number"
-          id="price-min"
-          onChange={({ target }) => setMinValue(Number(target.value))}
-          placeholder="MIN"
-          style={{ border: "1px solid green", width: "50%" }}
-          value={minValue}
-        />
-        <input
-          type="number"
-          id="price-max"
-          onChange={({ target }) => setMaxValue(Number(target.value))}
-          style={{ border: "1px solid green", width: "50%" }}
-          placeholder="MAX"
-          value={maxValue}
-        />
-      </div>
-
-      <Select
-        name="categories"
-        id="filter-category"
-        onChange={(event) => {
-          const name = event.target.value;
-          setCategory(name);
+      <form
+        onSubmit={(event) => {
+          event.preventDefault();
+          submitFilter();
         }}
       >
-        <option value={Category.WINE}>{categoryNames[Category.WINE]}</option>
-        <option value={Category.STRONG}>
-          {categoryNames[Category.STRONG]}
-        </option>
-        <option value={Category.LIGHT}>{categoryNames[Category.LIGHT]}</option>
-        <option value={Category.FREE}>{categoryNames[Category.FREE]}</option>
-        <option value={Category.OTHER}>{categoryNames[Category.OTHER]}</option>
-      </Select>
-      <button type="submit">Search</button>
-    </form>
+        <FilterCard text="Pavadinimas">
+          <NameFilter name={name} setName={setName} />
+        </FilterCard>
+        <FilterCard text="Nuolaida">
+          <DiscountFilter
+            minValue={minDiscount}
+            maxValue={maxDiscount}
+            setMinValue={setMinDiscount}
+            setMaxValue={setMaxDiscount}
+          />
+        </FilterCard>
+        <FilterCard text="Kainos rėžiai">
+          <PriceFilter
+            minValue={minPrice}
+            maxValue={maxPrice}
+            setMinValue={setMinPrice}
+            setMaxValue={setMaxPrice}
+          />
+        </FilterCard>
+        <FilterCard text="Kategorija">
+          <CategoryFilter setCategory={setCategory} />
+        </FilterCard>
+        <FilterCard text="Stiprumas">
+          <AlcVolumeFilter
+            minValue={minAlcVolume}
+            maxValue={maxAlcVolume}
+            setMinValue={setMinAlcVolume}
+            setMaxValue={setMaxAlcVolume}
+          />
+        </FilterCard>
+        <FilterCard text="Kiekis">
+          <VolumeFilter
+            minValue={minVolume}
+            maxValue={maxVolume}
+            setMinValue={setMinVolume}
+            setMaxValue={setMaxVolume}
+          />
+        </FilterCard>
+        <FilterCard text="Parduotuvė">
+          <StoreFilter setStore={setStore} />
+        </FilterCard>
+        <Button type="submit" size="sm" colorScheme="teal">
+          Search
+        </Button>
+      </form>
+    </Container>
   );
 };
 

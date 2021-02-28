@@ -1,30 +1,21 @@
-import React, { useState } from "react";
-
+import React from "react";
+import { Input } from "@chakra-ui/react";
 interface Props {
+  name: string;
   setName: (name: string) => void;
 }
 
-const NameFilter: React.FC<Props> = ({ setName }) => {
-  const [tempName, setTempName] = useState("");
+const NameFilter: React.FC<Props> = ({ name, setName }) => {
   return (
-    <div style={{ margin: "10px" }}>
-      <input
-        type="text"
-        value={tempName}
-        onChange={({ target }) => {
-          setTempName(target.value);
-        }}
-        style={{ border: "1px solid black" }}
-        placeholder="Enter name"
-      />
-      <button
-        onClick={() => {
-          setName(tempName);
-        }}
-      >
-        Search
-      </button>
-    </div>
+    <Input
+      type="text"
+      value={name}
+      onChange={({ target }) => {
+        setName(target.value);
+      }}
+      size="sm"
+      placeholder={name === "" ? "Enter name" : name}
+    />
   );
 };
 

@@ -8,7 +8,7 @@ interface Props {
   setMaxValue: React.Dispatch<React.SetStateAction<number>>;
 }
 
-const PriceFilter: React.FC<Props> = ({
+const DiscountFilter: React.FC<Props> = ({
   minValue,
   maxValue,
   setMinValue,
@@ -36,4 +36,4 @@ const PriceFilter: React.FC<Props> = ({
   );
 };
 
-export default PriceFilter;
+export default DiscountFilter;

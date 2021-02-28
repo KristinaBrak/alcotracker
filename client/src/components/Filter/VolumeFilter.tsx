@@ -1,5 +1,5 @@
 import React from "react";
-import { Input, Flex } from "@chakra-ui/react";
+import { Flex, Input } from "@chakra-ui/react";
 
 interface Props {
   minValue: number;
@@ -8,7 +8,7 @@ interface Props {
   setMaxValue: React.Dispatch<React.SetStateAction<number>>;
 }
 
-const PriceFilter: React.FC<Props> = ({
+const VolumeFilter: React.FC<Props> = ({
   minValue,
   maxValue,
   setMinValue,
@@ -36,4 +36,4 @@ const PriceFilter: React.FC<Props> = ({
   );
 };
 
-export default PriceFilter;
+export default VolumeFilter;
