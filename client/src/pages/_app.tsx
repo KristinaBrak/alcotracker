@@ -1,16 +1,25 @@
-import { ApolloProvider } from "@apollo/client";
-import { apolloClient } from "../lib/apolloClient";
+import { ApolloClient, ApolloProvider, InMemoryCache } from "@apollo/client";
 import { ChakraProvider } from "@chakra-ui/react";
+import { getDataFromTree } from "@apollo/react-ssr";
 
 import "../styles/globals.css";
+import withApollo from "next-with-apollo";
 
-function App({ Component, pageProps }) {
+function App({ Component, pageProps, apollo }) {
   return (
-    <ApolloProvider client={apolloClient}>
+    <ApolloProvider client={apollo}>
       <ChakraProvider>
         <Component {...pageProps} />
       </ChakraProvider>
     </ApolloProvider>
   );
 }
-export default App;
+export default withApollo(
+  ({ initialState }) => {
+    return new ApolloClient({
+      uri: "http://localhost:4000",
+      cache: new InMemoryCache().restore(initialState) || ({} as any),
+    });
+  },
+  { getDataFromTree }
+)(App);
