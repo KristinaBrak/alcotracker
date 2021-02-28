@@ -1,10 +1,16 @@
-import { useReducer, useState } from "react";
+import { useState } from "react";
 import Filter from "../components/Filter/Filter";
 import ProductList from "../components/Product/ProductList/ProdutList";
-import { ProductDtoFilter, useProductsQuery } from "../generated/graphql";
+import {
+  ProductDtoFilter,
+  Sort,
+  SortableField,
+  useProductsQuery,
+} from "../generated/graphql";
+import { Input, Box } from "@chakra-ui/react";
 
 const Home = () => {
-  const [value, setValue] = useState(5);
+  const [value, setValue] = useState(20);
   const [take, setTake] = useState(value);
   const [filter, setFilter] = useState<ProductDtoFilter>({});
 
@@ -12,13 +18,14 @@ const Home = () => {
     variables: {
       filter: filter,
       take: take,
+      sort: [{ field: SortableField.Discount, order: Sort.Desc }],
     },
   });
 
   return (
-    <div>
+    <Box>
       <Filter setFilter={setFilter} filter={filter} />
-      <input
+      <Input
         type="number"
         value={value}
         onChange={({ target }) => {
@@ -28,7 +35,7 @@ const Home = () => {
       />
       <button onClick={() => setTake(value)}>Apply</button>
       <ProductList productsData={data} loading={loading} error={error} />
-    </div>
+    </Box>
   );
 };
 

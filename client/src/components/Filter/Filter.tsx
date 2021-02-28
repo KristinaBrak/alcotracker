@@ -67,7 +67,6 @@ const Filter: React.FC<Props> = ({ setFilter, filter }) => {
     <Container
       colorScheme="teal"
       outline="1px solid teal"
-      id="filter-container"
       margin="10px"
       padding="10px"
     >

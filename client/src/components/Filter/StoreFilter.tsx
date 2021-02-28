@@ -20,7 +20,9 @@ const StoreFilter: React.FC<Props> = ({ setStore }) => {
     >
       <option value={""}>visi</option>
       {storeNames.map((store) => (
-        <option value={store}>{store}</option>
+        <option key={store} value={store}>
+          {store}
+        </option>
       ))}
     </Select>
   );
