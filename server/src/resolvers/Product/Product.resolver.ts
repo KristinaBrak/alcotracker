@@ -13,6 +13,7 @@ import {
 import { generateFilterType } from 'type-graphql-filter';
 import { getConnection } from 'typeorm';
 import { Price } from '../../entity/Price';
+import { columnNameDictionary } from './product.queries';
 import { createProductBuilder, parseFilter, ProductSort } from './Product.utils';
 import { ProductDTO } from './ProductDTO';
 
@@ -27,7 +28,6 @@ class ProductArgs {
   @Field(type => Int, { nullable: true })
   take?: number;
 }
-
 
 @Resolver(of => ProductDTO)
 export class ProductResolver implements ResolverInterface<ProductDTO> {
@@ -50,7 +50,11 @@ export class ProductResolver implements ResolverInterface<ProductDTO> {
 
     const orderedBuilder =
       sort?.reduce((acc, { field, order }) => {
-        return acc.addOrderBy(`product."${field}"`, order, 'NULLS LAST');
+        return acc.addOrderBy(
+          `${columnNameDictionary[field] ?? `"${field}"`}`,
+          order,
+          'NULLS LAST',
+        );
       }, builder) ?? builder;
 
     const result = await orderedBuilder.addOrderBy('product.id').getRawMany();

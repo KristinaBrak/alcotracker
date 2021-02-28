@@ -2,6 +2,7 @@ export const columnNameDictionary: { [column: string]: string } = {
   ['name']: 'product."name"',
   ['store']: 's."name"',
   ['category']: 'c."name"',
+  ['discount']: 'stats."discount"',
 };
 
 export const PRODUCT_SELECT = `

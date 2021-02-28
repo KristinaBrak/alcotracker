@@ -6,6 +6,7 @@ import { columnNameDictionary, PRODUCT_SELECT } from './product.queries';
 export enum SortableField {
   alcVolume = 'alcVolume',
   volume = 'volume',
+  discount = 'discount',
 }
 
 export enum Order {
@@ -14,7 +15,7 @@ export enum Order {
 }
 
 registerEnumType(SortableField, {
-  name: 'FilterableField',
+  name: 'SortableField',
 });
 
 registerEnumType(Order, {
