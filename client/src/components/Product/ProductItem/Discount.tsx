@@ -6,7 +6,7 @@ interface Props {
 }
 const Discount: React.FC<Props> = ({ discount }) => {
   return (
-    <Stat>
+    <Stat visibility={discount === 0 ? "hidden" : "visible"}>
       {discount > 0 ? (
         <StatHelpText>
           <StatArrow type="decrease" />

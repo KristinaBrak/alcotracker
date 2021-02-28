@@ -1,10 +1,4 @@
-import {
-  Box,
-  Heading,
-  Image,
-  Tag,
-  Text,
-} from "@chakra-ui/react";
+import { Box, Heading, Image, Tag, Text } from "@chakra-ui/react";
 import React from "react";
 import { ProductDto } from "../../../generated/graphql";
 import { categoryNames } from "../../Filter/Filter";
@@ -15,19 +9,27 @@ interface Props {
 }
 
 const ProductItem: React.FC<Props> = ({
-  product: { name, image, link, priceCurrent, discount, store, category },
+  product: {
+    name,
+    image,
+    link,
+    priceMode,
+    priceCurrent,
+    discount,
+    store,
+    category,
+  },
 }) => {
   return (
-    <Box
-      w="200px"
-      h="300px"
-      maxH="300px"
-      borderWidth="1px"
-      borderRadius="lg"
-      // overflow="hidden"
-      margin="2"
-    >
-      <a href={link} target="_blank">
+    <a href={link} target="_blank">
+      <Box
+        w="200px"
+        h="300px"
+        maxH="300px"
+        borderWidth="1px"
+        borderRadius="md"
+        margin="2"
+      >
         <Image
           width="100%"
           height="150px"
@@ -36,36 +38,38 @@ const ProductItem: React.FC<Props> = ({
           alt={name}
           loading="lazy"
         />
-      </a>
 
-      <Box
-        padding="2"
-        display="flex"
-        flexDirection="column"
-        justifyContent="space-between"
-        alignSelf="stretch"
-      >
-        <Text fontSize="sm" noOfLines={2}>
-          {name}
-        </Text>
         <Box
-          marginTop="2"
-          d="flex"
+          padding="2"
+          display="flex"
+          minH="150px"
+          flexDirection="column"
           justifyContent="space-between"
-          alignItems="baseline"
+          alignSelf="stretch"
         >
-          <Heading as="h5" size="sm">
-            {priceCurrent}€
-          </Heading>
-
-          <Tag colorScheme="pink">{store}</Tag>
-        </Box>
-        {discount !== 0 ? <Discount discount={discount} /> : null}
-        <Box marginTop="1">
-          <Tag>{categoryNames[category]}</Tag>
+          <Box minH="40px">
+            <Text fontSize="sm" noOfLines={2}>
+              {name}
+            </Text>
+          </Box>
+          <Box
+            marginTop="2"
+            d="flex"
+            justifyContent="space-between"
+            alignItems="baseline"
+          >
+            <Heading as="h5" size="sm">
+              {priceCurrent}€
+            </Heading>
+            <Tag colorScheme="pink">{store}</Tag>
+          </Box>
+          <Discount discount={discount} />
+          <Box marginTop="1">
+            <Tag>{categoryNames[category]}</Tag>
+          </Box>
         </Box>
       </Box>
-    </Box>
+    </a>
   );
 };
 
