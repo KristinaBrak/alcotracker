@@ -5,7 +5,8 @@ services:
     container_name: web
     depends_on:
       - "app"
-    ports: "3000:3000"
+    ports: 
+      - "3000:3000"
     restart: "unless-stopped"
     deploy:
       resources:
