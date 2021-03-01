@@ -25,7 +25,7 @@ const PORT = process.env.PORT || 4000;
   });
   scheduleJob(executeStoreRunner);
 
-  const server = new ApolloServer({ schema, cors: { origin: '*' } });
+  const server = new ApolloServer({ schema, cors: { origin: '*', credentials: true } });
   server.listen(PORT).then(({ url }) => {
     logger.info(`Server is ready at ${url}`);
   });
