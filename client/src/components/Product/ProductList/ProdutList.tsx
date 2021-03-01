@@ -1,4 +1,5 @@
 import { ProductDto, ProductsQuery } from "../../../generated/graphql";
+import Loader from "../../Loader/Loader";
 import ProductItem from "../ProductItem/ProductItem";
 
 interface Props {
@@ -12,7 +13,7 @@ const ProductList: React.FC<Props> = ({ productsData, loading, error }) => {
     return <p>error</p>;
   }
   if (loading || !productsData) {
-    return <p>Loading...</p>;
+    return <Loader />;
   }
 
   const { products } = productsData;

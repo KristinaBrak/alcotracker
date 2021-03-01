@@ -1,38 +1,50 @@
-version: '3.9'
+version: "3.9"
 services:
+  web:
+    image: mantassidabras/alcotracker-web:latest
+    container_name: web
+    depends_on:
+      - "app"
+    ports: "3000:3000"
+    restart: "unless-stopped"
+    deploy:
+      resources:
+        limits:
+          cpus: "1"
+          memory: 1g
   app:
     image: mantassidabras/alcotracker:latest
     container_name: app
     depends_on:
-      - 'redis'
-      - 'postgres'
+      - "redis"
+      - "postgres"
     ports:
-      - '4000:4000'
-    restart: 'unless-stopped'
+      - "4000:4000"
+    restart: "unless-stopped"
     deploy:
       resources:
         limits:
-          cpus: '2'
+          cpus: "2"
           memory: 1g
   redis:
-    image: 'arm32v7/redis'
+    image: "arm32v7/redis"
     container_name: redis
-    restart: 'unless-stopped'
+    restart: "unless-stopped"
     deploy:
       resources:
         limits:
-          cpus: '0.25'
+          cpus: "0.25"
           memory: 1g
   postgres:
-    image: 'postgres:13'
+    image: "postgres:13"
     container_name: postgres
     ports:
-      - '5432:5432'
-    restart: 'unless-stopped'
+      - "5432:5432"
+    restart: "unless-stopped"
     deploy:
       resources:
         limits:
-          cpus: '2'
+          cpus: "2"
           memory: 1g
     environment:
       - POSTGRES_DB=alcotracker
