@@ -31,7 +31,8 @@ jobs:
 
       - name: Build and push client
         uses: actions/setup-node@v1
-        run: |
-            yarn build 
-            docker buildx build --platform linux/arm/v7 -t mantassidabras/alcotracker-web:latest .
-            docker image push alcotracker-web:latest
+        with: 
+          node-version: 14.x
+      - run: cd client && yarn build 
+      - run: cd client && docker buildx build --platform linux/arm/v7 -t mantassidabras/alcotracker-web:latest .
+      - run: cd client && docker image push alcotracker-web:latest
