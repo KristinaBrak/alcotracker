@@ -17,7 +17,7 @@ function App({ Component, pageProps, apollo }) {
 export default withApollo(
   ({ initialState }) => {
     return new ApolloClient({
-      uri: "http://88.119.2.19:4000",
+      uri: "http://localhost:4000",
       credentials: "include",
       cache: new InMemoryCache().restore(initialState) || ({} as any),
     });

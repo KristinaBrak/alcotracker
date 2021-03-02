@@ -10,6 +10,7 @@ import AlcVolumeFilter from "./AlcVolumeFilter";
 import VolumeFilter from "./VolumeFilter";
 import StoreFilter from "./StoreFilter";
 import DiscountFilter from "./DiscountFilter";
+import RangeFilter from "./RangeFilter";
 
 interface Props {
   setFilter: Dispatch<SetStateAction<ProductDtoFilter>>;
@@ -33,8 +34,8 @@ export const categoryNames: { [key: string]: string } = {
 
 const Filter: React.FC<Props> = ({ setFilter, filter }) => {
   const [name, setName] = useState("");
-  const [minDiscount, setMinDiscount] = useState<number | undefined>();
-  const [maxDiscount, setMaxDiscount] = useState<number | undefined>();
+  const [minDiscount, setMinDiscount] = useState<string | undefined>();
+  const [maxDiscount, setMaxDiscount] = useState<string | undefined>();
   const [minPrice, setMinPrice] = useState<number | undefined>();
   const [maxPrice, setMaxPrice] = useState<number | undefined>();
   const [category, setCategory] = useState<string | undefined>();
@@ -48,8 +49,12 @@ const Filter: React.FC<Props> = ({ setFilter, filter }) => {
     setFilter({
       ...filter,
       name_like: name,
-      discount_gte: minDiscount,
-      discount_lte: maxDiscount,
+      discount_gte: minDiscount
+        ? +(Number(minDiscount) / 100).toFixed(2)
+        : undefined,
+      discount_lte: maxDiscount
+        ? +(Number(maxDiscount) / 100).toFixed(2)
+        : undefined,
       priceCurrent_lte: maxPrice,
       priceCurrent_gte: minPrice,
       priceMode_lte: maxPrice,
@@ -80,15 +85,15 @@ const Filter: React.FC<Props> = ({ setFilter, filter }) => {
           <NameFilter name={name} setName={setName} />
         </FilterCard>
         <FilterCard text="Nuolaida">
-          <DiscountFilter
+          <RangeFilter
             minValue={minDiscount}
             maxValue={maxDiscount}
             setMinValue={setMinDiscount}
             setMaxValue={setMaxDiscount}
           />
         </FilterCard>
-        <FilterCard text="Kainos rėžiai">
-          <PriceFilter
+        {/* <FilterCard text="Kainos rėžiai">
+          <RangeFilter
             minValue={minPrice}
             maxValue={maxPrice}
             setMinValue={setMinPrice}
@@ -99,7 +104,7 @@ const Filter: React.FC<Props> = ({ setFilter, filter }) => {
           <CategoryFilter setCategory={setCategory} />
         </FilterCard>
         <FilterCard text="Stiprumas">
-          <AlcVolumeFilter
+          <RangeFilter
             minValue={minAlcVolume}
             maxValue={maxAlcVolume}
             setMinValue={setMinAlcVolume}
@@ -107,7 +112,7 @@ const Filter: React.FC<Props> = ({ setFilter, filter }) => {
           />
         </FilterCard>
         <FilterCard text="Kiekis">
-          <VolumeFilter
+          <RangeFilter
             minValue={minVolume}
             maxValue={maxVolume}
             setMinValue={setMinVolume}
@@ -116,7 +121,7 @@ const Filter: React.FC<Props> = ({ setFilter, filter }) => {
         </FilterCard>
         <FilterCard text="Parduotuvė">
           <StoreFilter setStore={setStore} />
-        </FilterCard>
+        </FilterCard> */}
         <Button type="submit" size="sm" colorScheme="teal">
           Search
         </Button>
