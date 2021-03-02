@@ -39,8 +39,8 @@ const Filter: React.FC<Props> = ({ setFilter, filter }) => {
   const [minPrice, setMinPrice] = useState<string | undefined>();
   const [maxPrice, setMaxPrice] = useState<string | undefined>();
   const [category, setCategory] = useState<string | undefined>();
-  const [minAlcVolume, setMinAlcVolume] = useState<number | undefined>();
-  const [maxAlcVolume, setMaxAlcVolume] = useState<number | undefined>();
+  const [minAlcVolume, setMinAlcVolume] = useState<string | undefined>();
+  const [maxAlcVolume, setMaxAlcVolume] = useState<string | undefined>();
   const [minVolume, setMinVolume] = useState<number | undefined>();
   const [maxVolume, setMaxVolume] = useState<number | undefined>();
   const [store, setStore] = useState<string | undefined>();
@@ -60,8 +60,8 @@ const Filter: React.FC<Props> = ({ setFilter, filter }) => {
       priceMode_lte: maxPrice ? Number(maxPrice) : undefined,
       priceMode_gte: minPrice ? Number(minPrice) : undefined,
       category_like: category,
-      alcVolume_lte: maxAlcVolume,
-      alcVolume_gte: minAlcVolume,
+      alcVolume_lte: maxAlcVolume ? Number(maxAlcVolume) : undefined,
+      alcVolume_gte: minAlcVolume ? Number(minAlcVolume) : undefined,
       volume_lte: maxVolume,
       volume_gte: minVolume,
       store_like: store,
@@ -103,25 +103,26 @@ const Filter: React.FC<Props> = ({ setFilter, filter }) => {
         <FilterCard text="Kategorija">
           <CategoryFilter setCategory={setCategory} />
         </FilterCard>
-        {/* <FilterCard text="Stiprumas">
+        <FilterCard text="Stiprumas">
           <RangeFilter
+            step={0.5}
             minValue={minAlcVolume}
             maxValue={maxAlcVolume}
             setMinValue={setMinAlcVolume}
             setMaxValue={setMaxAlcVolume}
           />
         </FilterCard>
-        <FilterCard text="Kiekis">
+        {/* <FilterCard text="Kiekis">
           <RangeFilter
             minValue={minVolume}
             maxValue={maxVolume}
             setMinValue={setMinVolume}
             setMaxValue={setMaxVolume}
           />
-        </FilterCard>
+        </FilterCard> */}
         <FilterCard text="Parduotuvė">
           <StoreFilter setStore={setStore} />
-        </FilterCard> */}
+        </FilterCard>
         <Button type="submit" size="sm" colorScheme="teal">
           Search
         </Button>
