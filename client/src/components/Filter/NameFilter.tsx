@@ -14,7 +14,7 @@ const NameFilter: React.FC<Props> = ({ name, setName }) => {
         setName(target.value);
       }}
       size="sm"
-      placeholder={name === "" ? "Enter name" : name}
+      placeholder={"Įveskite pavadinimą"}
     />
   );
 };

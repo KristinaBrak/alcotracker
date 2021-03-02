@@ -3,13 +3,9 @@ import React, { Dispatch, SetStateAction, useState } from "react";
 import { ProductDtoFilter } from "../../generated/graphql";
 import CategoryFilter from "./CategoryFilter";
 import NameFilter from "./NameFilter";
-import PriceFilter from "./PriceFilter";
 import { Button, Container } from "@chakra-ui/react";
 import FilterCard from "./FilterCard";
-import AlcVolumeFilter from "./AlcVolumeFilter";
-import VolumeFilter from "./VolumeFilter";
 import StoreFilter from "./StoreFilter";
-import DiscountFilter from "./DiscountFilter";
 import RangeFilter from "./RangeFilter";
 
 interface Props {

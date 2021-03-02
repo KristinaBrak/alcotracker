@@ -1,4 +1,11 @@
-import { Flex, NumberInput, NumberInputField } from "@chakra-ui/react";
+import {
+  Flex,
+  NumberInput,
+  NumberInputField,
+  NumberInputStepper,
+  NumberIncrementStepper,
+  NumberDecrementStepper,
+} from "@chakra-ui/react";
 import React from "react";
 
 interface Props {
@@ -23,16 +30,26 @@ const RangeFilter: React.FC<Props> = ({
         onChange={(valueString) => setMinValue(valueString)}
         value={minValue}
         step={step}
+        size="sm"
       >
         <NumberInputField />
+        <NumberInputStepper>
+          <NumberIncrementStepper />
+          <NumberDecrementStepper />
+        </NumberInputStepper>
       </NumberInput>
       <NumberInput
         allowMouseWheel
         onChange={(valueString) => setMaxValue(valueString)}
         value={maxValue}
         step={step}
+        size="sm"
       >
         <NumberInputField />
+        <NumberInputStepper>
+          <NumberIncrementStepper />
+          <NumberDecrementStepper />
+        </NumberInputStepper>
       </NumberInput>
     </Flex>
   );
