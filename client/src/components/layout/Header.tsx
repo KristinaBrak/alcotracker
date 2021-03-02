@@ -17,7 +17,7 @@ function getRandomInt(max: number) {
   return Math.floor(Math.random() * Math.floor(max));
 }
 
-const Header = () => {
+const Header: React.FC = () => {
   return (
     <Center w="100%" h="80px" bg="teal.100">
       <Heading>{quotes[getRandomInt(quotes.length - 1)]}</Heading>

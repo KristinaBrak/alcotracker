@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import Filter from "../components/Filter/Filter";
+import Layout from "../components/Layout/Layout";
 import ProductList from "../components/Product/ProductList/ProdutList";
 import {
   ProductDtoFilter,
@@ -8,7 +9,6 @@ import {
   useProductsQuery,
 } from "../generated/graphql";
 import { Box, Center, Flex } from "@chakra-ui/react";
-import Layout from "../components/Layout/Layout";
 
 const Home = () => {
   const [value, setValue] = useState(80);
@@ -26,10 +26,16 @@ const Home = () => {
   return (
     <Layout>
       <Flex direction={{ md: "row", base: "column" }} justify="flex-start">
-        <Box minW={{ base: "100%", md: "200px" }} w="300px">
+        <Box
+          marginLeft="3"
+          marginBottom="3"
+          marginTop="2px"
+          minW={{ base: "100%", md: "200px" }}
+          w="300px"
+        >
           <Filter setFilter={setFilter} filter={filter} />
         </Box>
-        <Center margin="3">
+        <Center margin="3" marginTop="0">
           <ProductList productsData={data} loading={loading} error={error} />
         </Center>
         <Box />

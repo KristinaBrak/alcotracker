@@ -3,12 +3,11 @@ import React from "react";
 import Header from "./Header";
 import MainContent from "./MainContent";
 
-const Layout = ({ children }) => {
+const Layout: React.FC = ({ children }) => {
   return (
     <Flex direction="column">
       <Header />
       <MainContent>{children}</MainContent>
-      {/* <Footer /> */}
     </Flex>
   );
 };

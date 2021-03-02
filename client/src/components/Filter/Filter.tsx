@@ -65,12 +65,7 @@ const Filter: React.FC<Props> = ({ setFilter, filter }) => {
   };
 
   return (
-    <Container
-      colorScheme="teal"
-      outline="1px solid teal"
-      margin="10px"
-      padding="10px"
-    >
+    <Container colorScheme="teal" outline="1px solid teal" padding="10px">
       <form
         onSubmit={(event) => {
           event.preventDefault();
@@ -122,7 +117,7 @@ const Filter: React.FC<Props> = ({ setFilter, filter }) => {
         </FilterCard>
         <Container maxWidth="100%">
           <Button type="submit" size="sm" colorScheme="teal" width="100%">
-            Search
+            Ieškoti
           </Button>
         </Container>
       </form>
