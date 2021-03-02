@@ -1,7 +1,12 @@
+import { Box } from "@chakra-ui/react";
 import React from "react";
 
-const MainContent = () => {
-  return <div style={{ gridColumn: "2 / 4" }}>MainContent</div>;
+const MainContent = ({ children }) => {
+  return (
+    <Box marginTop="3" marginBottom="3">
+      {children}
+    </Box>
+  );
 };
 
 export default MainContent;

@@ -23,12 +23,11 @@ const ProductItem: React.FC<Props> = ({
   return (
     <a href={link} target="_blank">
       <Box
-        w="200px"
+        w={{ base: "160px" }}
         h="300px"
         maxH="300px"
         borderWidth="1px"
         borderRadius="md"
-        margin="2"
       >
         <Image
           width="100%"
@@ -61,7 +60,7 @@ const ProductItem: React.FC<Props> = ({
             <Heading as="h5" size="sm">
               {priceCurrent}€
             </Heading>
-            <Tag colorScheme="pink">{store}</Tag>
+            <Tag colorScheme="orange">{store}</Tag>
           </Box>
           <Discount discount={discount} />
           <Box marginTop="1">

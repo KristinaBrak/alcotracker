@@ -4,6 +4,7 @@ import { getDataFromTree } from "@apollo/react-ssr";
 
 import "../styles/globals.css";
 import withApollo from "next-with-apollo";
+import React from "react";
 
 function App({ Component, pageProps, apollo }) {
   return (

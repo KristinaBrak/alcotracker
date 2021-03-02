@@ -1,22 +1,15 @@
+import { Flex } from "@chakra-ui/react";
 import React from "react";
-import Footer from "./Footer";
 import Header from "./Header";
 import MainContent from "./MainContent";
-import Sidebar from "./Sidebar";
 
-const Layout = () => {
+const Layout = ({ children }) => {
   return (
-    <div
-      style={{
-        display: "grid",
-        gridTemplate: "auto 1fr auto / auto 1fr auto",
-      }}
-    >
+    <Flex direction="column">
       <Header />
-      <Sidebar />
-      <MainContent />
-      <Footer />
-    </div>
+      <MainContent>{children}</MainContent>
+      {/* <Footer /> */}
+    </Flex>
   );
 };
 
