@@ -120,9 +120,11 @@ const Filter: React.FC<Props> = ({ setFilter, filter }) => {
         <FilterCard text="Parduotuvė">
           <StoreFilter setStore={setStore} />
         </FilterCard>
-        <Button type="submit" size="sm" colorScheme="teal">
-          Search
-        </Button>
+        <Container maxWidth="100%">
+          <Button type="submit" size="sm" colorScheme="teal" width="100%">
+            Search
+          </Button>
+        </Container>
       </form>
     </Container>
   );
