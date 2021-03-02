@@ -36,8 +36,8 @@ const Filter: React.FC<Props> = ({ setFilter, filter }) => {
   const [name, setName] = useState("");
   const [minDiscount, setMinDiscount] = useState<string | undefined>();
   const [maxDiscount, setMaxDiscount] = useState<string | undefined>();
-  const [minPrice, setMinPrice] = useState<number | undefined>();
-  const [maxPrice, setMaxPrice] = useState<number | undefined>();
+  const [minPrice, setMinPrice] = useState<string | undefined>();
+  const [maxPrice, setMaxPrice] = useState<string | undefined>();
   const [category, setCategory] = useState<string | undefined>();
   const [minAlcVolume, setMinAlcVolume] = useState<number | undefined>();
   const [maxAlcVolume, setMaxAlcVolume] = useState<number | undefined>();
@@ -55,10 +55,10 @@ const Filter: React.FC<Props> = ({ setFilter, filter }) => {
       discount_lte: maxDiscount
         ? +(Number(maxDiscount) / 100).toFixed(2)
         : undefined,
-      priceCurrent_lte: maxPrice,
-      priceCurrent_gte: minPrice,
-      priceMode_lte: maxPrice,
-      priceMode_gte: minPrice,
+      priceCurrent_lte: maxPrice ? Number(maxPrice) : undefined,
+      priceCurrent_gte: minPrice ? Number(minPrice) : undefined,
+      priceMode_lte: maxPrice ? Number(maxPrice) : undefined,
+      priceMode_gte: minPrice ? Number(minPrice) : undefined,
       category_like: category,
       alcVolume_lte: maxAlcVolume,
       alcVolume_gte: minAlcVolume,
@@ -92,7 +92,7 @@ const Filter: React.FC<Props> = ({ setFilter, filter }) => {
             setMaxValue={setMaxDiscount}
           />
         </FilterCard>
-        {/* <FilterCard text="Kainos rėžiai">
+        <FilterCard text="Kainos rėžiai">
           <RangeFilter
             minValue={minPrice}
             maxValue={maxPrice}
@@ -103,7 +103,7 @@ const Filter: React.FC<Props> = ({ setFilter, filter }) => {
         <FilterCard text="Kategorija">
           <CategoryFilter setCategory={setCategory} />
         </FilterCard>
-        <FilterCard text="Stiprumas">
+        {/* <FilterCard text="Stiprumas">
           <RangeFilter
             minValue={minAlcVolume}
             maxValue={maxAlcVolume}
