@@ -25,7 +25,7 @@ const Home = () => {
 
   return (
     <Structure>
-      <Flex direction={{ md: "row", base: "column" }} justify="flex-start">
+      <Flex direction={{ md: "row", base: "column" }} justify="space-between">
         <Box
           marginLeft="3"
           marginBottom="3"
@@ -35,10 +35,12 @@ const Home = () => {
         >
           <Filter setFilter={setFilter} filter={filter} />
         </Box>
+
         <Center margin="3" marginTop="0">
           <ProductList productsData={data} loading={loading} error={error} />
         </Center>
-        <Box />
+
+        <Box minW={{ lg: "200px" }} />
         {/* <Sidebar /> */}
       </Flex>
     </Structure>
