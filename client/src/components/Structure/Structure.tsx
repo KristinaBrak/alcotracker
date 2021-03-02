@@ -3,7 +3,7 @@ import React from "react";
 import Header from "./Header";
 import MainContent from "./MainContent";
 
-const Layout: React.FC = ({ children }) => {
+const Structure: React.FC = ({ children }) => {
   return (
     <Flex direction="column">
       <Header />
@@ -12,4 +12,4 @@ const Layout: React.FC = ({ children }) => {
   );
 };
 
-export default Layout;
+export default Structure;

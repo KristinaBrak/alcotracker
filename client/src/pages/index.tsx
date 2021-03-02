@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import Filter from "../components/Filter/Filter";
-import Layout from "../components/Layout/Layout";
+import Structure from "../components/Structure/Structure";
 import ProductList from "../components/Product/ProductList/ProdutList";
 import {
   ProductDtoFilter,
@@ -24,7 +24,7 @@ const Home = () => {
   });
 
   return (
-    <Layout>
+    <Structure>
       <Flex direction={{ md: "row", base: "column" }} justify="flex-start">
         <Box
           marginLeft="3"
@@ -41,7 +41,7 @@ const Home = () => {
         <Box />
         {/* <Sidebar /> */}
       </Flex>
-    </Layout>
+    </Structure>
   );
 };
 
