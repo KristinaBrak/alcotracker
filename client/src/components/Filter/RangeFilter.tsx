@@ -19,6 +19,7 @@ const RangeFilter: React.FC<Props> = ({
   return (
     <Flex>
       <NumberInput
+        allowMouseWheel
         onChange={(valueString) => setMinValue(valueString)}
         value={minValue}
         step={step}
@@ -26,6 +27,7 @@ const RangeFilter: React.FC<Props> = ({
         <NumberInputField />
       </NumberInput>
       <NumberInput
+        allowMouseWheel
         onChange={(valueString) => setMaxValue(valueString)}
         value={maxValue}
         step={step}
