@@ -37,8 +37,8 @@ const Filter: React.FC<Props> = ({ setFilter, filter }) => {
   const [category, setCategory] = useState<string | undefined>();
   const [minAlcVolume, setMinAlcVolume] = useState<string | undefined>();
   const [maxAlcVolume, setMaxAlcVolume] = useState<string | undefined>();
-  const [minVolume, setMinVolume] = useState<number | undefined>();
-  const [maxVolume, setMaxVolume] = useState<number | undefined>();
+  const [minVolume, setMinVolume] = useState<string | undefined>();
+  const [maxVolume, setMaxVolume] = useState<string | undefined>();
   const [store, setStore] = useState<string | undefined>();
 
   const submitFilter = () => {
@@ -58,8 +58,8 @@ const Filter: React.FC<Props> = ({ setFilter, filter }) => {
       category_like: category,
       alcVolume_lte: maxAlcVolume ? Number(maxAlcVolume) : undefined,
       alcVolume_gte: minAlcVolume ? Number(minAlcVolume) : undefined,
-      volume_lte: maxVolume,
-      volume_gte: minVolume,
+      volume_lte: maxVolume ? Number(maxVolume) : undefined,
+      volume_gte: minVolume ? Number(minVolume) : undefined,
       store_like: store,
     });
   };
@@ -108,14 +108,15 @@ const Filter: React.FC<Props> = ({ setFilter, filter }) => {
             setMaxValue={setMaxAlcVolume}
           />
         </FilterCard>
-        {/* <FilterCard text="Kiekis">
+        <FilterCard text="Kiekis">
           <RangeFilter
+            step={0.1}
             minValue={minVolume}
             maxValue={maxVolume}
             setMinValue={setMinVolume}
             setMaxValue={setMaxVolume}
           />
-        </FilterCard> */}
+        </FilterCard>
         <FilterCard text="Parduotuvė">
           <StoreFilter setStore={setStore} />
         </FilterCard>
