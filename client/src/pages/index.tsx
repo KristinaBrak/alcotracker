@@ -8,7 +8,7 @@ import {
   SortableField,
   useProductsQuery,
 } from "../generated/graphql";
-import { Box, Center, Flex } from "@chakra-ui/react";
+import { Box, Flex } from "@chakra-ui/react";
 
 const Home = () => {
   const [value, setValue] = useState(80);
@@ -33,15 +33,14 @@ const Home = () => {
           minW={{ base: "100%", md: "200px" }}
           w="300px"
         >
-          <Filter setFilter={setFilter} filter={filter} />
+          <Filter setFilter={setFilter} filter={filter} loading={loading} />
         </Box>
 
-        <Center margin="3" marginTop="0">
+        <Box margin="3" marginTop="0">
           <ProductList productsData={data} loading={loading} error={error} />
-        </Center>
+        </Box>
 
         <Box minW={{ lg: "200px" }} />
-        {/* <Sidebar /> */}
       </Flex>
     </Structure>
   );

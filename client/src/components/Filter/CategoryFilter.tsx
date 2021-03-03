@@ -1,6 +1,5 @@
 import { Select } from "@chakra-ui/react";
 import React from "react";
-import { ProductDtoFilter } from "../../generated/graphql";
 
 interface Props {
   setCategory: (category: string) => void;

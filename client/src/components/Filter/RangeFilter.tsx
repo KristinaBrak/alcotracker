@@ -32,7 +32,7 @@ const RangeFilter: React.FC<Props> = ({
         step={step}
         size="sm"
       >
-        <NumberInputField />
+        <NumberInputField placeholder="nuo" />
         <NumberInputStepper>
           <NumberIncrementStepper />
           <NumberDecrementStepper />
@@ -45,7 +45,7 @@ const RangeFilter: React.FC<Props> = ({
         step={step}
         size="sm"
       >
-        <NumberInputField />
+        <NumberInputField placeholder="iki" />
         <NumberInputStepper>
           <NumberIncrementStepper />
           <NumberDecrementStepper />

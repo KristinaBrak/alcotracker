@@ -58,7 +58,7 @@ const ProductItem: React.FC<Props> = ({
             alignItems="baseline"
           >
             <Heading as="h5" size="sm">
-              {priceCurrent}€
+              {priceCurrent.toFixed(2)} €
             </Heading>
             <Tag colorScheme="orange">{store}</Tag>
           </Box>

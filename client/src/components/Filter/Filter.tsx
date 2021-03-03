@@ -11,6 +11,7 @@ import RangeFilter from "./RangeFilter";
 interface Props {
   setFilter: Dispatch<SetStateAction<ProductDtoFilter>>;
   filter: ProductDtoFilter;
+  loading?: boolean;
 }
 
 enum Category {
@@ -28,7 +29,7 @@ export const categoryNames: { [key: string]: string } = {
   [Category.OTHER]: "kiti",
 };
 
-const Filter: React.FC<Props> = ({ setFilter, filter }) => {
+const Filter: React.FC<Props> = ({ setFilter, filter, loading }) => {
   const [name, setName] = useState("");
   const [minDiscount, setMinDiscount] = useState<string | undefined>();
   const [maxDiscount, setMaxDiscount] = useState<string | undefined>();
@@ -116,8 +117,14 @@ const Filter: React.FC<Props> = ({ setFilter, filter }) => {
           <StoreFilter setStore={setStore} />
         </FilterCard>
         <Container maxWidth="100%">
-          <Button type="submit" size="sm" colorScheme="teal" width="100%">
-            Ieškoti
+          <Button
+            disabled={loading}
+            type="submit"
+            size="sm"
+            colorScheme="teal"
+            width="100%"
+          >
+            {loading ? "Ieškoma..." : "Ieškoti"}
           </Button>
         </Container>
       </form>

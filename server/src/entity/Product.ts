@@ -25,9 +25,11 @@ export class Product extends BaseEntity {
   @OneToMany(() => Price, price => price.product)
   prices: Promise<Price[]>;
 
+  @Index()
   @ManyToOne(() => Category, category => category.products)
   category: Category;
 
+  @Index()
   @ManyToOne(() => Store, store => store.products, { cascade: ['remove'] })
   store: Store;
 

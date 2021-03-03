@@ -5,7 +5,7 @@ interface Props {
   setStore: (store: string) => void;
 }
 
-const storeNames = ["barbora", "rimi", "bottlery", "lidl", "vynoteka"];
+const storeNames = ["barbora", "rimi", "bottlery", "lidl"];
 
 const StoreFilter: React.FC<Props> = ({ setStore }) => {
   return (
