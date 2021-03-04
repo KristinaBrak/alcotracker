@@ -20,8 +20,11 @@ const ProductItem: React.FC<Props> = ({
     category,
   },
 }) => {
+  const productName = name.replace("%", "proc");
+  const productLink = `http://localhost:3000/product/${productName}?disc=${discount}`;
   return (
-    <a href={link} target="_blank">
+    <a href={productLink} target="_blank">
+      {/* <a href={link} target="_blank"> */}
       <Box
         w={{ base: "160px" }}
         h="300px"
