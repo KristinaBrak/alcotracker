@@ -1,11 +1,4 @@
-import {
-  Box,
-  Flex,
-  Grid,
-  GridItem,
-  HStack,
-  SimpleGrid,
-} from "@chakra-ui/react";
+import { SimpleGrid } from "@chakra-ui/react";
 import React from "react";
 import { ProductDto, ProductsQuery } from "../../../generated/graphql";
 import Loader from "../../Loader/Loader";

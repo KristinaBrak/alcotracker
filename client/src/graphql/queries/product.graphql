@@ -7,8 +7,10 @@ query Product($id: Int!) {
     alcVolume
     priceMean
     priceMode
+    priceCurrent
     discount
     category
+    image
     store
     prices {
       createdAt

@@ -24,7 +24,6 @@ const Home = () => {
   });
 
   return (
-    <Structure>
       <Flex direction={{ md: "row", base: "column" }} justify="space-between">
         <Box
           marginLeft="3"
@@ -42,7 +41,6 @@ const Home = () => {
 
         <Box minW={{ lg: "200px" }} />
       </Flex>
-    </Structure>
   );
 };
 

@@ -5,12 +5,15 @@ import { getDataFromTree } from "@apollo/react-ssr";
 import "../styles/globals.css";
 import withApollo from "next-with-apollo";
 import React from "react";
+import Structure from "../components/Structure/Structure";
 
 function App({ Component, pageProps, apollo }) {
   return (
     <ApolloProvider client={apollo}>
       <ChakraProvider>
-        <Component {...pageProps} />
+        <Structure>
+          <Component {...pageProps} />
+        </Structure>
       </ChakraProvider>
     </ApolloProvider>
   );

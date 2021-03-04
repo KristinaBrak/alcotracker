@@ -158,7 +158,7 @@ export type ProductQuery = (
   { __typename?: 'Query' }
   & { product: (
     { __typename?: 'ProductDTO' }
-    & Pick<ProductDto, 'id' | 'name' | 'link' | 'volume' | 'alcVolume' | 'priceMean' | 'priceMode' | 'discount' | 'category' | 'store'>
+    & Pick<ProductDto, 'id' | 'name' | 'link' | 'volume' | 'alcVolume' | 'priceMean' | 'priceMode' | 'priceCurrent' | 'discount' | 'category' | 'image' | 'store'>
     & { prices: Array<(
       { __typename?: 'Price' }
       & Pick<Price, 'createdAt' | 'value'>
@@ -193,8 +193,10 @@ export const ProductDocument = gql`
     alcVolume
     priceMean
     priceMode
+    priceCurrent
     discount
     category
+    image
     store
     prices {
       createdAt
