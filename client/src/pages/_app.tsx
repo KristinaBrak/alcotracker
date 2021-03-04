@@ -15,11 +15,12 @@ function App({ Component, pageProps, apollo }) {
     </ApolloProvider>
   );
 }
+
 export default withApollo(
   ({ initialState }) => {
     return new ApolloClient({
       uri: "http://88.119.2.19:4000",
-      credentials: "include",
+      credentials: "same-origin",
       cache: new InMemoryCache().restore(initialState) || ({} as any),
     });
   },
