@@ -1,6 +1,6 @@
 import { fetchBarboraProducts } from './barbora/barboraService';
 import { fetchBottleryProducts } from './bottlery/bottleryService';
-import { fetchLidlProducts } from './lidl/lidl.service';
+import { fetchLidlProducts } from './lidl/lidlService';
 import { fetchRimiProducts } from './rimi/rimiService';
 import { ApiProduct } from './store.types';
 

@@ -1,6 +1,7 @@
 import axios from 'axios';
 import { JSDOM } from 'jsdom';
 import { withCache } from '../../../cache';
+import { logger } from '../../../logger';
 import { FetchData } from '../../../types';
 import { ApiProduct, Category } from '../store.types';
 
@@ -50,13 +51,25 @@ const parseCategoryUrls = (categoriesHtml: string): string[] => {
   return urls;
 };
 
-const parseVolume = (basicQuantity: string): number | undefined => {
-  // TODO implement this function
+const parseVolume = (basicQuantity: string): ApiProduct['volume'] => {
+  const volumeMatch = basicQuantity.match(new RegExp(`(?<volume>\\d*\\,?\\d+)\\s?l`));
+
+  const volume = volumeMatch?.groups?.volume;
+  if (volume) {
+    return Number(volume.replace(',', '.'));
+  }
   return;
 };
 
-const parseAlcVolume = (basicQuantity: string): number | undefined => {
-  // TODO implement this function
+const parseAlcVolume = (basicQuantity: string): ApiProduct['alcVolume'] => {
+  const alcVolumeMatch = basicQuantity.match(
+    new RegExp(`[,|]\\s*(?<alcVolume>\\d+(\\,\\d+)?)\\s*%.*alk`),
+  );
+
+  const alcVolume = alcVolumeMatch?.groups?.alcVolume;
+  if (alcVolume) {
+    return Number(alcVolume.replace(',', '.'));
+  }
   return;
 };
 
@@ -86,6 +99,7 @@ const parseLidlCategoryProducts = (alcPageHtml: string, category: Category): Api
 
     const volume = parseVolume(basicQuantity);
     const alcVolume = parseAlcVolume(basicQuantity);
+    console.log(volume, link);
     const product = {
       name,
       image,
