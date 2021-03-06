@@ -54,8 +54,6 @@ const Filter: React.FC<Props> = ({ setFilter, filter, loading }) => {
         : undefined,
       priceCurrent_lte: maxPrice ? Number(maxPrice) : undefined,
       priceCurrent_gte: minPrice ? Number(minPrice) : undefined,
-      priceMode_lte: maxPrice ? Number(maxPrice) : undefined,
-      priceMode_gte: minPrice ? Number(minPrice) : undefined,
       category_like: category,
       alcVolume_lte: maxAlcVolume ? Number(maxAlcVolume) : undefined,
       alcVolume_gte: minAlcVolume ? Number(minAlcVolume) : undefined,
