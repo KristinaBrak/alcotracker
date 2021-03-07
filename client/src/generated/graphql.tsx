@@ -66,7 +66,8 @@ export type ProductSort = {
 export enum SortableField {
   AlcVolume = 'alcVolume',
   Volume = 'volume',
-  Discount = 'discount'
+  Discount = 'discount',
+  PriceCurrent = 'priceCurrent'
 }
 
 export enum Sort {

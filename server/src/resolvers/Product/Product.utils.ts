@@ -7,6 +7,7 @@ export enum SortableField {
   alcVolume = 'alcVolume',
   volume = 'volume',
   discount = 'discount',
+  priceCurrent = 'priceCurrent',
 }
 
 export enum Order {

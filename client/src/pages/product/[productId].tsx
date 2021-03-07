@@ -20,7 +20,6 @@ import {
   Button,
 } from "@chakra-ui/react";
 import { categoryNames } from "../../components/Filter/Filter";
-import Link from "next/link";
 
 const timestampToDate = (timestamp: string) => {
   const date = new Date(Number(timestamp));
@@ -33,11 +32,16 @@ const timestampToDate = (timestamp: string) => {
 };
 
 export const Product = () => {
-  const router = useRouter();
-  const { productId } = router.query;
+  const { query } = useRouter();
+  const { productId } = query;
+  const parsedProductId = Number(
+    typeof productId === "string" ? productId : productId[0]
+  );
 
   const { error, loading, data } = useProductQuery({
-    variables: { id: Number(productId) },
+    variables: {
+      id: parsedProductId,
+    },
   });
 
   if (error) {
