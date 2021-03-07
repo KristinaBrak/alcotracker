@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import { useProductQuery } from "../../generated/graphql";
 import Loader from "../../components/Loader/Loader";
@@ -20,6 +20,7 @@ import {
   Button,
 } from "@chakra-ui/react";
 import { categoryNames } from "../../components/Filter/Filter";
+import { passwordHash } from "../login";
 
 const timestampToDate = (timestamp: string) => {
   const date = new Date(Number(timestamp));
@@ -32,8 +33,8 @@ const timestampToDate = (timestamp: string) => {
 };
 
 export const Product = () => {
-  const { query } = useRouter();
-  const { productId } = query;
+  const router = useRouter();
+  const { productId } = router.query;
   const parsedProductId = Number(
     typeof productId === "string" ? productId : productId[0]
   );
@@ -43,6 +44,13 @@ export const Product = () => {
       id: parsedProductId,
     },
   });
+
+  useEffect(() => {
+    const localPasswordHash = localStorage.getItem("password-hash");
+    if (localPasswordHash !== passwordHash) {
+      router.push("/login");
+    }
+  }, []);
 
   if (error) {
     return <p>error</p>;
