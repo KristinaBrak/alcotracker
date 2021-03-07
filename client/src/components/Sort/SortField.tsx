@@ -51,7 +51,7 @@ const SortField: React.FC<Props> = ({ setSort }) => {
         <option value="priceCurrent.desc">Nuo brangiausio iki pigiausio</option>
         <option value="priceCurrent.asc">Nuo pigiausio iki brangiausio</option>
 
-        <option value="alcVolume.desc">Stipriasi gėrimai</option>
+        <option value="alcVolume.desc">Stipriausi</option>
         <option value="volume.desc">Didžiausias tūris</option>
         <option value="volume.asc">Mažiausias tūris</option>
       </Select>
