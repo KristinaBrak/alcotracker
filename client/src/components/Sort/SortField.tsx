@@ -41,7 +41,6 @@ const SortField: React.FC<Props> = ({ setSort }) => {
   return (
     <Box>
       <Select
-        placeholder="Rikiuoti"
         defaultValue="discount.desc"
         onChange={({ target: { value } }) => onSortChange(value)}
       >

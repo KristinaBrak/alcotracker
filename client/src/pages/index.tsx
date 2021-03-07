@@ -14,7 +14,7 @@ import { useRouter } from "next/router";
 import { passwordHash } from "./login";
 
 const Home = () => {
-  const [value, setValue] = useState(20);
+  const [value, setValue] = useState(80);
   const [take, setTake] = useState(value);
   const [filter, setFilter] = useState<ProductDtoFilter>({});
   const [sort, setSort] = useState<ProductSort[]>([]);
@@ -46,16 +46,16 @@ const Home = () => {
             marginLeft="3"
             marginBottom="3"
             marginTop="2px"
-            minW={{ base: "100%", md: "200px" }}
-            w="300px"
+            minW={{ base: "100%", md: "240px" }}
+            maxW="240px"
           >
             <Filter setFilter={setFilter} filter={filter} loading={loading} />
           </Box>
-          <Flex direction="column">
-            <Box w="300px">
+          <Flex direction="column" align="flex-start" width="100%">
+            <Box w="300px" marginLeft="3" marginBottom="3">
               <SortField setSort={setSort} />
             </Box>
-            <Box margin="3" marginTop="0">
+            <Box margin="3" marginTop="0" w="100%">
               <ProductList
                 productsData={data}
                 loading={loading}

@@ -1,4 +1,4 @@
-import { Box, Heading, Image, Tag, Text } from "@chakra-ui/react";
+import { Box, Flex, Heading, Image, Tag, Text } from "@chakra-ui/react";
 import React from "react";
 import { ProductDto } from "../../../generated/graphql";
 import { categoryNames } from "../../Filter/Filter";
@@ -10,23 +10,13 @@ interface Props {
 }
 
 const ProductItem: React.FC<Props> = ({
-  product: {
-    id,
-    name,
-    image,
-    link,
-    priceMode,
-    priceCurrent,
-    discount,
-    store,
-    category,
-  },
+  product: { id, name, image, priceCurrent, discount, store, category, volume },
 }) => {
   return (
     <Link href={`/product/${id}`}>
       <a>
         <Box
-          w={{ base: "160px" }}
+          w={{ base: "170px", sm: "160px" }}
           h="300px"
           maxH="300px"
           borderWidth="1px"
@@ -66,9 +56,10 @@ const ProductItem: React.FC<Props> = ({
               <Tag colorScheme="orange">{store}</Tag>
             </Box>
             <Discount discount={discount} />
-            <Box marginTop="1">
-              <Tag>{categoryNames[category]}</Tag>
-            </Box>
+            <Flex marginTop="1" justify="space-between" align="baseline">
+              <Tag size="sm">{categoryNames[category]}</Tag>
+              {volume ? <Text fontSize="xs">{volume} L</Text> : null}
+            </Flex>
           </Box>
         </Box>
       </a>
