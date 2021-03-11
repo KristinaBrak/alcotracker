@@ -1,26 +1,25 @@
-import React, { useEffect, useState } from "react";
-import { useRouter } from "next/router";
-import { useProductQuery } from "../../generated/graphql";
-import Loader from "../../components/Loader/Loader";
 import {
   Box,
+  Button,
   Center,
   Flex,
   Heading,
   Image,
-  ListItem,
-  UnorderedList,
-  Table,
-  Tbody,
-  Tr,
-  Th,
-  Td,
-  TableCaption,
   Link as UiLink,
-  Button,
+  ListItem,
+  Table,
+  TableCaption,
+  Tbody,
+  Td,
+  Tr,
+  UnorderedList,
 } from "@chakra-ui/react";
+import { useRouter } from "next/router";
+import React from "react";
 import { categoryNames } from "../../components/Filter/Filter";
-import { passwordHash } from "../login";
+import Loader from "../../components/Loader/Loader";
+import { useProductQuery } from "../../generated/graphql";
+import { authenticate } from "../../utils/ssr-authenticate";
 
 const timestampToDate = (timestamp: string) => {
   const date = new Date(Number(timestamp));
@@ -45,13 +44,6 @@ export const Product = () => {
     },
   });
 
-  useEffect(() => {
-    const localPasswordHash = localStorage.getItem("password-hash");
-    if (localPasswordHash !== passwordHash) {
-      router.push("/login");
-    }
-  }, []);
-
   if (error) {
     return <p>error</p>;
   }
@@ -65,6 +57,7 @@ export const Product = () => {
       link,
       volume,
       alcVolume,
+      priceMode,
       priceCurrent,
       prices,
       discount,
@@ -114,9 +107,23 @@ export const Product = () => {
                   </Td>
                 </Tr>
                 <Tr>
+                  <Td>Įprasta kaina</Td>
+                  <Td isNumeric>
+                    <strong>{priceMode} €</strong>
+                  </Td>
+                </Tr>
+                <Tr>
                   <Td>Kaina</Td>
                   <Td isNumeric>
                     <strong>{priceCurrent} €</strong>
+                  </Td>
+                </Tr>
+                <Tr>
+                  <Td>Nuolaida</Td>
+                  <Td isNumeric>
+                    <strong>
+                      {discount ? `${(discount * 100).toFixed(0)} %` : null}
+                    </strong>
                   </Td>
                 </Tr>
                 <Tr>
@@ -129,14 +136,6 @@ export const Product = () => {
                   <Td>Stiprumas</Td>
                   <Td isNumeric>
                     <strong>{alcVolume ? `${alcVolume} %` : null}</strong>
-                  </Td>
-                </Tr>
-                <Tr>
-                  <Td>Nuolaida</Td>
-                  <Td isNumeric>
-                    <strong>
-                      {discount ? `${(discount * 100).toFixed(0)} %` : null}
-                    </strong>
                   </Td>
                 </Tr>
               </Tbody>
@@ -175,5 +174,7 @@ export const Product = () => {
     </Center>
   );
 };
+
+export const getServerSideProps = authenticate;
 
 export default Product;
