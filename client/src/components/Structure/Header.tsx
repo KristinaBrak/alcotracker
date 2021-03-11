@@ -1,4 +1,5 @@
 import { Center, Heading } from "@chakra-ui/react";
+import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
 
 const quotes = [
@@ -20,6 +21,7 @@ function getRandomInt(max: number) {
 }
 
 const Header: React.FC = () => {
+  const router = useRouter();
   const [quote, setQuote] = useState(quotes[getRandomInt(quotes.length - 1)]);
   useEffect(() => {
     const timeout = setTimeout(() => {

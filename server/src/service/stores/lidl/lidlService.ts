@@ -1,7 +1,6 @@
 import axios from 'axios';
 import { JSDOM } from 'jsdom';
 import { withCache } from '../../../cache';
-import { logger } from '../../../logger';
 import { FetchData } from '../../../types';
 import { ApiProduct, Category } from '../store.types';
 
@@ -99,7 +98,6 @@ const parseLidlCategoryProducts = (alcPageHtml: string, category: Category): Api
 
     const volume = parseVolume(basicQuantity);
     const alcVolume = parseAlcVolume(basicQuantity);
-    console.log(volume, link);
     const product = {
       name,
       image,

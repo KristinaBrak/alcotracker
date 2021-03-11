@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import Filter from "../components/Filter/Filter";
-import Structure from "../components/Structure/Structure";
 import ProductList from "../components/Product/ProductList/ProdutList";
 import {
   ProductDtoFilter,
@@ -9,12 +8,18 @@ import {
 } from "../generated/graphql";
 import { Box, Flex } from "@chakra-ui/react";
 import SortField from "../components/Sort/SortField";
+import { useRouter } from "next/router";
+import { parseSortQuery } from "../utils/sort";
+import { authenticate } from "../utils/ssr-authenticate";
 
 const Home = () => {
   const [value, setValue] = useState(80);
   const [take, setTake] = useState(value);
   const [filter, setFilter] = useState<ProductDtoFilter>({});
-  const [sort, setSort] = useState<ProductSort[]>([]);
+  const router = useRouter();
+  const [sort, setSort] = useState<ProductSort[]>(
+    parseSortQuery(router.query.sort)
+  );
 
   const { error, loading, data } = useProductsQuery({
     variables: {
@@ -43,10 +48,11 @@ const Home = () => {
           <ProductList productsData={data} loading={loading} error={error} />
         </Box>
       </Flex>
-
       <Box minW={{ lg: "200px" }} />
     </Flex>
   );
 };
+
+export const getServerSideProps = authenticate;
 
 export default Home;

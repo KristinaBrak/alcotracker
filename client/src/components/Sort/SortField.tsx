@@ -1,40 +1,19 @@
 import { Box, Select } from "@chakra-ui/react";
 import { useRouter } from "next/router";
-import React, { useEffect } from "react";
-import { ProductSort, SortableField } from "../../generated/graphql";
+import React from "react";
+import { ProductSort } from "../../generated/graphql";
+import { parseSortQuery } from "../../utils/sort";
 
 interface Props {
   setSort: React.Dispatch<React.SetStateAction<ProductSort[]>>;
 }
 
-const DEFAULT_SORT = "discount.desc";
-
-const parseSortQuery = (sort: string | string[]): ProductSort[] => {
-  const sortQuery = typeof sort === "string" ? sort : null;
-  const sortEntries = sortQuery ? sortQuery.split(",") : [DEFAULT_SORT];
-
-  return sortEntries.reduce<ProductSort[]>((acc, sortEntry) => {
-    const [field, order] = sortEntry.split(".");
-    const isValidField = Object.values(SortableField).some(
-      (sf) => sf.toLowerCase() === field.toLowerCase()
-    );
-
-    return isValidField
-      ? [...acc, { field, order: order.toUpperCase() } as ProductSort]
-      : acc;
-  }, []);
-};
-
 const SortField: React.FC<Props> = ({ setSort }) => {
   const router = useRouter();
-  const { sort } = router.query;
-
-  useEffect(() => {
-    const result = parseSortQuery(sort);
-    setSort(result);
-  }, [router.query]);
 
   const onSortChange = (value: string) => {
+    const result = parseSortQuery(value);
+    setSort(result);
     router.push({ query: { ...router.query, sort: value } });
   };
 

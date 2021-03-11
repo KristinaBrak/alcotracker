@@ -116,7 +116,7 @@ const Filter: React.FC<Props> = ({ setFilter, filter, loading }) => {
         </FilterCard>
         <Container maxWidth="100%">
           <Button
-            disabled={loading}
+            isLoading={loading}
             type="submit"
             size="sm"
             colorScheme="teal"
