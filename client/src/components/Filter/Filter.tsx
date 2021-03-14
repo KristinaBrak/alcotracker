@@ -1,4 +1,3 @@
-import { Select } from "@chakra-ui/react";
 import React, { Dispatch, SetStateAction, useState } from "react";
 import { ProductDtoFilter } from "../../generated/graphql";
 import CategoryFilter from "./CategoryFilter";
@@ -7,6 +6,8 @@ import { Button, Container } from "@chakra-ui/react";
 import FilterCard from "./FilterCard";
 import StoreFilter from "./StoreFilter";
 import RangeFilter from "./RangeFilter";
+import { useRouter } from "next/router";
+import { buildFilterParams } from "../../utils/filter";
 
 interface Props {
   setFilter: Dispatch<SetStateAction<ProductDtoFilter>>;
@@ -30,20 +31,40 @@ export const categoryNames: { [key: string]: string } = {
 };
 
 const Filter: React.FC<Props> = ({ setFilter, filter, loading }) => {
-  const [name, setName] = useState("");
-  const [minDiscount, setMinDiscount] = useState<string | undefined>();
-  const [maxDiscount, setMaxDiscount] = useState<string | undefined>();
-  const [minPrice, setMinPrice] = useState<string | undefined>();
-  const [maxPrice, setMaxPrice] = useState<string | undefined>();
-  const [category, setCategory] = useState<string | undefined>();
-  const [minAlcVolume, setMinAlcVolume] = useState<string | undefined>();
-  const [maxAlcVolume, setMaxAlcVolume] = useState<string | undefined>();
-  const [minVolume, setMinVolume] = useState<string | undefined>();
-  const [maxVolume, setMaxVolume] = useState<string | undefined>();
-  const [store, setStore] = useState<string | undefined>();
+  const router = useRouter();
+
+  const [name, setName] = useState(filter.name_like);
+  const [minDiscount, setMinDiscount] = useState<string | undefined>(
+    filter.discount_gte?.toString()
+  );
+  const [maxDiscount, setMaxDiscount] = useState<string | undefined>(
+    filter.discount_lte?.toString()
+  );
+  const [minPrice, setMinPrice] = useState<string | undefined>(
+    filter.priceCurrent_gte?.toString()
+  );
+  const [maxPrice, setMaxPrice] = useState<string | undefined>(
+    filter.priceCurrent_lte?.toString()
+  );
+  const [category, setCategory] = useState<string | undefined>(
+    filter.category_like
+  );
+  const [minAlcVolume, setMinAlcVolume] = useState<string | undefined>(
+    filter.alcVolume_gte?.toString()
+  );
+  const [maxAlcVolume, setMaxAlcVolume] = useState<string | undefined>(
+    filter.alcVolume_lte?.toString()
+  );
+  const [minVolume, setMinVolume] = useState<string | undefined>(
+    filter.alcVolume_gte?.toString()
+  );
+  const [maxVolume, setMaxVolume] = useState<string | undefined>(
+    filter.volume_lte?.toString()
+  );
+  const [store, setStore] = useState<string | undefined>(filter.store_like);
 
   const submitFilter = () => {
-    setFilter({
+    const newFilter = {
       ...filter,
       name_like: name,
       discount_gte: minDiscount
@@ -60,7 +81,18 @@ const Filter: React.FC<Props> = ({ setFilter, filter, loading }) => {
       volume_lte: maxVolume ? Number(maxVolume) : undefined,
       volume_gte: minVolume ? Number(minVolume) : undefined,
       store_like: store,
+    };
+
+    const query = buildFilterParams({
+      ...router.query,
+      ...newFilter,
     });
+
+    router.push({
+      query,
+    });
+
+    setFilter(newFilter);
   };
 
   return (
@@ -91,7 +123,10 @@ const Filter: React.FC<Props> = ({ setFilter, filter, loading }) => {
           />
         </FilterCard>
         <FilterCard text="Kategorija">
-          <CategoryFilter setCategory={setCategory} />
+          <CategoryFilter
+            defaultValue={filter.category_like}
+            setCategory={setCategory}
+          />
         </FilterCard>
         <FilterCard text="Stiprumas">
           <RangeFilter
@@ -112,7 +147,7 @@ const Filter: React.FC<Props> = ({ setFilter, filter, loading }) => {
           />
         </FilterCard>
         <FilterCard text="Parduotuvė">
-          <StoreFilter setStore={setStore} />
+          <StoreFilter defaultValue={filter.store_like} setStore={setStore} />
         </FilterCard>
         <Container maxWidth="100%">
           <Button

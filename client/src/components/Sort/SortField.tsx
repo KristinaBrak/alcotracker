@@ -2,7 +2,7 @@ import { Box, Select } from "@chakra-ui/react";
 import { useRouter } from "next/router";
 import React from "react";
 import { ProductSort } from "../../generated/graphql";
-import { parseSortQuery } from "../../utils/sort";
+import { DEFAULT_SORT, parseSortQuery } from "../../utils/sort";
 
 interface Props {
   setSort: React.Dispatch<React.SetStateAction<ProductSort[]>>;
@@ -20,7 +20,7 @@ const SortField: React.FC<Props> = ({ setSort }) => {
   return (
     <Box>
       <Select
-        defaultValue="discount.desc"
+        defaultValue={router.query.sort || DEFAULT_SORT}
         onChange={({ target: { value } }) => onSortChange(value)}
       >
         <option value="discount.desc">Didžiausia nuolaida</option>

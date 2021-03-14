@@ -2,6 +2,7 @@ import { Select } from "@chakra-ui/react";
 import React from "react";
 
 interface Props {
+  defaultValue?: string;
   setCategory: (category: string) => void;
 }
 
@@ -21,12 +22,13 @@ const categoryNames: { [key: string]: string } = {
   [Category.OTHER]: "kiti",
 };
 
-const CategoryFilter: React.FC<Props> = ({ setCategory }) => {
+const CategoryFilter: React.FC<Props> = ({ defaultValue, setCategory }) => {
   return (
     <Select
       name="categories"
       id="filter-category"
       size="sm"
+      defaultValue={defaultValue}
       onChange={(event) => {
         const name = event.target.value;
         setCategory(name);

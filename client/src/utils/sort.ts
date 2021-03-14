@@ -1,6 +1,6 @@
 import { ProductSort, SortableField } from "../generated/graphql";
 
-const DEFAULT_SORT = "discount.desc";
+export const DEFAULT_SORT = "discount.desc";
 
 export const parseSortQuery = (sort: string | string[]): ProductSort[] => {
   const sortQuery = typeof sort === "string" ? sort : null;
