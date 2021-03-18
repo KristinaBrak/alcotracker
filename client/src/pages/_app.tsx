@@ -6,8 +6,10 @@ import "../styles/globals.css";
 import withApollo from "next-with-apollo";
 import React from "react";
 import Structure from "../components/Structure/Structure";
+import useScrollRestoration from "./useScrollRestoration";
 
-function App({ Component, pageProps, apollo }) {
+function App({ Component, pageProps, apollo, router }) {
+  useScrollRestoration(router);
   return (
     <ApolloProvider client={apollo}>
       <ChakraProvider>
