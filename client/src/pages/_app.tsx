@@ -24,7 +24,7 @@ function App({ Component, pageProps, apollo, router }) {
 export default withApollo(
   ({ initialState }) => {
     return new ApolloClient({
-      uri: "http://88.119.2.19:4000",
+      uri: "https://uzpylimas.online/api",
       credentials: "same-origin",
       cache: new InMemoryCache().restore(initialState) || ({} as any),
     });
