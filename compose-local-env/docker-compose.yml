@@ -6,7 +6,7 @@ services:
     depends_on:
       - "app"
     ports: 
-      - "80:3000"
+      - "3000:3000"
     restart: "unless-stopped"
     deploy:
       resources:
@@ -16,9 +16,9 @@ services:
   app:
     image: mantassidabras/alcotracker:latest
     container_name: app
-    depends_on:
-      - "redis"
-      - "postgres"
+    depends_on: 
+      - "redis" 
+      - "postgres" 
     ports:
       - "4000:4000"
     restart: "unless-stopped"
