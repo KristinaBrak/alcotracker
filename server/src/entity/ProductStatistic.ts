@@ -25,6 +25,7 @@ import { ViewColumn, ViewEntity } from 'typeorm';
   order by p.id
   ) as z;
   `,
+  materialized: true,
 })
 export class ProductStatistic {
   @Field(type => Int)
