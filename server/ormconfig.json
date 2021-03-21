@@ -45,7 +45,7 @@
     "username": "postgres",
     "password": "nQPcdB2iSHogfS",
     "database": "alcotracker",
-    "synchronize": true,
+    "synchronize": false,
     "logging": false,
     "entities": ["dist/entity/**/*.js"],
     "migrations": ["dist/migration/**/*.js"],
