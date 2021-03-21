@@ -4,7 +4,7 @@ export class productStatsView1614251905772 implements MigrationInterface {
     name = 'productStatsView1614251905772'
 
     public async up(queryRunner: QueryRunner): Promise<void> {
-        await queryRunner.query(`CREATE VIEW "product_statistic" AS 
+        await queryRunner.query(`CREATE MATERIALIZED VIEW "product_statistic" AS 
   select z.*, 
   (1 - z."priceCurrent" / z."priceMode")::numeric(10,2) as "discount"
   from (
@@ -31,7 +31,7 @@ export class productStatsView1614251905772 implements MigrationInterface {
 
     public async down(queryRunner: QueryRunner): Promise<void> {
         await queryRunner.query(`DELETE FROM "typeorm_metadata" WHERE "type" = 'VIEW' AND "schema" = $1 AND "name" = $2`, ["public","product_statistic"]);
-        await queryRunner.query(`DROP VIEW "product_statistic"`);
+        await queryRunner.query(`DROP MATERIALIZED VIEW "product_statistic"`);
     }
 
 }
