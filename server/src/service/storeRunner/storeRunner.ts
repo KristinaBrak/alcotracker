@@ -45,6 +45,10 @@ const updateStoreProducts = async (store: Store, products: ApiProduct[]) => {
         await ProductRepository.save(dbProduct);
       } else {
         let changed = false;
+        if (dbProduct.image !== image) {
+          dbProduct.image = image;
+          changed = true;
+        }
         if (dbProduct.alcVolume != alcVolume) {
           dbProduct.alcVolume = alcVolume ?? null;
           changed = true;
@@ -54,7 +58,7 @@ const updateStoreProducts = async (store: Store, products: ApiProduct[]) => {
           changed = true;
         }
         if (changed) {
-          logger.warn(`updating existing product! ${name}`);
+          logger.warn(`updating existing product! ${dbProduct.id} ${name}`);
           await ProductRepository.save(dbProduct);
         }
       }
