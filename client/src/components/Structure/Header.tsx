@@ -34,7 +34,7 @@ const Header: React.FC = () => {
   }, [quote]);
 
   return (
-    <Center w="100%" h="80px" bg="teal.100">
+    <Center h="80px" bg="teal.100">
       <Heading>{quote}</Heading>
     </Center>
   );

@@ -7,7 +7,7 @@ const Footer: React.FC = () => {
       as="footer"
       bg="teal.500"
       h="50px"
-      w="100%"
+      // w="100%"
       marginTop="auto"
       color="white"
     >
