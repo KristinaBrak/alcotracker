@@ -15,21 +15,7 @@ interface BottleryItem {
   picture_filepath: string;
 }
 
-const requestData =
-  'action=btl_products&data%5Border%5D=price_desc&data%5Blimit%5D=';
-
-[
-  'ALCO_WINE',
-  'ALCO_STRONG',
-  'POS_SALES',
-  //   "ADVERTISEMENT",
-  //   "FOOD",
-  'ALCO_LIGHT',
-  //   "PERSONAL_CARE",
-  //   "NO_ALCO_BEVERAGES",
-  'ALCO_FREE',
-  //   "HOUSEHOLD_ACCESS",
-];
+const requestData = 'action=btl_products&data%5Border%5D=price_desc&data%5Blimit%5D=';
 
 const convertToCategory = (category: string) => {
   const categoryDictionary: { [key: string]: Category | undefined } = {
@@ -86,6 +72,8 @@ const fetchData = async (url: string) => {
 export const fetchBottleryProducts = async (): Promise<ApiProduct[]> => {
   const data = await withCache(fetchData)(BOTTLERY_URL);
 
-  const items: ApiProduct[] = data.map(mapProduct);
+  const items: ApiProduct[] = data
+    .map(mapProduct)
+    .filter(({ category }) => category !== Category.OTHER);
   return items;
 };
