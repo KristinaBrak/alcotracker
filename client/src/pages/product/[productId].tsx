@@ -150,13 +150,13 @@ export const Product = () => {
                 <Tr>
                   <Td>Įprasta kaina</Td>
                   <Td isNumeric>
-                    <strong>{priceMode} €</strong>
+                    <strong>{priceMode.toFixed(2)} €</strong>
                   </Td>
                 </Tr>
                 <Tr>
                   <Td>Kaina</Td>
                   <Td isNumeric>
-                    <strong>{priceCurrent} €</strong>
+                    <strong>{priceCurrent.toFixed(2)} €</strong>
                   </Td>
                 </Tr>
                 <Tr>

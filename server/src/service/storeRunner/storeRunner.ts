@@ -1,4 +1,4 @@
-import { getConnection } from 'typeorm';
+import { getConnection, QueryRunner } from 'typeorm';
 import { Category } from '../../entity/Category';
 import { Price } from '../../entity/Price';
 import { Product } from '../../entity/Product';
@@ -79,8 +79,17 @@ const fetchAndUpdateStoreProducts = async ({ name, fn }: ApiStore) => {
   await updateStoreProducts(store, products);
 };
 
+const refreshMaterializedView = async (materializedView: string) => {
+  const connection = getConnection();
+  const queryRunner: QueryRunner = connection.createQueryRunner();
+  await queryRunner.connect();
+  await queryRunner.query(`REFRESH MATERIALIZED VIEW ${materializedView}`);
+  logger.info(`materialized view ${materializedView} refreshed`);
+};
+
 export const executeStoreRunner = async () => {
   logger.info('executing store runner');
   await updateStores();
   await Promise.all(stores.map(fetchAndUpdateStoreProducts));
+  await refreshMaterializedView('product_statistic');
 };

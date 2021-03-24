@@ -35,7 +35,7 @@ const Home = () => {
   });
 
   return (
-    <Grid templateColumns={{ base: "repeat(1, 1fr)", md: "repeat(3, 1fr)" }}>
+    <Grid templateColumns={{ base: "repeat(1, 1fr)", md: "1fr 2fr 1fr" }}>
       <Box
         marginLeft={{ base: "0", md: "3" }}
         marginBottom="3"

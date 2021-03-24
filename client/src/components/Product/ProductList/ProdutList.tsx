@@ -1,4 +1,4 @@
-import { SimpleGrid } from "@chakra-ui/react";
+import { Center, Heading, SimpleGrid } from "@chakra-ui/react";
 import React from "react";
 import { ProductDto, ProductsQuery } from "../../../generated/graphql";
 import Loader from "../../Loader/Loader";
@@ -19,6 +19,15 @@ const ProductList: React.FC<Props> = ({ productsData, loading, error }) => {
   }
 
   const { products } = productsData;
+  if (!products.length) {
+    return (
+      <Center marginTop="20%">
+        <Heading as="h4" size="sm">
+          Rezultatų nėra
+        </Heading>
+      </Center>
+    );
+  }
   return (
     <SimpleGrid columns={{ base: 2, sm: 3, md: 3, lg: 4, xl: 6 }} spacing="3">
       {products.map((product) => (
