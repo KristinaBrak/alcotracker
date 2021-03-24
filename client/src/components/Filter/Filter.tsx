@@ -56,7 +56,7 @@ const Filter: React.FC<Props> = ({ setFilter, filter, loading }) => {
     filter.alcVolume_lte?.toString()
   );
   const [minVolume, setMinVolume] = useState<string | undefined>(
-    filter.alcVolume_gte?.toString()
+    filter.volume_gte?.toString()
   );
   const [maxVolume, setMaxVolume] = useState<string | undefined>(
     filter.volume_lte?.toString()
