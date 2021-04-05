@@ -14,6 +14,7 @@ const MIN_PAGING_ELEMENTS = 3;
 
 const barboraURL = 'https://barbora.lt';
 
+// TODO clear uneeded header
 const config = {
   headers: {
     Connection: 'keep-alive',
@@ -74,30 +75,28 @@ const convertToCategory = (category: string) => {
 };
 
 const isAlcoholCategory = (categoryName: string) => {
-  const category = convertToCategory(categoryName);
+  const category = convertToCategory(categoryName.toLowerCase());
   return category !== Category.OTHER;
 };
 
-const fetchBarboraProductCategories = async (data: string) => {
-  const categories: BarboraCategory[] = [];
+const fetchBarboraProductCategories = async (data: string): Promise<BarboraCategory[]> => {
   const dom = new JSDOM(data);
-  dom.window.document
-    .querySelectorAll("div[class='b-single-category--box'] > h3 > a")
-    ?.forEach(el => {
-      const name = el.textContent?.trim();
-      if (name && isAlcoholCategory(name.toLowerCase())) {
-        const link: Url = barboraURL + el.getAttribute('href')?.trim();
-        categories.push({ name, link });
-      }
-    });
-  return categories;
+  const categoryElements = Array.from(dom.window.document.querySelectorAll("div.b-single-category--box h3 a"));
+  return categoryElements.reduce<BarboraCategory[]>((acc, el) => {
+    const name = el.textContent?.trim();
+    if (name && isAlcoholCategory(name)) {
+      const link: Url = barboraURL + el.getAttribute('href')?.trim();
+      return [...acc, { name, link }];
+    }
+    return acc;
+  }, []);
 };
 
+// TODO extract pagination out of this function
 const fetchBarboraCategoryProducts = async ({
   name,
   link,
 }: BarboraCategory): Promise<ApiProduct[]> => {
-  const products: ApiProduct[] = [];
 
   const {
     query: { page },
@@ -114,46 +113,30 @@ const fetchBarboraCategoryProducts = async ({
     query: { page: nextPage },
   } = querystring.parseUrl(nextPageUrl);
 
-  dom.window.document.querySelectorAll('div.b-product--wrap')?.forEach((el, _, __) => {
-    const details = el.getAttribute('data-b-for-cart');
-    // Attribute 'data-b-for-cart' structure with examples
-    //   {"id":"00000000000BR05951",
-    //   "product_position_in_list":0,
-    //   "title":"Spiritinis gėrimas CAPTAIN MORGAN ORIGINAL SPICED GOLD (35%), 1000 ml",
-    //   "category_id":"9efa3bf4-5d31-4031-9636-f20a1e7b1e5b",
-    //   "category_name_full_path":"Gėrimai/Stiprieji alkoholiniai gėrimai/Romas",
-    //   "root_category_id":"3e2e66e1-88c3-48df-b8c2-f444618991e4",
-    //   "brand_name":"Captain Morgan",
-    //   "price":21.9900,
-    //   "image":"/api/images/GetInventoryImage?id=ec47b192-c0f3-4230-a41d-6e85ea7ba9d4",
-    //   "comparative_unit":"l",
-    //   "comparative_unit_price":21.99,
-    //   "status":"active",
-    //   "popUpText":null,
-    //   "age_limitation":20,
-    //   "picking_actions":[],
-    //   "list":"Prekės pagal kategoriją",
-    //   "quantity":1.0}
+  const productElements = Array.from(dom.window.document.querySelectorAll('div.b-product--wrap'));
 
-    if (details) {
-      const element = JSON.parse(details);
-      const linkElement = el.querySelector(
-        "div[class='b-product-wrap-img'] > a[class='b-product--imagelink b-link--product-info']",
-      );
-      const link = barboraURL + linkElement?.getAttribute('href');
+  const products = productElements.map<ApiProduct>(el => {
+    const linkElement = el.querySelector(
+      "div.b-product-wrap-img a.b-product--imagelink.b-link--product-info",
+    );
 
-      const product: ApiProduct = {
-        name: element.title,
-        category: convertToCategory(name),
-        price: element.price,
-        alcVolume: extractAlcVolume(element.title),
-        volume: extractVolume(element.title),
-        link,
-        image: barboraURL + element.image,
-      };
+    const link = barboraURL + linkElement?.getAttribute('href');
 
-      products.push(product);
-    }
+    const productName = el.querySelector("span[itemprop='name']")?.textContent ?? "";
+    const priceLabel = el.querySelector("span[itemprop='price']")?.getAttribute('content') ?? "";
+    const price = Number(priceLabel);
+    const image = el.querySelector("img[itemprop='image']")?.getAttribute('src') ?? "";
+
+    const product: ApiProduct = {
+      name: productName,
+      category: convertToCategory(name),
+      price,
+      alcVolume: extractAlcVolume(productName),
+      volume: extractVolume(productName),
+      link,
+      image: barboraURL + image,
+    };
+    return product;
   });
 
   if (page === nextPage) {
@@ -166,10 +149,11 @@ const fetchBarboraCategoryProducts = async ({
 export const fetchBarboraProducts = async () => {
   const { data } = await axios.get(barboraURL + '/gerimai', config);
 
-  const barboraCategories: BarboraCategory[] = await fetchBarboraProductCategories(data);
+  const barboraCategories = await fetchBarboraProductCategories(data);
 
   const products = (
     await Promise.all(barboraCategories.map(category => fetchBarboraCategoryProducts(category)))
   ).flat();
+  console.log(products);
   return products;
 };
