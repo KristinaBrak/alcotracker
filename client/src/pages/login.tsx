@@ -1,13 +1,9 @@
 import {
   Box,
   Button,
-  Center,
   Flex,
   FormControl,
   FormErrorMessage,
-  FormHelperText,
-  FormLabel,
-  Heading,
   Input,
 } from "@chakra-ui/react";
 import { useRouter } from "next/router";
@@ -82,7 +78,7 @@ const Login = () => {
   );
 };
 
-export const getServerSideProps = async function ({ req }) {
+export const getServerSideProps = async function({ req }) {
   const cookies = req.headers.cookie ?? "";
   const value = cookie.parse(cookies)[COOKIE_NAME];
 

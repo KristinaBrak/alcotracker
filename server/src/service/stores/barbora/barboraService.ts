@@ -154,6 +154,5 @@ export const fetchBarboraProducts = async () => {
   const products = (
     await Promise.all(barboraCategories.map(category => fetchBarboraCategoryProducts(category)))
   ).flat();
-  console.log(products);
   return products;
 };
