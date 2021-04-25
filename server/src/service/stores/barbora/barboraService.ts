@@ -10,8 +10,6 @@ interface BarboraCategory {
   link: Url;
 }
 
-const MIN_PAGING_ELEMENTS = 3;
-
 const barboraURL = 'https://barbora.lt';
 
 // TODO clear uneeded header
@@ -81,7 +79,9 @@ const isAlcoholCategory = (categoryName: string) => {
 
 const fetchBarboraProductCategories = async (data: string): Promise<BarboraCategory[]> => {
   const dom = new JSDOM(data);
-  const categoryElements = Array.from(dom.window.document.querySelectorAll("div.b-single-category--box h3 a"));
+  const categoryElements = Array.from(
+    dom.window.document.querySelectorAll('div.b-single-category--box h3 a'),
+  );
   return categoryElements.reduce<BarboraCategory[]>((acc, el) => {
     const name = el.textContent?.trim();
     if (name && isAlcoholCategory(name)) {
@@ -92,12 +92,27 @@ const fetchBarboraProductCategories = async (data: string): Promise<BarboraCateg
   }, []);
 };
 
-// TODO extract pagination out of this function
+const fetchBarboraCategoryProductsTODO = async ({ name, link }: BarboraCategory) => {
+  const { data } = await axios.get(link, config);
+  const dom = new JSDOM(data);
+  const pageList = dom.window.document.querySelector('ul.pagination');
+  const pageLinks = Array.from(pageList!.querySelectorAll('a'));
+  const nextLink = pageLinks[pageLinks.length - 1].getAttribute('href')!;
+
+  const {
+    query: { page: nextPageValue },
+  } = querystring.parseUrl(nextLink);
+  const nextPage = Number(nextPageValue);
+
+  const activePage = Number(pageList?.querySelector('.active a')?.textContent);
+
+  while (activePage < nextPage) {}
+};
+
 const fetchBarboraCategoryProducts = async ({
   name,
   link,
 }: BarboraCategory): Promise<ApiProduct[]> => {
-
   const {
     query: { page },
   } = querystring.parseUrl(link);
@@ -106,7 +121,7 @@ const fetchBarboraCategoryProducts = async ({
   const dom = new JSDOM(data);
 
   const pageList = dom.window.document.querySelector('ul.pagination');
-  const pageListLength = pageList?.children.length ?? MIN_PAGING_ELEMENTS;
+  const pageListLength = pageList?.children.length ?? 1;
   const nextPageLinkElement = pageList?.children[pageListLength - 1].querySelector('a');
   const nextPageUrl = barboraURL + nextPageLinkElement?.getAttribute('href') ?? undefined;
   const {
@@ -115,17 +130,17 @@ const fetchBarboraCategoryProducts = async ({
 
   const productElements = Array.from(dom.window.document.querySelectorAll('div.b-product--wrap'));
 
-  const products = productElements.map<ApiProduct>(el => {
+  const products = productElements.reduce<ApiProduct[]>((acc, el) => {
     const linkElement = el.querySelector(
-      "div.b-product-wrap-img a.b-product--imagelink.b-link--product-info",
+      'div.b-product-wrap-img a.b-product--imagelink.b-link--product-info',
     );
 
     const link = barboraURL + linkElement?.getAttribute('href');
 
-    const productName = el.querySelector("span[itemprop='name']")?.textContent ?? "";
-    const priceLabel = el.querySelector("span[itemprop='price']")?.getAttribute('content') ?? "";
+    const productName = el.querySelector("span[itemprop='name']")?.textContent ?? '';
+    const priceLabel = el.querySelector("span[itemprop='price']")?.getAttribute('content') ?? '';
     const price = Number(priceLabel);
-    const image = el.querySelector("img[itemprop='image']")?.getAttribute('src') ?? "";
+    const image = el.querySelector("img[itemprop='image']")?.getAttribute('src') ?? '';
 
     const product: ApiProduct = {
       name: productName,
@@ -136,8 +151,9 @@ const fetchBarboraCategoryProducts = async ({
       link,
       image: barboraURL + image,
     };
-    return product;
-  });
+
+    return price ? [...acc, product] : acc;
+  }, []);
 
   if (page === nextPage) {
     return products;
