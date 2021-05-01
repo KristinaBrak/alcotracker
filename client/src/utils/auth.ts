@@ -8,7 +8,7 @@ export const PASSWORD_HASH =
 export const login = (password: string) => {
   const isAuthenticated = bcrypt.compareSync(password, PASSWORD_HASH);
   const now = new Date();
-  const monthAhead = new Date(now.setMonth(now.getMonth() + 1));
+  const monthAhead = new Date(now.setMonth(now.getMonth() + 6));
 
   if (isAuthenticated) {
     cookieCutter.set(COOKIE_NAME, PASSWORD_HASH, { expires: monthAhead });
