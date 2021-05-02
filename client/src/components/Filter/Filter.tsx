@@ -1,4 +1,4 @@
-import React, { Dispatch, SetStateAction, useState } from "react";
+import React, { Dispatch, SetStateAction, useRef, useState } from "react";
 import { ProductDtoFilter } from "../../generated/graphql";
 import CategoryFilter from "./CategoryFilter";
 import NameFilter from "./NameFilter";
@@ -14,6 +14,7 @@ interface FilterProps {
   filter: ProductDtoFilter;
   loading?: boolean;
   onSubmit: () => void;
+  firstRef?: React.MutableRefObject<undefined>;
 }
 
 enum Category {
@@ -36,6 +37,7 @@ const Filter: React.FC<FilterProps> = ({
   filter,
   loading,
   onSubmit,
+  firstRef,
 }) => {
   const router = useRouter();
 
@@ -112,7 +114,7 @@ const Filter: React.FC<FilterProps> = ({
         }}
       >
         <FilterCard text="Pavadinimas">
-          <NameFilter name={name} setName={setName} />
+          <NameFilter name={name} setName={setName} firstRef={firstRef} />
         </FilterCard>
         <FilterCard text="Nuolaida">
           <RangeFilter

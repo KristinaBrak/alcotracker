@@ -1,7 +1,7 @@
 import { HamburgerIcon } from "@chakra-ui/icons";
 import { Box, Flex, Grid, IconButton, useDisclosure } from "@chakra-ui/react";
 import { useRouter } from "next/router";
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import FilterDrawer from "../components/Drawer/FilterDrawer";
 import Filter from "../components/Filter/Filter";
 import ProductList from "../components/Product/ProductList/ProdutList";
@@ -37,16 +37,23 @@ const Home = () => {
   });
 
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const firstRef = useRef();
 
   return (
     <Grid templateColumns={{ base: "repeat(1, 1fr)", md: "1fr 2fr 1fr" }}>
-      <FilterDrawer isOpen={isOpen} onOpen={onOpen} onClose={onClose}>
+      <FilterDrawer
+        isOpen={isOpen}
+        onOpen={onOpen}
+        onClose={onClose}
+        initialFocusRef={firstRef}
+      >
         <Box marginBottom="3" marginTop="2px" w="100%">
           <Filter
             setFilter={setFilter}
             filter={filter}
             loading={loading}
             onSubmit={onClose}
+            firstRef={firstRef}
           />
         </Box>
       </FilterDrawer>
@@ -78,7 +85,9 @@ const Home = () => {
               aria-label="Filtruoti"
               size="md"
               onClick={onOpen}
+              onout
               icon={<HamburgerIcon />}
+              _focus={{ outline: 0 }}
             />
           </Box>
           <SortField setSort={setSort} />

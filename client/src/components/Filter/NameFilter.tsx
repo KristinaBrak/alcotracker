@@ -3,9 +3,10 @@ import { Input } from "@chakra-ui/react";
 interface Props {
   name: string;
   setName: (name: string) => void;
+  firstRef?: React.MutableRefObject<undefined>;
 }
 
-const NameFilter: React.FC<Props> = ({ name, setName }) => {
+const NameFilter: React.FC<Props> = ({ name, setName, firstRef }) => {
   return (
     <Input
       type="text"
@@ -15,6 +16,7 @@ const NameFilter: React.FC<Props> = ({ name, setName }) => {
       }}
       size="sm"
       placeholder={"Įveskite pavadinimą"}
+      ref={firstRef}
     />
   );
 };
