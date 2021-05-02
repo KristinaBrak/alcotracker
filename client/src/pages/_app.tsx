@@ -1,13 +1,12 @@
 import { ApolloClient, ApolloProvider, InMemoryCache } from "@apollo/client";
-import { ChakraProvider } from "@chakra-ui/react";
 import { getDataFromTree } from "@apollo/react-ssr";
-
-import "../styles/globals.css";
+import { ChakraProvider } from "@chakra-ui/react";
 import withApollo from "next-with-apollo";
 import React, { useEffect } from "react";
 import Structure from "../components/Structure/Structure";
-import useScrollRestoration from "./useScrollRestoration";
 import { pageview } from "../lib/gtag";
+import "../styles/globals.css";
+import useScrollRestoration from "./useScrollRestoration";
 
 function App({ Component, pageProps, apollo, router }) {
   useScrollRestoration(router);

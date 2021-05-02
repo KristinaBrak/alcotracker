@@ -9,10 +9,11 @@ import RangeFilter from "./RangeFilter";
 import { useRouter } from "next/router";
 import { buildFilterParams } from "../../utils/filter";
 
-interface Props {
+interface FilterProps {
   setFilter: Dispatch<SetStateAction<ProductDtoFilter>>;
   filter: ProductDtoFilter;
   loading?: boolean;
+  onSubmit: () => void;
 }
 
 enum Category {
@@ -30,7 +31,12 @@ export const categoryNames: { [key: string]: string } = {
   [Category.OTHER]: "kiti",
 };
 
-const Filter: React.FC<Props> = ({ setFilter, filter, loading }) => {
+const Filter: React.FC<FilterProps> = ({
+  setFilter,
+  filter,
+  loading,
+  onSubmit,
+}) => {
   const router = useRouter();
 
   const [name, setName] = useState(filter.name_like);
@@ -100,7 +106,9 @@ const Filter: React.FC<Props> = ({ setFilter, filter, loading }) => {
       <form
         onSubmit={(event) => {
           event.preventDefault();
+
           submitFilter();
+          onSubmit();
         }}
       >
         <FilterCard text="Pavadinimas">

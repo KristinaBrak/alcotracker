@@ -14,11 +14,11 @@ import {
 } from "@chakra-ui/react";
 import { useRouter } from "next/router";
 import React from "react";
+import LineChart from "../../components/Chart/LineChart";
 import { categoryNames } from "../../components/Filter/Filter";
 import Loader from "../../components/Loader/Loader";
 import { useProductQuery } from "../../generated/graphql";
 import { authenticate } from "../../utils/ssr-authenticate";
-import LineChart from "../../components/Chart/LineChart";
 
 const timestampToDate = (timestamp: string) => {
   const date = new Date(Number(timestamp));
