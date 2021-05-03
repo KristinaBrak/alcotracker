@@ -13,15 +13,17 @@ const ProductItem: React.FC<Props> = ({
   product: { id, name, image, priceCurrent, discount, store, category, volume },
 }) => {
   return (
-    <Link href={`/product/${id}`}>
-      <a>
-        <Box
-          w={{ base: "170px", sm: "160px" }}
-          h="300px"
-          maxH="300px"
-          borderWidth="1px"
-          borderRadius="md"
-        >
+    <Box
+      flexGrow={1}
+      minW={{ base: "120px", sm: "146px", md: "156px", xl: "170px" }}
+      w="100%"
+      h="300px"
+      maxH="300px"
+      borderWidth="1px"
+      borderRadius="md"
+    >
+      <Link href={`/product/${id}`}>
+        <a>
           <Image
             width="100%"
             height="150px"
@@ -61,9 +63,9 @@ const ProductItem: React.FC<Props> = ({
               {volume ? <Text fontSize="xs">{volume} L</Text> : null}
             </Flex>
           </Box>
-        </Box>
-      </a>
-    </Link>
+        </a>
+      </Link>
+    </Box>
   );
 };
 

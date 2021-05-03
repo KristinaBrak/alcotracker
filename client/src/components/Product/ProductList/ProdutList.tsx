@@ -1,4 +1,4 @@
-import { Center, Heading, SimpleGrid } from "@chakra-ui/react";
+import { Box, Center, Flex, Grid, Heading, SimpleGrid } from "@chakra-ui/react";
 import React from "react";
 import { ProductDto, ProductsQuery } from "../../../generated/graphql";
 import Loader from "../../Loader/Loader";
@@ -29,11 +29,20 @@ const ProductList: React.FC<Props> = ({ productsData, loading, error }) => {
     );
   }
   return (
-    <SimpleGrid columns={{ base: 2, sm: 3, md: 3, lg: 4, xl: 6 }} spacing="3">
+    <Grid
+      templateColumns={{
+        base: "repeat(2, 1fr)",
+        sm: "repeat(3, 1fr)",
+        md: "repeat(3, 1fr)",
+        lg: "repeat(4, 1fr)",
+        xl: "repeat(5, 1fr)",
+      }}
+      gridGap={{ base: 2, sm: 2, md: 3 }}
+    >
       {products.map((product) => (
         <ProductItem product={product as ProductDto} key={`${product.id}`} />
       ))}
-    </SimpleGrid>
+    </Grid>
   );
 };
 

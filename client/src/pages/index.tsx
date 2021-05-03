@@ -40,11 +40,7 @@ const Home = () => {
 
   return (
     <Grid templateColumns={{ base: "repeat(1, 1fr)", md: "1fr 2fr 1fr" }}>
-      <FilterDrawer
-        isOpen={isOpen}
-        onOpen={onOpen}
-        onClose={onClose}
-      >
+      <FilterDrawer isOpen={isOpen} onOpen={onOpen} onClose={onClose}>
         <Box marginBottom="3" marginTop="2px" w="100%">
           <Filter
             setFilter={setFilter}
@@ -59,8 +55,7 @@ const Home = () => {
         marginBottom="3"
         marginTop="2px"
         minW={{ base: "100%", md: "240px" }}
-        maxW="240px"
-        w="100%"
+        maxW={{ base: "240px", xl: "300px" }}
         display={{ base: "none", md: "block" }}
       >
         <Filter
@@ -72,8 +67,8 @@ const Home = () => {
       </Box>
       <Flex direction="column">
         <Flex
-          marginLeft="3"
-          marginRight="3"
+          marginLeft={{ base: 2, md: 3 }}
+          marginRight={{ base: 2, md: 3 }}
           marginBottom="3"
           justifyContent="space-between"
         >
@@ -89,7 +84,7 @@ const Home = () => {
           </Box>
           <SortField setSort={setSort} />
         </Flex>
-        <Box margin="3" marginTop="0">
+        <Box margin={{ base: 2, md: 3 }} marginTop="0" justifyContent="center">
           <ProductList productsData={data} loading={loading} error={error} />
         </Box>
       </Flex>
