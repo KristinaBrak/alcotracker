@@ -114,7 +114,7 @@ const Filter: React.FC<FilterProps> = ({
         }}
       >
         <FilterCard text="Pavadinimas">
-          <NameFilter name={name} setName={setName} firstRef={firstRef} />
+          <NameFilter name={name} setName={setName} />
         </FilterCard>
         <FilterCard text="Nuolaida">
           <RangeFilter

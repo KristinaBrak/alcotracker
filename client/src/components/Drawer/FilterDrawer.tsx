@@ -14,7 +14,6 @@ interface FilterDrawerProps {
   isOpen: boolean;
   onOpen: () => void;
   onClose: () => void;
-  initialFocusRef: React.MutableRefObject<undefined>;
 }
 
 const FilterDrawer: React.FC<FilterDrawerProps> = ({
@@ -22,7 +21,6 @@ const FilterDrawer: React.FC<FilterDrawerProps> = ({
   isOpen,
   onOpen,
   onClose,
-  initialFocusRef,
 }) => {
   const { width } = useWindowSize();
   useEffect(() => {
@@ -34,7 +32,6 @@ const FilterDrawer: React.FC<FilterDrawerProps> = ({
       placement="left"
       onClose={onClose}
       isOpen={isOpen}
-      initialFocusRef={initialFocusRef}
     >
       <DrawerOverlay>
         <DrawerContent>

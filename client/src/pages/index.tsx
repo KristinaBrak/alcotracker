@@ -37,7 +37,6 @@ const Home = () => {
   });
 
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const firstRef = useRef();
 
   return (
     <Grid templateColumns={{ base: "repeat(1, 1fr)", md: "1fr 2fr 1fr" }}>
@@ -45,7 +44,6 @@ const Home = () => {
         isOpen={isOpen}
         onOpen={onOpen}
         onClose={onClose}
-        initialFocusRef={firstRef}
       >
         <Box marginBottom="3" marginTop="2px" w="100%">
           <Filter
@@ -53,7 +51,6 @@ const Home = () => {
             filter={filter}
             loading={loading}
             onSubmit={onClose}
-            firstRef={firstRef}
           />
         </Box>
       </FilterDrawer>
