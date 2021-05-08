@@ -46,13 +46,7 @@ const Home: React.FC<Props> = ({ displayNews }) => {
   return (
     <>
       {displayNews && <NewsBanner />}
-      <Grid
-        templateColumns={{
-          base: "repeat(1, 1fr)",
-          md: "2fr 5fr 0",
-          lg: "1fr 2fr 1fr",
-        }}
-      >
+      <Grid templateColumns={{ base: "repeat(1, 1fr)", md: "1fr 2fr 1fr" }}>
         <FilterDrawer isOpen={isOpen} onOpen={onOpen} onClose={onClose}>
           <Box marginBottom="3" marginTop="2px" w="100%">
             <Filter
