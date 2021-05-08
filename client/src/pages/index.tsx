@@ -4,6 +4,7 @@ import { useRouter } from "next/router";
 import React, { useEffect, useRef, useState } from "react";
 import FilterDrawer from "../components/Drawer/FilterDrawer";
 import Filter from "../components/Filter/Filter";
+import NewsBanner from "../components/NewsBanner/NewsBanner";
 import ProductList from "../components/Product/ProductList/ProdutList";
 import SortField from "../components/Sort/SortField";
 import {
@@ -15,7 +16,11 @@ import { parseFilterQuery } from "../utils/filter";
 import { parseSortQuery } from "../utils/sort";
 import { authenticate } from "../utils/ssr-authenticate";
 
-const Home = () => {
+type Props = {
+  displayNews: boolean;
+};
+
+const Home: React.FC<Props> = ({ displayNews }) => {
   const [value, setValue] = useState(80);
   const [take, setTake] = useState(value);
   const router = useRouter();
@@ -39,15 +44,33 @@ const Home = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
 
   return (
-    <Grid
-      templateColumns={{
-        base: "repeat(1, 1fr)",
-        md: "2fr 5fr 0",
-        lg: "1fr 2fr 1fr",
-      }}
-    >
-      <FilterDrawer isOpen={isOpen} onOpen={onOpen} onClose={onClose}>
-        <Box marginBottom="3" marginTop="2px" w="100%">
+    <>
+      {displayNews && <NewsBanner />}
+      <Grid
+        templateColumns={{
+          base: "repeat(1, 1fr)",
+          md: "2fr 5fr 0",
+          lg: "1fr 2fr 1fr",
+        }}
+      >
+        <FilterDrawer isOpen={isOpen} onOpen={onOpen} onClose={onClose}>
+          <Box marginBottom="3" marginTop="2px" w="100%">
+            <Filter
+              setFilter={setFilter}
+              filter={filter}
+              loading={loading}
+              onSubmit={onClose}
+            />
+          </Box>
+        </FilterDrawer>
+        <Box
+          marginLeft={{ base: "0", md: "3" }}
+          marginBottom="3"
+          marginTop="2px"
+          minW={{ base: "100%", md: "240px" }}
+          maxW={{ base: "240px", xl: "300px" }}
+          display={{ base: "none", md: "block" }}
+        >
           <Filter
             setFilter={setFilter}
             filter={filter}
@@ -55,46 +78,35 @@ const Home = () => {
             onSubmit={onClose}
           />
         </Box>
-      </FilterDrawer>
-      <Box
-        marginLeft={{ base: "0", md: "3" }}
-        marginBottom="3"
-        marginTop="2px"
-        minW={{ base: "100%", md: "240px" }}
-        maxW={{ base: "240px", xl: "300px" }}
-        display={{ base: "none", md: "block" }}
-      >
-        <Filter
-          setFilter={setFilter}
-          filter={filter}
-          loading={loading}
-          onSubmit={onClose}
-        />
-      </Box>
-      <Flex direction="column">
-        <Flex
-          marginLeft={{ base: 2, md: 3 }}
-          marginRight={{ base: 2, md: 3 }}
-          marginBottom="3"
-          justifyContent="space-between"
-        >
-          <Box display={{ base: "visible", md: "none" }}>
-            <IconButton
-              aria-label="Filtruoti"
-              size="md"
-              onClick={onOpen}
-              onout
-              icon={<HamburgerIcon />}
-              _focus={{ outline: 0 }}
-            />
+        <Flex direction="column">
+          <Flex
+            marginLeft={{ base: 2, md: 3 }}
+            marginRight={{ base: 2, md: 3 }}
+            marginBottom="3"
+            justifyContent="space-between"
+          >
+            <Box display={{ base: "visible", md: "none" }}>
+              <IconButton
+                aria-label="Filtruoti"
+                size="md"
+                onClick={onOpen}
+                onout
+                icon={<HamburgerIcon />}
+                _focus={{ outline: 0 }}
+              />
+            </Box>
+            <SortField setSort={setSort} />
+          </Flex>
+          <Box
+            margin={{ base: 2, md: 3 }}
+            marginTop="0"
+            justifyContent="center"
+          >
+            <ProductList productsData={data} loading={loading} error={error} />
           </Box>
-          <SortField setSort={setSort} />
         </Flex>
-        <Box margin={{ base: 2, md: 3 }} marginTop="0" justifyContent="center">
-          <ProductList productsData={data} loading={loading} error={error} />
-        </Box>
-      </Flex>
-    </Grid>
+      </Grid>
+    </>
   );
 };
 

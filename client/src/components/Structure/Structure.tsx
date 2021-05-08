@@ -1,5 +1,6 @@
 import { Flex, Slide } from "@chakra-ui/react";
 import React from "react";
+import NewsBanner from "../NewsBanner/NewsBanner";
 import Footer from "./Footer";
 import Header from "./Header";
 import MainContent from "./MainContent";

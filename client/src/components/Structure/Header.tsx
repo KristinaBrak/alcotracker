@@ -1,4 +1,4 @@
-import { Center, Heading } from "@chakra-ui/react";
+import { Center, Heading, Link } from "@chakra-ui/react";
 import React, { useEffect, useState } from "react";
 
 const quotes = [
@@ -33,9 +33,11 @@ const Header: React.FC = () => {
 
   return (
     <Center h="80px" bg="teal.100">
-      <Heading padding="10px" textAlign="center" size="lg">
-        {quote}
-      </Heading>
+      <Link href="/" _hover={{ textDecoration: "none" }}>
+        <Heading padding="10px" textAlign="center" size="lg">
+          {quote}
+        </Heading>
+      </Link>
     </Center>
   );
 };
