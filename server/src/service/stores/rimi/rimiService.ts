@@ -5,6 +5,7 @@ import { FetchData, Url } from '../../../types';
 import { Category, ApiProduct } from '../store.types';
 import { extractAlcVolume, extractVolume } from './rimi.utils';
 import { JSDOM } from 'jsdom';
+import { logger } from '../../../logger';
 
 interface RimiCategory {
   name: string;
@@ -20,7 +21,7 @@ const rimiAlcoholURL = 'https://www.rimi.lt/e-parduotuve/lt/produktai/alkoholini
 const requestOptions: AxiosRequestConfig = {
   headers: {
     Cookie:
-      'rimi_storefront_session=eyJpdiI6IkQ4MGtHampuXC9sWG5IMUxyd1pBQ0RnPT0iLCJ2YWx1ZSI6IkxtenlQazE1ZUFhbWdRMGhVeWd2Z0V6OHo3bVZJOVRHdVlBUnRMK2lDd1R5Q291VFlYWWVEUzhOWFNRbmx3OUE2b08rZXQ3OHczR1JmSmJSdE5LTlNQWFBGa09JS3VhQXBRUVZyUXVqdnpcL0NUelRrcXFHcDFuRHVhaWpKTG41RiIsIm1hYyI6IjRiYmVjZTA0MzViNjg2MDU0YTg0ZmE2NjkwOGFmN2NlYjc1NWJjYzRiYWMxMzllZDM2MTNkYTk1ZmM0YmJiZDYifQ%3D%3D; ',
+      'rimi_storefront_session=eyJpdiI6IlRpaFh3K3hndUxIWGVwemNzWXdTbVE9PSIsInZhbHVlIjoieFIrZlRHblkrZlB1MG5GSkhQS0piMTMxaTBFUGlCdlV4UG5jdmxnRU5MNmpqdXVFRERMWmUwWHJTdWVVYnZZeDVxWGxMODUxd0F2TEM2MjR0ZVUzcm1UMXR2cGsxSFFhZ1J1ZWZVcE9HZ1pIVTlHQjVhamw1NEF2Q1ZBaDIwY1AiLCJtYWMiOiI1ZjI5ODkyMjU5ZWVlOGNiZTUwZmZlNDI0NjM2YTYxNzY4ZmRmYzM4MGFlMzI5NTUyZDU5NmY5YTBmMDZkZTFhIn0%3D; ',
   },
 };
 
@@ -44,8 +45,8 @@ const convertToCategory = (category: string) => {
   return categoryDictionary[category.toLowerCase()] ?? Category.OTHER;
 };
 
-const fetchData: FetchData<string> = async (url: string) => {
-  const { data } = await axios.get<string>(url, requestOptions);
+const fetchData: FetchData<string> = async (url: string, options: AxiosRequestConfig) => {
+  const { data } = await axios.get<string>(url, options);
   return data;
 };
 
@@ -103,7 +104,8 @@ export const fetchRimiCategoryProducts = async ({ name, link }: RimiCategory) =>
     let nextPage: Url | undefined = link;
 
     while (nextPage) {
-      const data = await withCache(fetchData)(nextPage);
+      const data = await withCache(fetchData)(nextPage, requestOptions);
+
       products.push(...parseProducts(data, name));
       nextPage = parseNextPageUrl(data);
     }
@@ -118,19 +120,25 @@ const formatUrl = (link: string) => {
   return itemUrl;
 };
 
-const listItemToCategory = (acc: RimiCategory[], item: HTMLLIElement) => {
-  const anchor = item.querySelector('.-no-child a');
+const listItemToCategory = (acc: RimiCategory[], item: HTMLLIElement, dom: JSDOM) => {
+  const anchor = item.querySelector("a[role='menuitem']");
   const link = anchor?.getAttribute('href');
+
   if (link) {
     const name = anchor?.innerHTML?.trim() ?? '';
     return [...acc, { name, link: formatUrl(link) }];
   }
-  const nestedLink = item
-    .querySelector('ul li a.category-menu__category-link')
+  const dataId = item
+    .querySelector('button[data-target-descendant]')
+    ?.getAttribute('data-target-descendant');
+
+  const baseLink = dom.window.document
+    .querySelector(`div[data-index='${dataId}'] ul li a.base-category-link`)
     ?.getAttribute('href');
-  if (nestedLink) {
-    const name = item.firstChild?.textContent?.trim() ?? '';
-    return [...acc, { name, link: formatUrl(nestedLink) }];
+
+  if (baseLink) {
+    const name = item.textContent?.trim() ?? '';
+    return [...acc, { name, link: formatUrl(baseLink) }];
   }
   return acc;
 };
@@ -138,19 +146,31 @@ const listItemToCategory = (acc: RimiCategory[], item: HTMLLIElement) => {
 const fetchRimiCategories = (data: string) => {
   const dom = new JSDOM(data);
   const menu = dom.window.document.querySelector(
-    "#main nav .category-menu__wrapper a[href='/e-parduotuve/lt/produktai/alkoholiniai-gerimai/c/SH-1']",
-  )?.nextElementSibling;
+    "#main nav .category-menu a[href='/e-parduotuve/lt/produktai/alkoholiniai-gerimai/c/SH-1']",
+  )?.parentElement?.parentElement;
+
   const itemList = menu?.querySelectorAll('li');
+
   const items = Array.from(itemList ?? []);
-  const results = items.reduce<RimiCategory[]>(listItemToCategory, []);
+  const results = items.reduce<RimiCategory[]>(
+    (acc, item) => listItemToCategory(acc, item, dom),
+    [],
+  );
+
   return results;
 };
 
 export const fetchRimiProducts = async () => {
   const data = await withCache(fetchData)(rimiAlcoholURL, requestOptions);
   const rimiCategories = fetchRimiCategories(data);
-  const items = (
-    await Promise.all(rimiCategories.map(rimiCategory => fetchRimiCategoryProducts(rimiCategory)))
-  ).flat();
+  if (!rimiCategories.length) {
+    logger.error('Failed to get rimi categories!');
+  }
+
+  const items = (await Promise.all(rimiCategories.map(fetchRimiCategoryProducts))).flat();
+
+  if (!items.length) {
+    logger.error('failed to get rimi items!');
+  }
   return items;
 };

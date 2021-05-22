@@ -4,6 +4,12 @@ export type NewsEntry = {
 };
 
 export const news: NewsEntry[] = [
+  {
+    date: "2021-05-22",
+    content: [
+      "Dėl rimi puslapio pertvarkos, buvo sustoję rimi prekių registacija. Vėl sutaisyta.",
+    ],
+  },
   { date: "2021-05-08", content: ["Pataisyta rimi parduotuvės paieška"] },
   {
     date: "2021-05-03",
