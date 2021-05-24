@@ -84,6 +84,7 @@ const refreshMaterializedView = async (materializedView: string) => {
   const queryRunner: QueryRunner = connection.createQueryRunner();
   await queryRunner.connect();
   await queryRunner.query(`REFRESH MATERIALIZED VIEW ${materializedView}`);
+  await queryRunner.release();
   logger.info(`materialized view ${materializedView} refreshed`);
 };
 
