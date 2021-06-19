@@ -1,7 +1,7 @@
 import { HamburgerIcon } from "@chakra-ui/icons";
 import { Box, Flex, Grid, IconButton, useDisclosure } from "@chakra-ui/react";
 import { useRouter } from "next/router";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useState } from "react";
 import FilterDrawer from "../components/Drawer/FilterDrawer";
 import Filter from "../components/Filter/Filter";
 import NewsBanner from "../components/NewsBanner/NewsBanner";
@@ -41,7 +41,7 @@ const Home: React.FC<Props> = ({ displayNews }) => {
     },
   });
 
-  const { isOpen, onOpen, onClose } = useDisclosure();
+    const { isOpen, onOpen, onClose } = useDisclosure();
 
   return (
     <>

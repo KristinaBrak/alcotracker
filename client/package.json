@@ -27,7 +27,8 @@
     "next-pwa": "^5.2.18",
     "next-with-apollo": "^5.1.1",
     "react": "17.0.1",
-    "react-dom": "17.0.1"
+    "react-dom": "17.0.1",
+    "recharts": "^2.0.9"
   },
   "devDependencies": {
     "@graphql-codegen/cli": "1.20.1",
