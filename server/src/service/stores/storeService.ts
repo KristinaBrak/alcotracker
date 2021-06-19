@@ -4,6 +4,7 @@ import { fetchIkiProducts } from './iki/ikiService';
 import { fetchLidlProducts } from './lidl/lidlService';
 import { fetchRimiProducts } from './rimi/rimiService';
 import { ApiProduct } from './store.types';
+import { fetchVynotekaProducts } from './vynoteka/vynotekaService';
 
 export interface ApiStore {
   name: string;
@@ -25,4 +26,5 @@ export const stores: ApiStore[] = [
   { name: 'barbora', link: 'https://barbora.lt/', fn: fetchBarboraProducts },
   { name: 'lidl', link: 'https://www.lidl.lt/lt', fn: fetchLidlProducts },
   { name: 'iki', link: 'https://iki.lt/', fn: fetchIkiProducts },
+  { name: 'vynoteka', link: 'https://www.vynoteka.lt/', fn: fetchVynotekaProducts },
 ];

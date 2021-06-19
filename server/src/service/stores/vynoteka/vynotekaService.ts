@@ -4,6 +4,7 @@ import { withCache } from '../../../cache';
 import { FetchData, Url } from '../../../types';
 import { ApiProduct, Category } from '../store.types';
 import { groupBy } from 'ramda';
+import { logger } from '../../../logger';
 
 interface VynotekaCategory {
   name: string;
@@ -106,7 +107,8 @@ const fetchVynotekaCategoryProducts = async (urlPath: string): Promise<ApiProduc
 
 export const fetchVynotekaProducts = async () => {
   const items = (await Promise.all(drinkTypeUrls.map(fetchVynotekaCategoryProducts))).flat();
-  console.log(items.length);
-  console.log({ item: items[0] });
+  if (!items.length) {
+    logger.error('failed to get rimi items!');
+  }
   return items;
 };
