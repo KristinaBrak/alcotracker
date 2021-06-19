@@ -41,7 +41,7 @@ const Home: React.FC<Props> = ({ displayNews }) => {
     },
   });
 
-    const { isOpen, onOpen, onClose } = useDisclosure();
+  const { isOpen, onOpen, onClose } = useDisclosure();
 
   return (
     <>
