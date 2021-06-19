@@ -1,15 +1,9 @@
 import axios from 'axios';
 import { JSDOM } from 'jsdom';
 import { withCache } from '../../../cache';
-import { FetchData, Url } from '../../../types';
-import { ApiProduct, Category } from '../store.types';
-import { groupBy } from 'ramda';
 import { logger } from '../../../logger';
-
-interface VynotekaCategory {
-  name: string;
-  link: Url;
-}
+import { FetchData } from '../../../types';
+import { ApiProduct, Category } from '../store.types';
 
 const drinkTypeUrls = ['vynas', 'stiprieji-alkoholiniai-gerimai', 'alus'];
 
@@ -23,7 +17,7 @@ const convertToCategory = (category: string) => {
   return categoryDictionary[category.toLowerCase()] ?? Category.OTHER;
 };
 
-const vynotekaURL: Url = 'https://www.vynoteka.lt';
+const vynotekaURL = 'https://www.vynoteka.lt';
 
 const fetchData: FetchData<string> = async (url: string) => {
   const { data } = await axios.get<string>(url);
@@ -108,7 +102,7 @@ const fetchVynotekaCategoryProducts = async (urlPath: string): Promise<ApiProduc
 export const fetchVynotekaProducts = async () => {
   const items = (await Promise.all(drinkTypeUrls.map(fetchVynotekaCategoryProducts))).flat();
   if (!items.length) {
-    logger.error('failed to get rimi items!');
+    logger.error('failed to get vynoteka items!');
   }
   return items;
 };

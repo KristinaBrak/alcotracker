@@ -1,9 +1,11 @@
 import axios from 'axios';
 import { JSDOM } from 'jsdom';
-import { Url } from '../../../types';
+import { FetchData, Url } from '../../../types';
 import { Category, ApiProduct } from '../store.types';
 import querystring from 'query-string';
 import { logger } from '../../../logger';
+import { withCache } from '../../../cache';
+import { barboraConfig } from './barbora.config';
 
 interface BarboraCategory {
   name: string;
@@ -12,24 +14,9 @@ interface BarboraCategory {
 
 const barboraURL = 'https://barbora.lt';
 
-// TODO clear uneeded header
-const config = {
-  headers: {
-    Connection: 'keep-alive',
-    'Cache-Control': 'max-age=0',
-    'Upgrade-Insecure-Requests': '1',
-    'User-Agent':
-      'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4147.89 Safari/537.36',
-    Accept:
-      'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9',
-    'Sec-Fetch-Site': 'none',
-    'Sec-Fetch-Mode': 'navigate',
-    'Sec-Fetch-User': '?1',
-    'Sec-Fetch-Dest': 'document',
-    'Accept-Language': 'en-US,en;q=0.9',
-    Cookie:
-      'f5avraaaaaaaaaaaaaaaa_session_=IAGNLHJNLEEOFFIBOOFJOBKBNCLMCNIOOAOEFDMGEJMDHNJLFHEHOBFALGGFCDFHAMIDKCMFCMJLMCBDFBKAMNPKPCGHONOIMKICOEICNEGEBPFCGEFFFLFBBMGEALJC; region=barbora.lt; _fbp=fb.1.1612524867873.567810989; f5avraaaaaaaaaaaaaaaa_session_=JGONBLKHDOKGHPCOABKIIOKCANBOHJKCIIHLHDGINOPIOEDKGEGMELDAAFNNIFCHEJCDKHFNFMOMCIGHFMBABMJBJCBHEIFNOCCFGINDGMLEAOFEOLIDGLDHBBEKHGNN',
-  },
+const fetchData: FetchData<string> = async (url: string) => {
+  const { data } = await axios.get<string>(url, barboraConfig);
+  return data;
 };
 
 const extractAlcVolume = (productName: string): ApiProduct['alcVolume'] => {
@@ -66,7 +53,8 @@ const convertToCategory = (category: string) => {
     ['nealkoholiniai gėrimai']: Category.FREE,
     ['stiprieji alkoholiniai gėrimai']: Category.STRONG,
     ['vynas']: Category.WINE,
-    ['alus ir sidras']: Category.LIGHT,
+    ['alus']: Category.LIGHT,
+    ['sidras ir kokteiliai']: Category.LIGHT,
   };
 
   return categoryDictionary[category.toLowerCase()] ?? Category.OTHER;
@@ -92,83 +80,84 @@ const fetchBarboraProductCategories = async (data: string): Promise<BarboraCateg
   }, []);
 };
 
-const fetchBarboraCategoryProductsTODO = async ({ name, link }: BarboraCategory) => {
-  const { data } = await axios.get(link, config);
-  const dom = new JSDOM(data);
-  const pageList = dom.window.document.querySelector('ul.pagination');
-  const pageLinks = Array.from(pageList!.querySelectorAll('a'));
-  const nextLink = pageLinks[pageLinks.length - 1].getAttribute('href')!;
+const parseProducts =
+  (data: string) =>
+  (category: Category): ApiProduct[] => {
+    const dom = new JSDOM(data);
 
-  const {
-    query: { page: nextPageValue },
-  } = querystring.parseUrl(nextLink);
-  const nextPage = Number(nextPageValue);
+    const productElements = Array.from(dom.window.document.querySelectorAll('div.b-product--wrap'));
 
-  const activePage = Number(pageList?.querySelector('.active a')?.textContent);
+    const products = productElements.reduce<ApiProduct[]>((acc, el) => {
+      const linkElement = el.querySelector(
+        'div.b-product-wrap-img a.b-product--imagelink.b-link--product-info',
+      );
 
-  while (activePage < nextPage) {}
-};
+      const link = barboraURL + linkElement?.getAttribute('href');
 
-const fetchBarboraCategoryProducts = async ({
-  name,
-  link,
-}: BarboraCategory): Promise<ApiProduct[]> => {
+      const productName = el.querySelector("span[itemprop='name']")?.textContent ?? '';
+      const priceLabel = el.querySelector("span[itemprop='price']")?.getAttribute('content') ?? '';
+      const price = Number(priceLabel);
+      const image = el.querySelector("img[itemprop='image']")?.getAttribute('src') ?? '';
+
+      const product: ApiProduct = {
+        name: productName,
+        category: category,
+        price,
+        alcVolume: extractAlcVolume(productName),
+        volume: extractVolume(productName),
+        link,
+        image: barboraURL + image,
+      };
+
+      return price ? [...acc, product] : acc;
+    }, []);
+
+    return products;
+  };
+
+async function* fetchNextPage(url: string): any {
   const {
     query: { page },
-  } = querystring.parseUrl(link);
-
-  const { data } = await axios.get(link, config);
+  } = querystring.parseUrl(url);
+  console.log({ url });
+  const data = await withCache(fetchData)(url);
   const dom = new JSDOM(data);
-
   const pageList = dom.window.document.querySelector('ul.pagination');
   const pageListLength = pageList?.children.length ?? 1;
   const nextPageLinkElement = pageList?.children[pageListLength - 1].querySelector('a');
-  const nextPageUrl = barboraURL + nextPageLinkElement?.getAttribute('href') ?? undefined;
+  const nextPageLink = barboraURL + nextPageLinkElement?.getAttribute('href') ?? undefined;
   const {
     query: { page: nextPage },
-  } = querystring.parseUrl(nextPageUrl);
-
-  const productElements = Array.from(dom.window.document.querySelectorAll('div.b-product--wrap'));
-
-  const products = productElements.reduce<ApiProduct[]>((acc, el) => {
-    const linkElement = el.querySelector(
-      'div.b-product-wrap-img a.b-product--imagelink.b-link--product-info',
-    );
-
-    const link = barboraURL + linkElement?.getAttribute('href');
-
-    const productName = el.querySelector("span[itemprop='name']")?.textContent ?? '';
-    const priceLabel = el.querySelector("span[itemprop='price']")?.getAttribute('content') ?? '';
-    const price = Number(priceLabel);
-    const image = el.querySelector("img[itemprop='image']")?.getAttribute('src') ?? '';
-
-    const product: ApiProduct = {
-      name: productName,
-      category: convertToCategory(name),
-      price,
-      alcVolume: extractAlcVolume(productName),
-      volume: extractVolume(productName),
-      link,
-      image: barboraURL + image,
-    };
-
-    return price ? [...acc, product] : acc;
-  }, []);
-
-  if (page === nextPage) {
-    return products;
+  } = querystring.parseUrl(nextPageLink);
+  if (page !== nextPage) {
+    yield data;
+    yield* fetchNextPage(nextPageLink);
   }
+}
 
-  return products.concat(await fetchBarboraCategoryProducts({ name, link: nextPageUrl }));
+const fetchBarboraCategoryProducts = async (
+  apiCategory: BarboraCategory,
+): Promise<ApiProduct[]> => {
+  const category = convertToCategory(apiCategory.name);
+
+  const results: ApiProduct[][] = [];
+  for await (const data of fetchNextPage(apiCategory.link)) {
+    const products = parseProducts(data)(category);
+    results.push(products);
+  }
+  return results.flat();
 };
 
 export const fetchBarboraProducts = async () => {
-  const { data } = await axios.get(barboraURL + '/gerimai', config);
+  const { data } = await axios.get(barboraURL + '/gerimai', barboraConfig);
 
   const barboraCategories = await fetchBarboraProductCategories(data);
 
-  const products = (
-    await Promise.all(barboraCategories.map(category => fetchBarboraCategoryProducts(category)))
-  ).flat();
+  const products = (await Promise.all(barboraCategories.map(fetchBarboraCategoryProducts))).flat();
+
+  if (!products.length) {
+    logger.error('failed to get barbora items!');
+  }
+
   return products;
 };

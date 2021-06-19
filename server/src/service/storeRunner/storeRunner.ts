@@ -7,9 +7,9 @@ import { logger } from '../../logger';
 import { ApiProduct } from '../stores/store.types';
 import { ApiStore, stores } from '../stores/storeService';
 
-const updateStores = async () => {
-  const dbStores = await Store.find();
-  for (const { name: storeName, link } of stores) {
+const updateStore =
+  (dbStores: Store[]) =>
+  async ({ name: storeName, link }: ApiStore) => {
     const storeExist = dbStores.some(({ name }) => storeName === name);
     if (!storeExist) {
       const store = new Store();
@@ -18,7 +18,11 @@ const updateStores = async () => {
       logger.info(`creating store ${storeName}`);
       await Store.save(store);
     }
-  }
+  };
+
+const updateStores = async () => {
+  const dbStores = await Store.find();
+  stores.forEach(updateStore(dbStores));
 };
 
 const updateStoreProducts = async (store: Store, products: ApiProduct[]) => {
