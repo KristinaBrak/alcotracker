@@ -120,7 +120,7 @@ const formatUrl = (link: string) => {
   return itemUrl;
 };
 
-const listItemToCategory = (acc: RimiCategory[], item: HTMLLIElement, dom: JSDOM) => {
+const listItemToCategory = (dom: JSDOM) => (acc: RimiCategory[], item: HTMLLIElement) => {
   const anchor = item.querySelector("a[role='menuitem']");
   const link = anchor?.getAttribute('href');
 
@@ -152,10 +152,7 @@ const fetchRimiCategories = (data: string) => {
   const itemList = menu?.querySelectorAll('li');
 
   const items = Array.from(itemList ?? []);
-  const results = items.reduce<RimiCategory[]>(
-    (acc, item) => listItemToCategory(acc, item, dom),
-    [],
-  );
+  const results = items.reduce<RimiCategory[]>(listItemToCategory(dom), []);
 
   return results;
 };
