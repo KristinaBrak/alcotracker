@@ -119,7 +119,6 @@ async function* fetchNextPage(url: string): any {
   const {
     query: { page },
   } = querystring.parseUrl(url);
-  console.log({ url });
   const data = await withCache(fetchData)(url);
   const dom = new JSDOM(data);
   const pageList = dom.window.document.querySelector('ul.pagination');

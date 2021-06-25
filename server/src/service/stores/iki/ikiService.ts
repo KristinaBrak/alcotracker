@@ -1,6 +1,7 @@
 import axios from 'axios';
 import { JSDOM } from 'jsdom';
 import { withCache } from '../../../cache';
+import { logger } from '../../../logger';
 import { FetchData } from '../../../types';
 import { ApiProduct, Category } from '../store.types';
 
@@ -22,7 +23,7 @@ const convertToCategory = (category: string): Category => {
 
 const fetchHtml: FetchData<string> = async (url: string) => {
   const { data } = await axios.get(url).catch(() => {
-    throw new Error('Lidl API error');
+    throw new Error(`Iki API error at ${url}`);
   });
 
   return data;
@@ -127,29 +128,36 @@ const getPageCount = (html: string): number => {
   return lastPageNode ? Number(lastPageNode.innerHTML) : 1;
 };
 
+export const parsePageUrls = (route: string) => (html: string) => {
+  const pageCount = getPageCount(html);
+  const pageNumbers = Array.from(Array(pageCount + 1).keys()).filter(num => num > 1);
+  return pageNumbers.map(page => `${alcUrl}page/${page}${route}`);
+};
+
+export const mapPageToApiProducts =
+  (category: string) => (route: string) => async (url: string) => {
+    const htmlPage = await withCache(fetchHtml)(url);
+    return parseIkiCategoryProducts(htmlPage, category, route);
+  };
+
+export const mapCategoryToApiProducts = async ({
+  category,
+  route,
+}: IkiCategoryType): Promise<ApiProduct[]> => {
+  const html = await withCache(fetchHtml)(alcUrl + route);
+  const pagedUrls = parsePageUrls(route)(html);
+  return (
+    await Promise.all([alcUrl + route, ...pagedUrls].map(mapPageToApiProducts(category)(route)))
+  ).flat();
+};
+
 export const fetchIkiProducts = async () => {
   const alcCategoriesHtml = await withCache(fetchHtml)(alcUrl);
-
   const categories = parseCategories(alcCategoriesHtml);
-  const products = (
-    await Promise.all(
-      categories.map(async ({ category, route }) => {
-        const html = await withCache(fetchHtml)(alcUrl + route);
-        const pageCount = getPageCount(html);
-        const pageNumbers = Array.from(Array(pageCount + 1).keys()).filter(num => num > 1);
-        const pagedUrls = pageNumbers.map(page => `${alcUrl}page/${page}${route}`);
-        const allProducts = (
-          await Promise.all(
-            [alcUrl + route, ...pagedUrls].map(async url => {
-              const htmlPage = await withCache(fetchHtml)(url);
-              return parseIkiCategoryProducts(htmlPage, category, route);
-            }),
-          )
-        ).flat();
-        return allProducts;
-      }),
-    )
-  ).flat();
+  const products = (await Promise.all(categories.map(mapCategoryToApiProducts))).flat();
+  if (!products.length) {
+    logger.error('Iki products failed to fetch');
+  }
 
   return products;
 };
