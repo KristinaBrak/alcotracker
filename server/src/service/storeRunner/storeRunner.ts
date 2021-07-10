@@ -98,6 +98,6 @@ const refreshMaterializedView = async (materializedView: string) => {
 export const executeStoreRunner = async () => {
   logger.info('executing store runner');
   await updateStores();
-  await Promise.all(stores.map(fetchAndUpdateStoreProducts));
+  await Promise.all(stores.map(fetchAndUpdateStoreProducts)).catch(e => logger.error(e));
   await refreshMaterializedView('product_statistic');
 };
