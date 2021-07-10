@@ -22,6 +22,7 @@
     "cheerio": "^1.0.0-rc.5",
     "class-validator": "^0.13.1",
     "dotenv": "^8.2.0",
+    "fp-ts": "^2.10.5",
     "graphql": "^15.5.0",
     "ioredis": "^4.19.4",
     "jsdom": "^16.4.0",
@@ -29,7 +30,6 @@
     "pg": "^8.4.0",
     "puppeteer": "^9.1.1",
     "query-string": "^6.13.8",
-    "ramda": "^0.27.1",
     "reflect-metadata": "^0.1.10",
     "type-graphql": "^1.1.1",
     "type-graphql-filter": "^0.2.2",
@@ -42,7 +42,6 @@
     "@types/jsdom": "^16.2.6",
     "@types/node": "^14.14.22",
     "@types/node-cron": "^2.0.3",
-    "@types/ramda": "types/npm-ramda#dist",
     "nodemon": "^2.0.7",
     "ts-node": "^9.1.1",
     "typescript": "^4.1.3"
