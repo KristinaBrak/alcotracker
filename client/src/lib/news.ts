@@ -5,7 +5,7 @@ export type NewsEntry = {
 
 export const news: NewsEntry[] = [
   {
-    date: "2021-06-19",
+    date: "2021-07-10",
     content: ["Pridėta nauja parduotuvė: Vynoteka"],
   },
   {

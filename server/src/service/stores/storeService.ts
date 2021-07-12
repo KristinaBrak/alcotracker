@@ -1,10 +1,10 @@
-import { fetchBarboraProducts } from './barbora/barboraService';
-import { fetchBottleryProducts } from './bottlery/bottleryService';
-import { fetchIkiProducts } from './iki/ikiService';
-import { fetchLidlProducts } from './lidl/lidlService';
-import { fetchRimiProducts } from './rimi/rimiService';
+import { fetchBarboraProducts } from './barbora/barbora.service';
+import { fetchBottleryProducts } from './bottlery/bottlery.service';
+import { fetchIkiProducts } from './iki/iki.service';
+import { fetchLidlProducts } from './lidl/lidl.service';
+import { fetchRimiProducts } from './rimi/rimi.service';
 import { ApiProduct } from './store.types';
-import { fetchVynotekaProducts } from './vynoteka/vynotekaService';
+import { fetchVynotekaProducts } from './vynoteka/vynoteka.service';
 
 export interface ApiStore {
   name: string;

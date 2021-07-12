@@ -1,9 +1,21 @@
+import { Category } from '../store.types';
+
+export type VynotekaApiCategory = {
+  name: string;
+  query: string;
+  category: Category;
+};
+
+export type VynotekaApiResponse = {
+  list: VynotekaApiResponseProduct[];
+};
+
 export type Attr = {
   [key: string]: {
     [key: string]: string;
   };
 };
-export type ApiResponseProduct = {
+export type VynotekaApiResponseProduct = {
   id: number;
   product_type: string;
   label: string;
@@ -34,8 +46,7 @@ export type ApiResponseProduct = {
 //   alcohol: '1',
 //   energy_drink: null,
 //   country_of_origin_id: '55',
-//   rdp: null,
-//   rdqty: null,
+//   rdp: null, //   rdqty: null,
 //   rdsku: null,
 //   rdbar: null,
 //   rdl: null,

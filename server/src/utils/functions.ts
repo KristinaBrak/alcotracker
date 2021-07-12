@@ -14,7 +14,9 @@ export function prop<K extends string, T extends Record<K, any>>(
   }
 }
 
-export const trace = <T>(tag: string, x: T) => {
-  console.log(tag, x);
-  return x;
-};
+export const trace =
+  <T>(tag: string) =>
+  (x: T) => {
+    console.log(tag, x);
+    return x;
+  };
