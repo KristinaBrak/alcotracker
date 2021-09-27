@@ -18,7 +18,7 @@ const fetchData: FetchData<VynotekaApiResponse> = async (url: string) => {
 
 const vynotekaURL = 'https://www.vynoteka.lt';
 const vynotekaBaseApiUrl = 'https://vynoteka.lt/api/product/list?categories';
-const vynotekaMedia = 'https://vynoteka.lt/upload/media/cache/248_600/';
+// const vynotekaMedia = 'https://vynoteka.lt/upload/media/cache/150_300/';
 
 const apiCategories: VynotekaApiCategory[] = [
   { name: 'vynas', query: '%5B1%5D=102', category: Category.WINE },
@@ -33,7 +33,7 @@ const mapApiResponseItemToApiItem =
     return {
       name: label,
       link: vynotekaURL + slug,
-      image: vynotekaMedia + md,
+      image: vynotekaURL + md,
       price: parsePrice(p.pr), // not worth getting the product if didn't manage to get price
       category,
       volume: parseVolume(attr)(['qty', 'vol'])(5),

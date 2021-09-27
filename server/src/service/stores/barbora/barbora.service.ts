@@ -106,7 +106,7 @@ const parseProducts =
         alcVolume: extractAlcVolume(productName),
         volume: extractVolume(productName),
         link,
-        image: barboraURL + image,
+        image: image,
       };
 
       return price ? [...acc, product] : acc;
