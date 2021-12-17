@@ -28,7 +28,7 @@ const updateStores = async () => {
   }
 };
 
-const updateStoreProducts = async (store: Store, products: readonly ApiProduct[]) => {
+const updateStoreProducts = async (store: Store, products: ApiProduct[]) => {
   const CategoryRepository = getConnection().getRepository(Category);
   const dbCategories = await CategoryRepository.find();
   for (const { category, image, link, name, price, alcVolume, volume } of products) {
