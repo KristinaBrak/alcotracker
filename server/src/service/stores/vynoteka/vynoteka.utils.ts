@@ -3,15 +3,13 @@ import * as O from 'fp-ts/Option';
 import * as A from 'fp-ts/Array';
 import * as ROA from 'fp-ts/ReadonlyArray';
 import { flow } from 'fp-ts/lib/function';
-import { prop, replace, trace } from '../../../utils/functions';
+import { prop, replace } from '../../../utils/functions';
 
 export const atIndex = (attr: Attr) => (index: number) => O.fromNullable(attr[index]);
 export const extract = (obj: any): O.Option<any> => O.fromNullable(Object.values(obj)[0]);
 
-export const parseNumeric = flow(
-  replace(',')('.'),
-  Number,
-  (val): O.Option<number> => (val === NaN ? O.none : O.some(val)),
+export const parseNumeric = flow(replace(',')('.'), Number, val =>
+  isNaN(val) ? O.none : O.some(val),
 );
 
 export const propToNumber = (propStr: string) =>
