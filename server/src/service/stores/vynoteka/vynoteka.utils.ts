@@ -11,7 +11,7 @@ export const extract = (obj: any): O.Option<any> => O.fromNullable(Object.values
 export const parseNumeric = flow(
   replace(',')('.'),
   Number,
-  (val): O.Option<number> => (val === NaN ? O.none : O.some(val)),
+  (val): O.Option<number> => (isNaN(val) ? O.none : O.some(val)),
 );
 
 export const propToNumber = (propStr: string) =>
