@@ -9,7 +9,7 @@ select 1 from
 	left outer join price p2 on (prod.id = p2."productId" and 
 		(p1."createdAt" < p2."createdAt" or (p1."createdAt" = p2."createdAt" and p1.id < p2.id)))
 	where p2.id is null 
-		and p1."createdAt" < now() - interval '2 week'
+		and p1."createdAt" < now() - interval '1 week'
 	) as oldproduct
 where oldproduct.id = pt.id
 );

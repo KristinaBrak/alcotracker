@@ -33,7 +33,7 @@ export type VynotekaApiResponseProduct = {
   };
   cor: any;
   c: any;
-  attr?: Attr;
+  attr: Attr;
 };
 
 // {
