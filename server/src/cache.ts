@@ -4,28 +4,32 @@ import { CACHE_DURATION_SECONDS } from './consts';
 import { logger } from './logger';
 import { FetchData } from './types';
 
-export const REDIS_HOST = process.env.REDIS_HOST ?? 'localhost:6379';
+const REDIS_HOST = process.env.REDIS_HOST ?? 'localhost:6379';
 
-export const cache = new Redis(REDIS_HOST).on('error', error => {
-  logger.error(`Redis is not swimming ${error}`);
-  exit(2);
-});
+// const cache = new Redis(REDIS_HOST).on('error', error => {
+//   logger.error(`Redis is not swimming ${error}`);
+//   exit(2);
+// });
 
-export const withCache = <T>(fn: FetchData<T>) => async (
-  key: string,
-  ...args: any[]
-): Promise<T> => {
-  const cachedItems = await cache.get(key);
-  if (cachedItems) {
-    logger.debug('cache hit', key);
+export const withCache =
+  <T>(fn: FetchData<T>) =>
+  async (key: string, ...args: any[]): Promise<T> =>
+    fn(key, ...args);
 
-    return JSON.parse(cachedItems);
-  }
+// export const withCache =
+//   <T>(fn: FetchData<T>) =>
+//   async (key: string, ...args: any[]): Promise<T> => {
+//     const cachedItems = await cache.get(key);
+//     if (cachedItems) {
+//       logger.debug('cache hit', key);
 
-  return fn(key, ...args).then(async data => {
-    logger.debug('writting to cache', key);
+//       return JSON.parse(cachedItems);
+//     }
 
-    await cache.setex(key, CACHE_DURATION_SECONDS, JSON.stringify(data));
-    return data;
-  });
-};
+//     return fn(key, ...args).then(async data => {
+//       logger.debug('writting to cache', key);
+
+//       await cache.setex(key, CACHE_DURATION_SECONDS, JSON.stringify(data));
+//       return data;
+//     });
+//   };
