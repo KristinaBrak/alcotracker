@@ -49,7 +49,7 @@ export const parsePrice = flow(
 );
 
 export const parseAlcVolume = (attr: Attr) => (prop: string) =>
-  flow(extractAttr(attr), O.map(propToNumber(prop)), O.flatten, O.toUndefined);
+  flow(extractAttr(attr), O.chain(propToNumber(prop)), O.toUndefined);
 
 export const parseVolume = (attr: Attr) => (props: Array<keyof VolumeType>) =>
   flow(extractAttr(attr), O.chain(getVolume(props)), O.toUndefined);

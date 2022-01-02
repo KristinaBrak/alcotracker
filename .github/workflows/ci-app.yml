@@ -25,13 +25,13 @@ jobs:
         with:
           context: server
           file: server/Dockerfile
-          platforms: linux/arm/v7
+          # platforms: linux/arm/v7
           push: true
           tags: mantassidabras/alcotracker:latest
 
   client-build-and-push-image:
     runs-on: ubuntu-latest
-    steps: 
+    steps:
       - name: checkout
         uses: actions/checkout@v2
       - name: Set up QEMU
@@ -45,9 +45,9 @@ jobs:
           password: ${{ secrets.DOCKER_PASSWORD }}
       - name: Build and push client
         uses: actions/setup-node@v1
-        with: 
+        with:
           node-version: 14.x
       - run: cd client && yarn install
-      - run: cd client && yarn build 
-      - run: cd client && docker buildx build --platform linux/arm/v7 -t mantassidabras/alcotracker-web:latest . --push
-          
+      - run: cd client && yarn build
+      - run: cd client && docker buildx build -t mantassidabras/alcotracker-web:latest . --push
+
