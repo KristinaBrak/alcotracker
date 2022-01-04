@@ -12,4 +12,4 @@ COPY package.json .
 RUN yarn install
 COPY . .
 RUN yarn build
-CMD "yarn migration:run; yarn start-prod"
+CMD "yarn" "start-prod"
