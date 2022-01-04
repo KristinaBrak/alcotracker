@@ -1,6 +1,7 @@
 {
   "compilerOptions": {
     "target": "es6",
+    "types": ["node", "jest"],
     "module": "commonjs",
     "lib": ["dom", "es6", "es2017", "es2019", "esnext.asynciterable"],
     "skipLibCheck": true,
@@ -15,6 +16,7 @@
     "noImplicitReturns": true,
     "noFallthroughCasesInSwitch": true,
     "allowSyntheticDefaultImports": true,
+    "forceConsistentCasingInFileNames": true,
     "esModuleInterop": true,
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,

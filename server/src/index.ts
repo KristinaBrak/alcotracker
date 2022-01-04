@@ -13,9 +13,11 @@ const PORT = process.env.PORT || 4000;
 
 (async () => {
   logger.info('Starting alcotracker');
+
   const connection = await getConnectionOptions(dbName).then(options =>
     createConnection({ ...options, name: 'default' }),
   );
+
   logger.info('connected to database');
   await connection.runMigrations();
   logger.info('migrations completed');

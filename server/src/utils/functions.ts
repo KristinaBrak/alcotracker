@@ -20,3 +20,8 @@ export const trace =
     console.log(tag, x);
     return x;
   };
+
+export const inc = (x: number) => x + 1;
+export const text = (x: string) => {
+  return x;
+};
