@@ -9,6 +9,9 @@
     "dev": "nodemon --exec ts-node --type-check src/index.ts",
     "build": "tsc --project ./",
     "test": "echo \"Error: no test specified\" && exit 1",
+    "sync": "./node_modules/.bin/ts-node ./node_modules/.bin/typeorm schema:sync",
+    "sync:log": "./node_modules/.bin/ts-node ./node_modules/.bin/typeorm schema:log",
+    "migration:run": "./node_modules/.bin/ts-node ./node_modules/.bin/typeorm migration:run",
     "migration:generate": "./node_modules/.bin/ts-node ./node_modules/.bin/typeorm migration:generate",
     "migration:revert": "./node_modules/.bin/ts-node ./node_modules/.bin/typeorm migration:revert"
   },

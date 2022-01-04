@@ -17,8 +17,6 @@ const PORT = process.env.PORT || 4000;
     createConnection({ ...options, name: 'default' }),
   );
   logger.info('connected to database');
-  await connection.runMigrations();
-  logger.info('migrations completed');
 
   const schema = await buildSchema({
     resolvers: [__dirname + '/resolvers/**/*.resolver.{ts,js}'],
