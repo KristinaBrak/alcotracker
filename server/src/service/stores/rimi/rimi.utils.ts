@@ -29,3 +29,8 @@ export const extractVolume = (productName: string): ApiProduct['volume'] => {
   }
   return;
 };
+
+export const deduplicate =
+  (prop: string) =>
+  <T extends { [key: string]: any }>(acc: T[], item: T) =>
+    acc.find(a => a[prop] === item[prop]) ? acc : [...acc, item];

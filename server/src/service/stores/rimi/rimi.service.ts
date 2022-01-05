@@ -3,7 +3,7 @@ import cheerio from 'cheerio';
 import { withCache } from '../../../cache';
 import { FetchData, Url } from '../../../types';
 import { Category, ApiProduct } from '../store.types';
-import { extractAlcVolume, extractVolume } from './rimi.utils';
+import { deduplicate, extractAlcVolume, extractVolume } from './rimi.utils';
 import { JSDOM } from 'jsdom';
 import { logger } from '../../../logger';
 
@@ -158,14 +158,15 @@ const fetchRimiCategories = (data: string) => {
 };
 
 export const fetchRimiProducts = async () => {
+  console.log('fetching rimi products');
   const data = await withCache(fetchData)(rimiAlcoholURL, requestOptions);
   const rimiCategories = fetchRimiCategories(data);
   if (!rimiCategories.length) {
     logger.error('Failed to get rimi categories!');
   }
 
-  const items = (await Promise.all(rimiCategories.map(fetchRimiCategoryProducts))).flat();
-
+  const apiItems = (await Promise.all(rimiCategories.map(fetchRimiCategoryProducts))).flat();
+  const items = apiItems.reduce<ApiProduct[]>(deduplicate('name'), []);
   if (!items.length) {
     logger.error('failed to get rimi items!');
   }
