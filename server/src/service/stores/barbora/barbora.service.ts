@@ -1,11 +1,11 @@
 import axios from 'axios';
 import { JSDOM } from 'jsdom';
-import { FetchData, Url } from '../../../types';
+import { Url } from '../../../types';
 import { Category, ApiProduct } from '../store.types';
 import querystring from 'query-string';
 import { logger } from '../../../logger';
-import { withCache } from '../../../cache';
 import { barboraConfig } from './barbora.config';
+import { fetchData } from '../../../utils/api.utils';
 
 interface BarboraCategory {
   name: string;
@@ -13,11 +13,6 @@ interface BarboraCategory {
 }
 
 const barboraURL = 'https://barbora.lt';
-
-const fetchData: FetchData<string> = async (url: string) => {
-  const { data } = await axios.get<string>(url, barboraConfig);
-  return data;
-};
 
 const extractAlcVolume = (productName: string): ApiProduct['alcVolume'] => {
   const alcVolumeText = productName.match(/\d?\d?\,?\d\s?%/);
@@ -119,7 +114,7 @@ async function* fetchNextPage(url: string): any {
   const {
     query: { page },
   } = querystring.parseUrl(url);
-  const data = await withCache(fetchData)(url);
+  const data = await fetchData(url);
   const dom = new JSDOM(data);
   const pageList = dom.window.document.querySelector('ul.pagination');
   const pageListLength = pageList?.children.length ?? 1;
