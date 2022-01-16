@@ -9,7 +9,7 @@ import { fetchVynotekaProducts } from './vynoteka/vynoteka.service';
 export interface ApiStore {
   name: string;
   link: string;
-  fn: () => Promise<ApiProduct[]>;
+  fn: () => Promise<readonly ApiProduct[]>;
 }
 
 export const stores: ApiStore[] = [

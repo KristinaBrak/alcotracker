@@ -1,20 +1,13 @@
-import axios from 'axios';
-import { withCache } from '../../../cache';
 import { logger } from '../../../logger';
-import { FetchData } from '../../../types';
 import { ApiProduct, Category } from '../store.types';
 import {
   VynotekaApiCategory,
   VynotekaApiResponse,
   VynotekaApiResponseProduct,
 } from './vynoteka.types';
-import { parseAlcVolume, parseNumeric, parsePrice, parseVolume } from './vynoteka.utils';
+import { parseAlcVolume, parsePrice, parseVolume } from './vynoteka.utils';
 import * as A from 'fp-ts/Array';
-
-const fetchData: FetchData<VynotekaApiResponse> = async (url: string) => {
-  const { data } = await axios.get<VynotekaApiResponse>(url);
-  return data;
-};
+import { fetchData } from '../../../utils/api.utils';
 
 const vynotekaURL = 'https://www.vynoteka.lt';
 const vynotekaBaseApiUrl = 'https://vynoteka.lt/api/product/list?categories';
@@ -42,7 +35,7 @@ const mapApiResponseItemToApiItem =
   };
 
 const fetchVynotekaApiCategoryProducts = async ({ query, category }: VynotekaApiCategory) => {
-  const { list } = await withCache(fetchData)(vynotekaBaseApiUrl + query);
+  const { list } = await fetchData<VynotekaApiResponse>(vynotekaBaseApiUrl + query);
   return A.map(mapApiResponseItemToApiItem(category))(list);
 };
 

@@ -1,6 +1,7 @@
 import axios from 'axios';
 import { withCache } from '../../../cache';
 import { BOTTLERY_PRODUCT, BOTTLERY_URL } from '../../../consts';
+import { fetchData } from '../../../utils/api.utils';
 import { Category, ApiProduct } from '../store.types';
 
 interface BottleryItem {
@@ -57,21 +58,28 @@ interface BottleryResponseType {
   data: BottleryItem[];
 }
 
-const fetchData = async (url: string) => {
-  const {
-    data: { error, data },
-  } = await axios.post<BottleryResponseType>(url, requestData).catch(() => {
+// const fetchData = async (url: string) => {
+//   const {
+//     data: { error, data },
+//   } = await axios.post<BottleryResponseType>(url, requestData).catch(() => {
+//     throw new Error('Bottlery API error');
+//   });
+//   if (error) {
+//     throw new Error('Bottlery response error');
+//   }
+//   return data;
+// };
+
+export const fetchBottleryProducts = async (): Promise<ApiProduct[]> => {
+  const { error, data } = await fetchData<BottleryResponseType>(BOTTLERY_URL, {
+    method: 'post',
+    data: requestData,
+  }).catch(() => {
     throw new Error('Bottlery API error');
   });
   if (error) {
     throw new Error('Bottlery response error');
   }
-  return data;
-};
-
-export const fetchBottleryProducts = async (): Promise<ApiProduct[]> => {
-  const data = await withCache(fetchData)(BOTTLERY_URL);
-
   const items: ApiProduct[] = data
     .map(mapProduct)
     .filter(({ category }) => category !== Category.OTHER);

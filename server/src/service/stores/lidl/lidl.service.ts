@@ -1,7 +1,5 @@
-import axios from 'axios';
 import { JSDOM } from 'jsdom';
-import { withCache } from '../../../cache';
-import { FetchData } from '../../../types';
+import { fetchData } from '../../../utils/api.utils';
 import { ApiProduct, Category } from '../store.types';
 import { parseAlcVolumeLidl, parseVolumeLidl } from './lidl.utils';
 
@@ -22,14 +20,6 @@ const convertToCategory = (category: string): Category => {
   };
 
   return categoryDictionary[category.toLowerCase()] ?? Category.OTHER;
-};
-
-const fetchHtml: FetchData<string> = async (url: string) => {
-  const { data } = await axios.get(url).catch(() => {
-    throw new Error('Lidl API error');
-  });
-
-  return data;
 };
 
 const parseCategoryUrls = (categoriesHtml: string): string[] => {
@@ -83,7 +73,7 @@ const parseLidlCategoryProducts = (alcPageHtml: string, category: Category): Api
 };
 
 const getCategoryProducts = async (route: string) => {
-  const alcPageHtml = await withCache(fetchHtml)(lidlUrl + route);
+  const alcPageHtml = await fetchData(lidlUrl + route);
   const categoryName = route.split('/').pop() || '';
   const category = convertToCategory(categoryName);
   return parseLidlCategoryProducts(alcPageHtml, category);
@@ -92,7 +82,7 @@ const getCategoryProducts = async (route: string) => {
 export const fetchLidlProducts = async (): Promise<ApiProduct[]> => {
   const alcUrlRoute = '/alkoholiniai-gerimai';
   const alcUrl = lidlUrl + alcUrlRoute;
-  const categoriesHtml = await withCache(fetchHtml)(alcUrl);
+  const categoriesHtml = await fetchData(alcUrl);
   const categoryUrls = parseCategoryUrls(categoriesHtml);
   const results = await Promise.all(categoryUrls.map(getCategoryProducts));
   return results.flat();

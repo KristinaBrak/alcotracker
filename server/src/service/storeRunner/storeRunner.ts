@@ -22,13 +22,10 @@ const updateStoreCreator =
 
 const updateStores = async () => {
   const dbStores = await Store.find();
-  const updateStore = updateStoreCreator(dbStores);
-  Promise.all(stores.map(updateStore));
+  Promise.all(stores.map(updateStoreCreator(dbStores)));
 };
 
-const updateIfProductChanged = () => {};
-
-const updateStoreProducts = async (store: Store, products: ApiProduct[]) => {
+const updateStoreProducts = async (store: Store, products: readonly ApiProduct[]) => {
   const CategoryRepository = getConnection().getRepository(Category);
   const dbCategories = await CategoryRepository.find();
   Promise.all(

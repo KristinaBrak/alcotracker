@@ -1,33 +1,14 @@
-import axios from 'axios';
 import { JSDOM } from 'jsdom';
 import { withCache } from '../../../cache';
 import { logger } from '../../../logger';
-import { FetchData } from '../../../types';
-import { ApiProduct, Category } from '../store.types';
+import { fetchData } from '../../../utils/api.utils';
+import { ApiProduct } from '../store.types';
+import { parseVolume, parseAlcVolume, convertToCategory } from './iki.utils';
 
 const ikiUrl = 'https://iki.lt';
 
 const alcRoute = '/alkoholiniai-gerimai/';
 const alcUrl = ikiUrl + alcRoute;
-
-const convertToCategory = (category: string): Category => {
-  const categoryDictionary: { [key: string]: Category | undefined } = {
-    ['stiprieji gėrimai']: Category.STRONG,
-    ['alus']: Category.LIGHT,
-    ['vynas']: Category.WINE,
-    ['sidras, kokteiliai']: Category.LIGHT,
-  };
-
-  return categoryDictionary[category.toLowerCase()] ?? Category.OTHER;
-};
-
-const fetchHtml: FetchData<string> = async (url: string) => {
-  const { data } = await axios.get(url).catch(() => {
-    throw new Error(`Iki API error at ${url}`);
-  });
-
-  return data;
-};
 
 interface IkiCategoryType {
   category: string;
@@ -66,21 +47,6 @@ const getCategoryUrls = (subcategories: IkiCategoryType['subcategories']): strin
       .join('&') +
     '&ordering=none'
   );
-};
-
-const parseVolume = (volumeText: string): ApiProduct['volume'] => {
-  if (!volumeText) {
-    return;
-  }
-  const [volumeValueText] = volumeText.split(' ');
-  return Number(volumeValueText.replace(',', '.'));
-};
-
-const parseAlcVolume = (alcVolumeText: string): ApiProduct['alcVolume'] => {
-  if (!alcVolumeText) {
-    return;
-  }
-  return Number(alcVolumeText.replace('%', '').replace('|', '').trim().replace(',', '.'));
 };
 
 const parseIkiCategoryProducts = (html: string, category: string, route: string): ApiProduct[] => {
@@ -136,7 +102,7 @@ export const parsePageUrls = (route: string) => (html: string) => {
 
 export const mapPageToApiProducts =
   (category: string) => (route: string) => async (url: string) => {
-    const htmlPage = await withCache(fetchHtml)(url);
+    const htmlPage = await fetchData(url);
     return parseIkiCategoryProducts(htmlPage, category, route);
   };
 
@@ -144,7 +110,7 @@ export const mapCategoryToApiProducts = async ({
   category,
   route,
 }: IkiCategoryType): Promise<ApiProduct[]> => {
-  const html = await withCache(fetchHtml)(alcUrl + route);
+  const html = await fetchData(alcUrl + route);
   const pagedUrls = parsePageUrls(route)(html);
   return (
     await Promise.all([alcUrl + route, ...pagedUrls].map(mapPageToApiProducts(category)(route)))
@@ -152,7 +118,7 @@ export const mapCategoryToApiProducts = async ({
 };
 
 export const fetchIkiProducts = async () => {
-  const alcCategoriesHtml = await withCache(fetchHtml)(alcUrl);
+  const alcCategoriesHtml = await fetchData(alcUrl);
   const categories = parseCategories(alcCategoriesHtml);
   const products = (await Promise.all(categories.map(mapCategoryToApiProducts))).flat();
   if (!products.length) {

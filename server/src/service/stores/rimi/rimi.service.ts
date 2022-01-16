@@ -1,11 +1,11 @@
-import axios, { AxiosRequestConfig } from 'axios';
+import { AxiosRequestConfig } from 'axios';
 import cheerio from 'cheerio';
-import { withCache } from '../../../cache';
-import { FetchData, Url } from '../../../types';
-import { Category, ApiProduct } from '../store.types';
-import { deduplicate, extractAlcVolume, extractVolume } from './rimi.utils';
 import { JSDOM } from 'jsdom';
 import { logger } from '../../../logger';
+import { Url } from '../../../types';
+import { fetchData } from '../../../utils/api.utils';
+import { ApiProduct, Category } from '../store.types';
+import { deduplicate, extractAlcVolume, extractVolume } from './rimi.utils';
 
 interface RimiCategory {
   name: string;
@@ -43,11 +43,6 @@ const convertToCategory = (category: string) => {
   };
 
   return categoryDictionary[category.toLowerCase()] ?? Category.OTHER;
-};
-
-const fetchData: FetchData<string> = async (url: string, options: AxiosRequestConfig) => {
-  const { data } = await axios.get<string>(url, options);
-  return data;
 };
 
 const parseProducts = (data: string, categoryName: string): ApiProduct[] => {
@@ -104,7 +99,7 @@ export const fetchRimiCategoryProducts = async ({ name, link }: RimiCategory) =>
     let nextPage: Url | undefined = link;
 
     while (nextPage) {
-      const data = await withCache(fetchData)(nextPage, requestOptions);
+      const data = await fetchData(nextPage, requestOptions);
 
       products.push(...parseProducts(data, name));
       nextPage = parseNextPageUrl(data);
@@ -159,7 +154,7 @@ const fetchRimiCategories = (data: string) => {
 
 export const fetchRimiProducts = async () => {
   console.log('fetching rimi products');
-  const data = await withCache(fetchData)(rimiAlcoholURL, requestOptions);
+  const data = await fetchData(rimiAlcoholURL, requestOptions);
   const rimiCategories = fetchRimiCategories(data);
   if (!rimiCategories.length) {
     logger.error('Failed to get rimi categories!');
