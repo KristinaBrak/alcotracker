@@ -94,32 +94,53 @@ const getPageCount = (html: string): number => {
   return lastPageNode ? Number(lastPageNode.innerHTML) : 1;
 };
 
-export const parsePageUrls = (route: string) => (html: string) => {
+export const parsePageUrls = ({ route, html }: IkiCategoryType & { html: string }) => {
   const pageCount = getPageCount(html);
   const pageNumbers = Array.from(Array(pageCount + 1).keys()).filter(num => num > 1);
-  return pageNumbers.map(page => `${alcUrl}page/${page}${route}`);
+  return [alcUrl + route, ...pageNumbers.map(page => `${alcUrl}page/${page}${route}`)];
 };
 
 export const mapPageToApiProducts =
-  (category: string) => (route: string) => async (url: string) => {
+  ({ category, route }: IkiCategoryType) =>
+  async (url: string) => {
     const htmlPage = await fetchData(url);
     return parseIkiCategoryProducts(htmlPage, category, route);
   };
 
-export const mapCategoryToApiProducts = async ({
-  category,
-  route,
-}: IkiCategoryType): Promise<ApiProduct[]> => {
-  const html = await fetchData(alcUrl + route);
-  const pagedUrls = parsePageUrls(route)(html);
-  return (
-    await Promise.all([alcUrl + route, ...pagedUrls].map(mapPageToApiProducts(category)(route)))
-  ).flat();
+type SplitPromise<T> = {
+  fulfilled: T[];
+  rejected: PromiseRejectedResult['reason'][];
 };
+const reduceSettled = <T>(acc: SplitPromise<T>, item: PromiseSettledResult<T>) => ({
+  ...acc,
+  [item.status]: [...acc[item.status], item.status === 'fulfilled' ? item.value : item.reason],
+});
+
+export const mapCategoryToApiProducts = async (
+  category: IkiCategoryType & { html: string },
+): Promise<ApiProduct[]> => {
+  const pagedUrls = parsePageUrls(category);
+  const settled = await Promise.allSettled(pagedUrls.map(mapPageToApiProducts(category)));
+  const { fulfilled: fullfiled, rejected } = settled.reduce<SplitPromise<ApiProduct[]>>(
+    reduceSettled,
+    {
+      fulfilled: [],
+      rejected: [],
+    },
+  );
+  rejected.forEach(logger.error);
+  return fullfiled.flat();
+};
+
+const fetchCategoryHtml = async (category: IkiCategoryType) => ({
+  ...category,
+  html: await fetchData(alcUrl + category.route),
+});
 
 export const fetchIkiProducts = async () => {
   const alcCategoriesHtml = await fetchData(alcUrl);
-  const categories = parseCategories(alcCategoriesHtml);
+  const ikiCategories = parseCategories(alcCategoriesHtml);
+  const categories = await Promise.all(ikiCategories.map(fetchCategoryHtml));
   const products = (await Promise.all(categories.map(mapCategoryToApiProducts))).flat();
   if (!products.length) {
     logger.error('Iki products failed to fetch');

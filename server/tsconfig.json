@@ -3,7 +3,7 @@
     "target": "es6",
     "types": ["node", "jest"],
     "module": "commonjs",
-    "lib": ["dom", "es6", "es2017", "es2019", "esnext.asynciterable"],
+    "lib": ["dom", "es6", "es2017", "es2019", "es2020", "esnext.asynciterable"],
     "skipLibCheck": true,
     "sourceMap": true,
     "outDir": "./dist",
