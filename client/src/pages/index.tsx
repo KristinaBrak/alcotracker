@@ -5,6 +5,7 @@ import React, { useState } from "react";
 import FilterDrawer from "../components/Drawer/FilterDrawer";
 import Filter from "../components/Filter/Filter";
 import NewsBanner from "../components/NewsBanner/NewsBanner";
+import { Pager } from "../components/Pager/Pager";
 import ProductList from "../components/Product/ProductList/ProdutList";
 import SortField from "../components/Sort/SortField";
 import {
@@ -21,8 +22,8 @@ type Props = {
 };
 
 const Home: React.FC<Props> = ({ displayNews }) => {
-  const [value, setValue] = useState(80);
-  const [take, setTake] = useState(value);
+  const [take] = useState(60);
+  const [skip, setSkip] = useState(0);
   const router = useRouter();
 
   const [filter, setFilter] = useState<ProductDtoFilter>(
@@ -36,6 +37,7 @@ const Home: React.FC<Props> = ({ displayNews }) => {
   const { error, loading, data } = useProductsQuery({
     variables: {
       filter,
+      skip,
       take,
       sort,
     },
@@ -97,6 +99,7 @@ const Home: React.FC<Props> = ({ displayNews }) => {
             justifyContent="center"
           >
             <ProductList productsData={data} loading={loading} error={error} />
+            <Pager take={take} setSkip={setSkip} />
           </Box>
         </Flex>
       </Grid>
