@@ -1,7 +1,7 @@
 import { HamburgerIcon } from "@chakra-ui/icons";
 import { Box, Flex, Grid, IconButton, useDisclosure } from "@chakra-ui/react";
 import { useRouter } from "next/router";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import FilterDrawer from "../components/Drawer/FilterDrawer";
 import Filter from "../components/Filter/Filter";
 import NewsBanner from "../components/NewsBanner/NewsBanner";
@@ -14,6 +14,7 @@ import {
   useProductsQuery,
 } from "../generated/graphql";
 import { parseFilterQuery } from "../utils/filter";
+import { clearPage } from "../utils/pager";
 import { parseSortQuery } from "../utils/sort";
 import { authenticate } from "../utils/ssr-authenticate";
 
